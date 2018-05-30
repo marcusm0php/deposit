@@ -13,7 +13,7 @@ class GearCommandBase extends Command
     protected $_worker;
     public function beforeRun()
     {
-        $this->_worker= new GearmanWorker();
+        $this->_worker= new \GearmanWorker();
         $gearmanIp = '127.0.0.1';
         $gearmanPort = '4730';
     
