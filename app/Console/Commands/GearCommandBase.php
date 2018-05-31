@@ -26,14 +26,11 @@ class GearCommandBase extends Command
         }
     
         echo "本机INETIP: {$inetIp}\n";die();
-        $gearmanConfig = app()->db->createCommand("
-			SELECT * FROM GEARMAN_CONFIG
-		    WHERE INETIP = '".$inetIp."'
-		")->queryRow();
+        $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
 
         if(!empty($gearmanConfig)){
-            $gearmanIp = $gearmanConfig['WORKERS_IP'];
-            $gearmanPort = $gearmanConfig['WORKERS_PORT'];
+            $gearmanIp = $gearmanConfig['gearmand_srv_ip'];
+            $gearmanPort = $gearmanConfig['gearmand_srv_port'];
         }else{
             echo "启动失败\n";
             echo "获取WORKERS_IP失败\n";
