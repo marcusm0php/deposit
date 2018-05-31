@@ -25,7 +25,7 @@ class GearCommandBase extends Command
             exit();
         }
     
-        echo "本机INETIP: {$inetIp}\n";die();
+        echo "本机INETIP: {$inetIp}\n";
         $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
 
         if(!empty($gearmanConfig)){
