@@ -30,8 +30,8 @@ class GearCommandBase extends Command
         $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
 
         if(!empty($gearmanConfig)){
-            $gearmanIp = $gearmanConfig['gearmand_srv_ip'];
-            $gearmanPort = $gearmanConfig['gearmand_srv_port'];
+            $gearmanIp = $gearmanConfig->gearmand_srv_ip;
+            $gearmanPort = $gearmanConfig->gearmand_srv_port;
         }else{
             echo "启动失败\n";
             echo "获取WORKERS_IP失败\n";

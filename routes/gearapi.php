@@ -14,5 +14,5 @@ use Illuminate\Http\Request;
 */
 
 Route::any('/gclients', function (Request $request) {
-    
+
 });
