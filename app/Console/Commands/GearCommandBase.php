@@ -52,7 +52,7 @@ class GearCommandBase extends Command
             extract($outParamEntities);
             $workLoadArgs = json_decode($job->workload(), true);
             
-            $mch_md5_token = $workLoadArgs['mch_md5_token'];
+            $mch_md5_token = isset($workLoadArgs['mch_md5_token'])? $workLoadArgs['mch_md5_token'] : null;
             
             $ga_traceno = $workLoadArgs['ga_traceno'];
             app()->singleton('ga_traceno', function($app) use ($ga_traceno){
@@ -77,7 +77,9 @@ class GearCommandBase extends Command
     
             app('galog')->log(json_encode([
                 'data' => $data,
-                'sign' => $sign
+                'sign' => $sign, 
+                'mch_md5_token' => $mch_md5_token, 
+                'ga_traceno' => $ga_traceno, 
             ]), 'worker_deposit', 'WorkerLoaded');
     
             $realDoRet = $realDo($dataOri, $sign, $data, $bizContent);
