@@ -50,7 +50,7 @@ class FormatResult
 		}
 		
 		if(empty($ret['biz_content'])){
-			$ret['biz_content'] = new stdClass();
+			$ret['biz_content'] = new \stdClass();
 		}
 
 		return $ret;
