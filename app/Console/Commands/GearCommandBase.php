@@ -99,7 +99,7 @@ class GearCommandBase extends Command
                 $ret = new FormatResult($data);
                 $ret->setError('SIGN.VERIFY.FAIL');
                 
-                $this->_signReturn($ret->getData());
+                return $this->_signReturn($ret->getData());
             }
         });
         echo "Command:Gear:Deposit.sign.verify is registered.\n";
