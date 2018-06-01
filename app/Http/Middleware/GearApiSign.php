@@ -28,7 +28,7 @@ class GearApiSign
         $sign = $request->input('sign', '');
         $data = json_decode($dataOri, true);
         
-        $signverifyRet = app('gclient')->doNormal('router.srv', json_encode([
+        $signverifyRet = app('gclient')->doNormal('deposit.sign.verify', json_encode([
             'data' => $dataOri,
             'sign' => $sign,
         ])); 
