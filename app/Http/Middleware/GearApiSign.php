@@ -36,8 +36,14 @@ class GearApiSign
             'ga_traceno' => app('ga_traceno')
         ])); 
         
-        echo $signverifyRet;
+        $signverifyRetDe = json_decode($signverifyRet, true);
+        if(isset($signverifyRetDe['data'])){
+            $signData = json_decode($signverifyRetDe['data'], true);
+            if(isset($signData['code']) && $signData['code'] == \App\Libs\FormatResultErrors::CODE_MAP['SUCCESS']['code']){
+                return $next($request);
+            }
+        }
         
-        return $next($request);
+        return $signverifyRet;
     }
 }

@@ -5,6 +5,9 @@ use PhpParser\Node\Expr\Isset_;
 class FormatResultErrors
 {
     const CODE_MAP = [
+        'SUCCESS' => [
+            'code' => '100', 
+        ], 
         'SYS.ERR' => [
             'code' => '101', 
             'message' => '系统错误', 
