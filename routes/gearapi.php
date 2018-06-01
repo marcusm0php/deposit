@@ -37,5 +37,8 @@ Route::any('/gclients', function (Request $request) {
 
     $ret = new FormatResult($data);
     $ret->setError('SIGN.BIZ_TYPE.INVALID');
-    return $ret->getData();
+    return [
+        'data' => $ret->getData(), 
+        'sign' => ''
+    ];
 });
