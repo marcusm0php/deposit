@@ -8,8 +8,9 @@ use phpDocumentor\Reflection\Types\Parent_;
 class GearDepositCommand extends GearCommandBase
 {
     protected $signature = 'command:gear:deposit';
-
     protected $description = 'Gearman Working: Deposit around functions.';
+    
+    protected $_worker;
 
     public function __construct()
     {
