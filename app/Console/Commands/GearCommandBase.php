@@ -73,7 +73,7 @@ class GearCommandBase extends Command
                 'sign_type' => '', 
             ], $data);
             $sign = $workLoadArgs['sign'];
-            $bizContent = $data['bizContent'];
+            $bizContent = $data['biz_content'];
     
             app('galog')->log(json_encode([
                 'data' => $data,
