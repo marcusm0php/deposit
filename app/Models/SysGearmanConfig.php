@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class SysGearmanConfig extends Model
 {
-
     const CREATED_AT = '';
     const UPDATED_AT = '';
     protected $dateFormat = 'Y-m-d H:i:s';

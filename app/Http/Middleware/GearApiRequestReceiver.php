@@ -27,10 +27,12 @@ class GearApiRequestReceiver
         $data = $request->input('data', '');
         $sign = $request->input('sign', '');
         
-        app()->singleton('ga_traceno', function ($app) {
-            return create_uuid();
-        });
+        $ga_traceno = create_uuid();
         
+        app()->singleton('ga_traceno', function($app) use ($ga_traceno){
+            return $ga_traceno;
+        });
+
         app('galog')->log(json_encode([
             'data' => $data, 
             'sign' => $sign
