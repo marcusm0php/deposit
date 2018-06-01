@@ -10,8 +10,6 @@ class GearDepositCommand extends GearCommandBase
     protected $signature = 'command:gear:deposit';
     protected $description = 'Gearman Working: Deposit around functions.';
     
-    protected $_worker;
-
     public function __construct()
     {
         parent::__construct();
@@ -74,19 +72,6 @@ class GearDepositCommand extends GearCommandBase
         echo "Command:Gear:Deposit.mchsub.create is registered.\n";
         
         
-        $this->addWorkerFunction('', function($bizContent, $data){
-            // TODO
-            /**
-             *
-             */
-        });
-        
-        $this->addWorkerFunction('', function($bizContent, $data){
-            // TODO
-            /**
-             *
-             */
-        });
 
         echo "Command:Gear:Deposit is started\n";
         while ($this->_worker->work());
