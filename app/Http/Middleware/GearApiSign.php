@@ -31,6 +31,7 @@ class GearApiSign
         $signverifyRet = app('gclient')->doNormal('deposit.sign.verify', json_encode([
             'data' => $dataOri,
             'sign' => $sign,
+            'ga_traceno' => app('ga_traceno')
         ])); 
         
         echo $signverifyRet;
