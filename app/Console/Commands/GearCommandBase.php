@@ -51,7 +51,7 @@ class GearCommandBase extends Command
 
     public function handle()
     {
-        $this->addWorkerFunction('sign.verify', function($dataOri, $sign, $bizContent, $data){
+        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $bizContent, $data){
             $mch_no = $data['mch_no'];
             
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();

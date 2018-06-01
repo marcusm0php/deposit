@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Models\InterfaceConfig;
+use App\Models;
 
 /**
  * 调用sign.verify处理，任务包含：
@@ -28,7 +30,7 @@ class GearApiSign
         $sign = $request->input('sign', '');
         $data = json_decode($dataOri, true);
         
-        $signverifyRet = app('gclient')->doNormal('deposit.sign.verify', json_encode([
+        $signverifyRet = app('gclient')->doNormal(InterfaceConfig::BIZ_TYPES['SIGN.VERIFY'], json_encode([
             'data' => $dataOri,
             'sign' => $sign,
             'ga_traceno' => app('ga_traceno')
