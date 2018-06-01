@@ -5,7 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models;
-use App\Models\InterfaceConfig;
+use App\Libs;
+use App\Libs\FormatResult;
 
 class GearCommandBase extends Command 
 {
@@ -16,6 +17,11 @@ class GearCommandBase extends Command
     protected $_worker;
     public function beforeRun()
     {
+        $this->_worker= new \GearmanWorker();
+        $gearmanIp = '127.0.0.1';
+        $gearmanPort = '4730';
+    
+
         exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
         $inetIp = empty($out[0])? '' : $out[0];
         if(empty($inetIp)){
@@ -43,16 +49,41 @@ class GearCommandBase extends Command
         }
     }
     
+
     public function handle()
     {
         $this->addWorkerFunction('sign.verify', function($dataOri, $sign, $bizContent, $data){
             $mch_no = $data['mch_no'];
             
-            
+            $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
+            if(empty($interfaceConfig)){
+                $ret = new FormatResult($data);
+                $ret->setError('SIGN.VERIFY.FAIL');
+                
+                $this->_signReturn($ret->getData());
+            }
         });
         
 //         $this->addWorkerFunction('worker.router', function($bizContent, $data){
             
 //         });
+
+    }
+
+    protected function _signReturn($data, $token = null, $format = 'md5')
+    {
+        $sign = '';
+        if($format == 'md5'){
+            $sign = SignMD5Helper::genSign($data, $token);
+        }
+        
+        $response = json_encode(array(
+            'data' => $data,
+            'sign' => $sign
+        ), JSON_UNESCAPED_UNICODE);
+
+        app('galog')->log($response, 'worker_deposit', 'WorkerReturn');
+    
+        return $response;
     }
 }
