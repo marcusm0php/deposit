@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Models\InterfaceConfig;
-use App\Models;
 
 /**
  * 调用sign.verify处理，任务包含：
@@ -30,7 +29,7 @@ class GearApiSign
         $sign = $request->input('sign', '');
         $data = json_decode($dataOri, true);
         
-        $signverifyRet = app('gclient')->doNormal(InterfaceConfig::BIZ_TYPES['SIGN.VERIFY'], json_encode([
+        $signverifyRet = app('gclient')->doNormal(InterfaceConfig::BIZ_TYPES['sign.verify'], json_encode([
             'data' => $dataOri,
             'sign' => $sign,
             'ga_traceno' => app('ga_traceno')
@@ -39,8 +38,8 @@ class GearApiSign
         $signverifyRetDe = json_decode($signverifyRet, true);
         if(isset($signverifyRetDe['data'])){
             $signData = json_decode($signverifyRetDe['data'], true);
-            if(isset($signData['code']) && $signData['code'] == \App\Libs\FormatResultErrors::CODE_MAP['SUCCESS']['code']){
-                $request->attributes->add('mch_md5_token', $signData['biz_content']['mch_md5_token']);
+            if(isset($signData['code']) && $signData['code'] == FormatResultErrors::CODE_MAP['SUCCESS']['code']){
+                $request['mch_md5_token'] = $signData['biz_content']['mch_md5_token'];
                 return $next($request);
             }
         }

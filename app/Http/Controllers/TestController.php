@@ -14,6 +14,15 @@ class TestController extends Controller
     public function __construct(Client $client)
     {
         $this->_client = $client;
+		
+		
+		$this->_curl = curl_init();
+		curl_setopt($this->_curl, CURLOPT_URL, $this->_request_url);
+		curl_setopt($this->_curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($this->_curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($this->_curl, CURLOPT_POST, 1);
+		curl_setopt($this->_curl, CURLOPT_HTTPHEADER, array());
+		curl_setopt($this->_curl, CURLOPT_RETURNTRANSFER, 1);
     }
 
     public function subCreate(Request $request)
@@ -21,7 +30,7 @@ class TestController extends Controller
         $data = json_encode([ 
 			'mch_no' => '8AAA',
 			'timestamp' => date('YmdHis'),
-			'biz_type' => '',
+			'biz_type' => 'mchsub.create',
 			'code' => '',
 			'message' => '',
 			'biz_content' => [
@@ -46,17 +55,19 @@ class TestController extends Controller
 		dump($data);
 		dump($sign);
 
-        $response = $this->_client->request('post',$this->_request_url,[
-            'form_params'=>[
-                'data'=>$data,
-                'sign'=>$sign
-            ],
-        ]);
+		curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+			'data' => $data,
+			'sign' => $sign
+		));
+		$ret = curl_exec($this->_curl);	dump($ret);echo '<br /><br />';die();
+		//$ret = json_decode($ret, true);
 
-        $result = $response->getBody();
-        dump($result);
-
-        dd(json_decode($result,true));
+		//dump(json_decode($ret['data'], true));
+		
+		
+		die();
+		
+		
     }
 
 }

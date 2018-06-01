@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Models;
-use App\Libs;
 use App\Libs\FormatResult;
 
 class GearCommandBase extends Command 
@@ -95,16 +93,10 @@ class GearCommandBase extends Command
             $mch_no = $data['mch_no'];
             $ret = new FormatResult($data);
             
-			dump($mch_no);
-			
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
-			
-			dump($interfaceConfig);
 			
             if(!empty($interfaceConfig)){
                 $signCal = \App\Libs\SignMD5Helper::genSign($dataOri, $interfaceConfig->md5_token);
-				
-				dump($signCal);
 				
                 if($signCal == $sign){
                     $ret->setError('SUCCESS');
@@ -123,23 +115,5 @@ class GearCommandBase extends Command
 //         $this->addWorkerFunction('worker.router', function($bizContent, $data){
             
 //         });
-    }
-
-    protected function _signReturn($data, $token = null, $format = 'md5')
-    {
-        $dataJson = json_encode($data, JSON_UNESCAPED_UNICODE);
-        $sign = '';
-        if($format == 'md5'){
-            $sign = \App\Libs\SignMD5Helper::genSign($dataJson, $token);
-        }
-        
-        $response = json_encode(array(
-            'data' => $dataJson,
-            'sign' => $sign
-        ), JSON_UNESCAPED_UNICODE);
-
-        app('galog')->log($response, 'worker_deposit', 'WorkerReturn');
-    
-        return $response;
     }
 }

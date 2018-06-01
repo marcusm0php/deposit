@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class InterfaceConfig extends Model
 {
     const BIZ_TYPES = [
-        'SIGN.VERIFY' => 'deposit.sign.verify',					// 验签
+        'sign.verify' => 'deposit.sign.verify',					// 验签
+        
+        'mchsub.create' => 'deposit.mchsub.create'              //创建子商户
     ];
     
     
