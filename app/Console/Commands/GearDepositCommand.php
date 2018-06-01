@@ -29,16 +29,16 @@ class GearDepositCommand extends GearCommandBase
             });
             echo $funcName . '('.app('ga_traceno').') is called at ' . date('Y-m-d H:i:s') . "\n";
 
+            $dataOri = $workLoadArgs['data'];
+            $data = json_decode($dataOri, true);
+            $sign = $workLoadArgs['sign'];
+            $bizContent = $data['bizContent'];
+            
             app('galog')->log(json_encode([
                 'data' => $data,
                 'sign' => $sign
             ]), 'worker_deposit', 'WorkerLoaded');
             
-            $dataOri = $workLoadArgs['data'];
-            $data = json_decode($dataOri, true);
-            $sign = $workLoadArgs['sign'];
-            $bizContent = $data['bizContent'];
-            	
             $realDoRet = $realDo($dataOri, $sign, $bizContent, $data);
             	
             return $realDoRet;
