@@ -113,7 +113,7 @@ class GearCommandBase extends Command
     {
         $sign = '';
         if($format == 'md5'){
-            $sign = SignMD5Helper::genSign($data, $token);
+            $sign = \App\Libs\SignMD5Helper::genSign($data, $token);
         }
         
         $response = json_encode(array(
