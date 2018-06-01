@@ -93,14 +93,22 @@ class GearCommandBase extends Command
     {
         $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $bizContent, $data){
             $mch_no = $data['mch_no'];
+            $ret = new FormatResult($data);
             
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
-            if(empty($interfaceConfig)){
-                $ret = new FormatResult($data);
-                $ret->setError('SIGN.VERIFY.FAIL');
-                
-                return $this->_signReturn($ret->getData());
+            if(!empty($interfaceConfig)){
+                $signCal = \App\Libs\SignMD5Helper::genSign($dataOri, $interfaceConfig->md5_token);
+                if($signCal == $sign){
+                    $ret->setError('SUCCESS');
+                    $ret->biz_content = [
+                        'mch_md5_token' => $interfaceConfig->md5_token
+                    ];
+                }
             }
+
+            $ret->setError('SIGN.VERIFY.FAIL');
+            
+            return $this->_signReturn($ret->getData());
         });
         echo "Command:Gear:Deposit.sign.verify is registered.\n";
         

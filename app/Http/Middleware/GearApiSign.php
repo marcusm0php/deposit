@@ -40,6 +40,7 @@ class GearApiSign
         if(isset($signverifyRetDe['data'])){
             $signData = json_decode($signverifyRetDe['data'], true);
             if(isset($signData['code']) && $signData['code'] == \App\Libs\FormatResultErrors::CODE_MAP['SUCCESS']['code']){
+                $request->attributes->add('mch_md5_token', $signData['biz_content']['mch_md5_token']);
                 return $next($request);
             }
         }

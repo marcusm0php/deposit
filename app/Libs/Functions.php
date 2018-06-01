@@ -10,9 +10,3 @@ function create_uuid($withSep = false)
 	return $uuid;
 }
 
-function pre($var)
-{
-    echo '<pre>';
-    print_r($var);
-    echo '</pre>';
-}

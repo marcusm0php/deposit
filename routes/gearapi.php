@@ -14,5 +14,15 @@ use Illuminate\Http\Request;
 */
 
 Route::any('/gclients', function (Request $request) {
+    $dataOri = $request->input('data', '');
+    $sign = $request->input('sign', '');
+    $data = json_decode($dataOri, true);
+    dd($mch_md5_token = $request->all());
+    die();
     
+    $bizRet = app('gclient')->doNormal(InterfaceConfig::BIZ_TYPES['SIGN.VERIFY'], json_encode([
+        'data' => $dataOri,
+        'sign' => $sign,
+        'ga_traceno' => app('ga_traceno')
+    ]));
 });
