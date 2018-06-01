@@ -6,6 +6,7 @@ class FormatResultErrors
     const CODE_MAP = [
         'SUCCESS' => [
             'code' => '100', 
+            'message' => ''
         ], 
         'SYS.ERR' => [
             'code' => '101', 

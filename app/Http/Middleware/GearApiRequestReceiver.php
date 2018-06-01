@@ -29,7 +29,6 @@ class GearApiRequestReceiver
         $sign = $request->input('sign', '');
         
         $ga_traceno = create_uuid();
-        
         app()->singleton('ga_traceno', function($app) use ($ga_traceno){
             return $ga_traceno;
         });

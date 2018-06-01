@@ -16,11 +16,10 @@ class GearCommandBase extends Command
 
     public function beforeRun()
     {
-        $this->_worker= new \GearmanWorker();
+        $this->_worker = new \GearmanWorker();
         $gearmanIp = '127.0.0.1';
         $gearmanPort = '4730';
     
-
         exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
         $inetIp = empty($out[0])? '' : $out[0];
         if(empty($inetIp)){
@@ -77,7 +76,8 @@ class GearCommandBase extends Command
     
             app('galog')->log(json_encode([
                 'data' => $data,
-                'sign' => $sign
+                'sign' => $sign, 
+                'funcName' => $funcName,
             ]), 'worker_deposit', 'WorkerLoaded');
     
             $realDoRet = $realDo($dataOri, $sign, $bizContent, $data);
