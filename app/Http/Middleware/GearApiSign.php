@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Models\InterfaceConfig;
+use App\Libs\FormatResultErrors;
 
 /**
  * 调用sign.verify处理，任务包含：
