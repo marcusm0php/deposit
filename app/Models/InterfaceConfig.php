@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class InterfaceConfig extends Model
 {
+    const BIZ_TYPES = [
+        'SIGN.VERIFY' => 'sign.verify',					// 验签
+    ];
+    
+    
     const CREATED_AT = 'create_time';
     const UPDATED_AT = '';
     protected $dateFormat = 'Y-m-d H:i:s';

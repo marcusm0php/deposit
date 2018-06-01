@@ -12,6 +12,7 @@ define('GALOG_PATH', [
 
     'worker_router' => storage_path('/galogs/worker_router/'),
     'worker_sign' => storage_path('/galogs/worker_sign/'),
+    'worker_deposit' => storage_path('/galogs/worker_deposit/'),
 ]);
 
 class GearApiLog

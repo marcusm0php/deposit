@@ -7,7 +7,7 @@
 namespace App\Libs;
 
 
-class SignMD5Handler
+class SignMD5Helper
 {
     public static function verify($data, $sign, $token, &$signCal = '')
     {

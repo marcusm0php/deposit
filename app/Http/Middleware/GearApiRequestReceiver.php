@@ -9,6 +9,7 @@ use Closure;
  * 1. 记录请求数据包
  * 2. 实例化好gearman client,并全局单例化
  * 3. 生成全局的识别码uuid，并全局可获取化
+ * 4. 实例化GearmanClient，并加入app的singleton
  * 
  * @author Administrator
  *
@@ -38,6 +39,14 @@ class GearApiRequestReceiver
             'sign' => $sign
         ]), 'landingtouch', 'Req');
 
+        $gearmanIp = '127.0.0.1';
+        $gearmanPort = '4730';
+        $gclient = new GearmanClient();
+        $gclient->addServer($gearmanIp, $gearmanPort);
+        app()->singleton('gclient', function($app) use ($gclient){
+            return $gclient;
+        });
+        
         return $next($request);
     }
 }
