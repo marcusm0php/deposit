@@ -14,9 +14,9 @@ class GearDepositCommand extends GearCommandBase
 
     public function __construct()
     {
-        $this->beforeRun();
-        
         parent::__construct();
+        
+        $this->beforeRun();
     }
     
     public function addWorkerFunction($funcName, $realDo)
