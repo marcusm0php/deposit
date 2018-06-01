@@ -16,10 +16,11 @@ class GearCommandBase extends Command
 
     public function beforeRun()
     {
-        $this->_worker = new \GearmanWorker();
+        $this->_worker= new \GearmanWorker();
         $gearmanIp = '127.0.0.1';
         $gearmanPort = '4730';
     
+
         exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
         $inetIp = empty($out[0])? '' : $out[0];
         if(empty($inetIp)){
@@ -76,8 +77,7 @@ class GearCommandBase extends Command
     
             app('galog')->log(json_encode([
                 'data' => $data,
-                'sign' => $sign, 
-                'funcName' => $funcName,
+                'sign' => $sign
             ]), 'worker_deposit', 'WorkerLoaded');
     
             $realDoRet = $realDo($dataOri, $sign, $bizContent, $data);
@@ -90,24 +90,32 @@ class GearCommandBase extends Command
     }
 
     public function handle()
-    {
+    { 
         $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $bizContent, $data){
             $mch_no = $data['mch_no'];
             $ret = new FormatResult($data);
             
+			dump($mch_no);
+			
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
+			
+			dump($interfaceConfig);
+			
             if(!empty($interfaceConfig)){
                 $signCal = \App\Libs\SignMD5Helper::genSign($dataOri, $interfaceConfig->md5_token);
+				
+				dump($signCal);
+				
                 if($signCal == $sign){
                     $ret->setError('SUCCESS');
                     $ret->biz_content = [
                         'mch_md5_token' => $interfaceConfig->md5_token
                     ];
+					return $this->_signReturn($ret->getData());
                 }
             }
 
             $ret->setError('SIGN.VERIFY.FAIL');
-            
             return $this->_signReturn($ret->getData());
         });
         echo "Command:Gear:Deposit.sign.verify is registered.\n";
