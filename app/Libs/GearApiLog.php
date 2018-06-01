@@ -37,10 +37,11 @@ class GearApiLog
         }
     }
     
-	public function log($message, $log_type, $event = '')
+	public function log($message, $log_type, $event = '', $ga_traceno = null)
 	{
 	    if(isset($this->_Loggers[$log_type])){
-	        $context = ['log.no' => app('ga_traceno')];
+	        $ga_traceno = $ga_traceno === null? app('ga_traceno') : $ga_traceno;
+	        $context = ['log.no' => $ga_traceno];
 	        if(!empty($event)){
 	            $context['log.event'] = $event;
 	        }

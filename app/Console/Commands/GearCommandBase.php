@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use App\Models;
+use App\Models\InterfaceConfig;
 
 class GearCommandBase extends Command 
 {
@@ -14,10 +16,11 @@ class GearCommandBase extends Command
     protected $_worker;
     public function beforeRun()
     {
-       /* $this->_worker= new \GearmanWorker();
+        $this->_worker= new \GearmanWorker();
         $gearmanIp = '127.0.0.1';
         $gearmanPort = '4730';
     
+
         exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
         $inetIp = empty($out[0])? '' : $out[0];
         if(empty($inetIp)){
@@ -30,18 +33,33 @@ class GearCommandBase extends Command
         $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
 
         if(!empty($gearmanConfig)){
-            $gearmanIp = $gearmanConfig->gearmand_srv_ip;
-            $gearmanPort = $gearmanConfig->gearmand_srv_port;
+            echo "Gearman Workers工作组IP: {$gearmanConfig->gearmand_srv_ip}\n";
+            echo "Gearman Workers工作组端口{$gearmanConfig->gearmand_srv_port}\n";
+            
+            $this->_worker= new \GearmanWorker();
+            $this->_worker->addServer($gearmanConfig->gearmand_srv_ip, $gearmanConfig->gearmand_srv_port);
+
+            return true;
         }else{
             echo "启动失败\n";
             echo "获取WORKERS_IP失败\n";
             exit();
+            return false;
         }
+    }
     
-        echo "Gearman Workers工作组IP: {$gearmanIp}\n";
-        echo "Gearman Workers工作组端口{$gearmanPort}\n";
-        $this->_worker->addServer($gearmanIp, $gearmanPort);*/
-    
-        return true;
+
+    public function handle()
+    {
+        $this->addWorkerFunction('sign.verify', function($dataOri, $sign, $bizContent, $data){
+            $mch_no = $data['mch_no'];
+            
+            
+        });
+        
+//         $this->addWorkerFunction('worker.router', function($bizContent, $data){
+            
+//         });
+
     }
 }
