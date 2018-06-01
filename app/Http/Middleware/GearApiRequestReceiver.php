@@ -41,7 +41,7 @@ class GearApiRequestReceiver
 
         $gearmanIp = '127.0.0.1';
         $gearmanPort = '4730';
-        $gclient = new GearmanClient();
+        $gclient = new \GearmanClient();
         $gclient->addServer($gearmanIp, $gearmanPort);
         app()->singleton('gclient', function($app) use ($gclient){
             return $gclient;
