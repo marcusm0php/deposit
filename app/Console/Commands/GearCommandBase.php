@@ -14,7 +14,6 @@ class GearCommandBase extends Command
 
     protected $description = 'Description';
 
-    protected $_worker;
     public function beforeRun()
     {
         $this->_worker= new \GearmanWorker();
@@ -52,7 +51,6 @@ class GearCommandBase extends Command
 
     public function handle()
     {
-        echo "Command:Gear:Deposit.sign.verify is registered.\n";
         $this->addWorkerFunction('sign.verify', function($dataOri, $sign, $bizContent, $data){
             $mch_no = $data['mch_no'];
             
@@ -64,6 +62,7 @@ class GearCommandBase extends Command
                 $this->_signReturn($ret->getData());
             }
         });
+        echo "Command:Gear:Deposit.sign.verify is registered.\n";
         
 //         $this->addWorkerFunction('worker.router', function($bizContent, $data){
             
