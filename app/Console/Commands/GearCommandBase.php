@@ -51,7 +51,9 @@ class GearCommandBase extends Command
         $this->_worker->addFunction($funcName, function($job, $outParamEntities){
             extract($outParamEntities);
             $workLoadArgs = json_decode($job->workload(), true);
-    
+            
+            $mch_md5_token = $workLoadArgs['mch_md5_token'];
+            
             $ga_traceno = $workLoadArgs['ga_traceno'];
             app()->singleton('ga_traceno', function($app) use ($ga_traceno){
                 return $ga_traceno;
@@ -78,7 +80,7 @@ class GearCommandBase extends Command
                 'sign' => $sign
             ]), 'worker_deposit', 'WorkerLoaded');
     
-            $realDoRet = $realDo($dataOri, $sign, $bizContent, $data);
+            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent);
              
             return $realDoRet;
         }, array(
@@ -89,7 +91,7 @@ class GearCommandBase extends Command
 
     public function handle()
     { 
-        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $bizContent, $data){
+        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent){
             $mch_no = $data['mch_no'];
             $ret = new FormatResult($data);
             

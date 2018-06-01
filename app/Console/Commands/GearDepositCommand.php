@@ -22,7 +22,7 @@ class GearDepositCommand extends GearCommandBase
         parent::handle();
         
         // 商户开设子账户
-        $this->addWorkerFunction('deposit.mchsub.create', function($data, $bizContent){
+        $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent){
             $bizContentFormat = array_merge([
                 'mchsub_no' => '',
                 'mchsub_name' => '',
