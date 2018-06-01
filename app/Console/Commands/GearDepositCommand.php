@@ -73,7 +73,7 @@ class GearDepositCommand extends GearCommandBase
         
         
 
-        echo "Command:Gear:Deposit is started\n";
+        echo "Command:Gear:Deposit Is Launched Successfully\n";
         while ($this->_worker->work());
     }
 }
