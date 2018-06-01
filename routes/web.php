@@ -16,6 +16,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix'=>'wxpay'],function(){
-
+Route::group(['prefix'=>'merchant'],function(){
+    Route::get('create','TestController@subCreate');
 });
