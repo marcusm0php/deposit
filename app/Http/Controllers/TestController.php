@@ -18,23 +18,33 @@ class TestController extends Controller
 
     public function subCreate(Request $request)
     {
-        $data = json_encode([
-            'mchsub_no' => '',
-            'mchsub_name' => '',
-            'bankcard' => [
-                [
-                    'mchno' => '',
-                    'mchsub_no' => '',
-                    'bankname' => '',
-                    'bankname_branch' => '',
-                    'cardno' => '',
-                    'createtime' => '',
-                ],
-            ],
-            'out_refund_no' => ''
+        $data = json_encode([ 
+			'mch_no' => '8AAA',
+			'timestamp' => date('YmdHis'),
+			'biz_type' => '',
+			'code' => '',
+			'message' => '',
+			'biz_content' => [
+				'mchsub_no' => '',
+				'mchsub_name' => '',
+				'bankcard' => [
+					[
+						'mchno' => '',
+						'mchsub_no' => '',
+						'bankname' => '',
+						'bankname_branch' => '',
+						'cardno' => '',
+						'createtime' => '',
+					],
+				],
+			], 
+			'sign_type' => ''
         ]);
-        $token = '8AAATOKENTOKENweweweftgt';
+        $token = 'TOKENTOKEN';
         $sign = SignMD5Helper::genSign($data, $token);
+		
+		dump($data);
+		dump($sign);
 
         $response = $this->_client->request('post',$this->_request_url,[
             'form_params'=>[
