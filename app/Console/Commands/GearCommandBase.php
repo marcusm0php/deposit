@@ -116,4 +116,22 @@ class GearCommandBase extends Command
             
 //         });
     }
+
+    protected function _signReturn($data, $token = null, $format = 'md5')
+    {
+        $dataJson = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $sign = '';
+        if($format == 'md5'){
+            $sign = \App\Libs\SignMD5Helper::genSign($dataJson, $token);
+        }
+        
+        $response = json_encode(array(
+            'data' => $dataJson,
+            'sign' => $sign
+        ), JSON_UNESCAPED_UNICODE);
+
+        app('galog')->log($response, 'worker_deposit', 'WorkerReturn');
+    
+        return $response;
+    }
 }
