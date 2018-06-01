@@ -39,7 +39,7 @@ class GearApiSign
         $signverifyRetDe = json_decode($signverifyRet, true);
         if(isset($signverifyRetDe['data'])){
             $signData = json_decode($signverifyRetDe['data'], true);
-            if(isset($signData['code']) && $signData['code'] == \App\Libs\FormatResultErrors::CODE_MAP['SUCCESS']['code']){
+            if(isset($signData['code']) && $signData['code'] == App\Libs\FormatResultErrors::CODE_MAP['SUCCESS']['code']){
                 return $next($request);
             }
         }
