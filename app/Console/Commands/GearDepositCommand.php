@@ -17,37 +17,6 @@ class GearDepositCommand extends GearCommandBase
         $this->beforeRun();
     }
     
-    public function addWorkerFunction($funcName, $realDo)
-    {
-        $this->_worker->addFunction($funcName, function($job, $outParamEntities){
-            extract($outParamEntities);
-            $workLoadArgs = json_decode($job->workload(), true);
-
-            $ga_traceno = $workLoadArgs['ga_traceno'];
-            app()->singleton('ga_traceno', function($app) use ($ga_traceno){
-                return $ga_traceno;
-            });
-            echo $funcName . '('.app('ga_traceno').') is called at ' . date('Y-m-d H:i:s') . "\n";
-
-            $dataOri = $workLoadArgs['data'];
-            $data = json_decode($dataOri, true);
-            $sign = $workLoadArgs['sign'];
-            $bizContent = $data['bizContent'];
-            
-            app('galog')->log(json_encode([
-                'data' => $data,
-                'sign' => $sign
-            ]), 'worker_deposit', 'WorkerLoaded');
-            
-            $realDoRet = $realDo($dataOri, $sign, $bizContent, $data);
-            	
-            return $realDoRet;
-        }, array(
-            'funcName' => $funcName,
-            'realDo' => $realDo
-        ));
-    }
-
     public function handle()
     {
         parent::handle();
