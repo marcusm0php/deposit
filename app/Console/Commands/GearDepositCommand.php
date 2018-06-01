@@ -54,6 +54,7 @@ class GearDepositCommand extends GearCommandBase
         parent::handle();
         
         // 商户开设子账户
+        echo "Command:Gear:Deposit.mchsub.create is registered.\n";
         $this->addWorkerFunction('mchsub.create', function($data, $bizContent){
             $bizContentFormat = array_merge([
                 'mchsub_no' => '',
@@ -86,6 +87,8 @@ class GearDepositCommand extends GearCommandBase
              *
              */
         });
-        
+
+        echo "Command:Gear:Deposit is started\n";
+        while ($this->_worker->work());
     }
 }

@@ -52,6 +52,7 @@ class GearCommandBase extends Command
 
     public function handle()
     {
+        echo "Command:Gear:Deposit.sign.verify is registered.\n";
         $this->addWorkerFunction('sign.verify', function($dataOri, $sign, $bizContent, $data){
             $mch_no = $data['mch_no'];
             
@@ -67,7 +68,6 @@ class GearCommandBase extends Command
 //         $this->addWorkerFunction('worker.router', function($bizContent, $data){
             
 //         });
-
     }
 
     protected function _signReturn($data, $token = null, $format = 'md5')
