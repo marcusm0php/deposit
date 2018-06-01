@@ -14,7 +14,7 @@ class GearCommandBase extends Command
     protected $_worker;
     public function beforeRun()
     {
-        $this->_worker= new \GearmanWorker();
+       /* $this->_worker= new \GearmanWorker();
         $gearmanIp = '127.0.0.1';
         $gearmanPort = '4730';
     
@@ -40,7 +40,7 @@ class GearCommandBase extends Command
     
         echo "Gearman Workers工作组IP: {$gearmanIp}\n";
         echo "Gearman Workers工作组端口{$gearmanPort}\n";
-        $this->_worker->addServer($gearmanIp, $gearmanPort);
+        $this->_worker->addServer($gearmanIp, $gearmanPort);*/
     
         return true;
     }
