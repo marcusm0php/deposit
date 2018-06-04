@@ -106,7 +106,8 @@ class GearDepositCommand extends GearCommandBase
                                                      ->where('bank_name', $bank_card['bank_name'])
                                                      ->where('card_type', $bank_card['card_type'])
                                                      ->where('card_no', $bank_card['card_no'])
-                                                     ->where('card_cvn', $bank_card['card_cvn']);
+                                                     ->where('card_cvn', $bank_card['card_cvn'])
+                                                     ->first();
             if($bank_card_existed){
                 $ret->setError('MCHSUB.CREATE.BANKCARD.REPEAT');
                 return $this->_signReturn($ret->getData());
