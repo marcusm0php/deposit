@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Bankcard extends Model
+class Bankcard extends ModelBase
 {
-    const CREATED_AT = 'create_time';
-    const UPDATED_AT = '';
-    protected $dateFormat = 'Y-m-d H:i:s';
     protected $table = 'bank_card';
     protected $primaryKey = 'id_bank_card';
     

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class InterfaceConfig extends Model
+class InterfaceConfig extends ModelBase
 {
     const BIZ_TYPES = [
         'sign.verify' => 'deposit.sign.verify',					// 验签
@@ -13,9 +13,6 @@ class InterfaceConfig extends Model
     ];
     
     
-    const CREATED_AT = 'create_time';
-    const UPDATED_AT = '';
-    protected $dateFormat = 'Y-m-d H:i:s';
     protected $table = 'interface_config';
     protected $primaryKey = 'id_interface_config';
     

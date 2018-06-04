@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Mchsub extends Model
+class Mchsub extends ModelBase
 {
-    const CREATED_AT = 'create_time';
-    const UPDATED_AT = '';
-    protected $dateFormat = 'Y-m-d H:i:s';
     protected $table = 'mch_sub';
     protected $primaryKey = 'id_mch_sub';
     

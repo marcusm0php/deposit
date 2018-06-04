@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MchAccntChargeUp extends Model
+class MchAccntChargeUp extends ModelBase
 {
-    const CREATED_AT = 'create_time';
-    const UPDATED_AT = '';
-    protected $dateFormat = 'Y-m-d H:i:s';
     protected $table = 'mch_accnt_charge_up';
     protected $primaryKey = 'id_mch_accnt_charge_up';
     

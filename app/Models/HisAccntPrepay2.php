@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HisAccntPrepay2 extends Model
+class HisAccntPrepay2 extends ModelBase
 {
-    const CREATED_AT = 'create_time';
-    const UPDATED_AT = '';
-    protected $dateFormat = 'Y-m-d H:i:s';
     protected $table = 'his_accnt_prepay2';
     protected $primaryKey = 'id_his_accnt_prepay2';
     

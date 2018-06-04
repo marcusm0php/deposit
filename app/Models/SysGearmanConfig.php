@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SysGearmanConfig extends Model
+class SysGearmanConfig extends ModelBase
 {
-    const CREATED_AT = '';
-    const UPDATED_AT = '';
-    protected $dateFormat = 'Y-m-d H:i:s';
     protected $table = 'sys_gearman_config';
     protected $primaryKey = 'id_sys_gearman_config';
     
