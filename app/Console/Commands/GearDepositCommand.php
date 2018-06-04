@@ -43,7 +43,9 @@ class GearDepositCommand extends GearCommandBase
                 'createtime' => '', 
             ];
             foreach($bizContentFormat['bank_card'] as $k => $bank_card){
-                $bizContentFormat['bank_card'][$k] = array_merge($bank_cardFormat, $bank_card);
+                if(is_array($bank_card)){
+                    $bizContentFormat['bank_card'][$k] = array_merge($bank_cardFormat, $bank_card);
+                }
             }
             $ret = new FormatResult($data);
             
