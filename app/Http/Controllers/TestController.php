@@ -72,7 +72,7 @@ class TestController extends Controller
         $data = json_encode([ 
 			'mch_no' => '8AAA',
 			'timestamp' => date('YmdHis'),
-			'biz_type' => 'mchsub.create',
+			'biz_type' => 'mchsub.bind.bankcard',
 			'code' => '',
 			'message' => '',
 			'biz_content' => [
