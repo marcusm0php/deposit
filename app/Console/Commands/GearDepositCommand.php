@@ -25,13 +25,13 @@ class GearDepositCommand extends GearCommandBase
         // 商户开设子账户
         $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent){
             $bizContentFormat = array_merge([
-                'mchsub_name' => '',
+                'mch_sub_name' => '',
                 'link_name' => '', 
                 'link_phone' => '', 
                 'link_email' => '', 
-                'bankcard' => [],
+                'bank_card' => [],
             ], $bizContent);
-            $bankcardFormat = [
+            $bank_cardFormat = [
                 'bank_name' => '', 
                 'bank_branch_name' => '', 
                 'card_type' => '', 
@@ -42,17 +42,17 @@ class GearDepositCommand extends GearCommandBase
                 'cardholder_phone' => '', 
                 'createtime' => '', 
             ];
-            foreach($bizContentFormat['bankcard'] as $k => $bankcard){
-                $bizContentFormat['bankcard'][$k] = array_merge($bankcardFormat, $bankcard);
+            foreach($bizContentFormat['bank_card'] as $k => $bank_card){
+                $bizContentFormat['bank_card'][$k] = array_merge($bank_cardFormat, $bank_card);
             }
             $ret = new FormatResult($data);
             
-            if(empty($bizContentFormat['bankcard'])){
+            if(empty($bizContentFormat['bank_card'])){
                 $ret->setError('MCHSUB.CREATE.BANKCARD.EMPTY');
                 return $this->_signReturn($ret->getData());
             }
             
-            $mchsub = \App\Models\Mchsub::where('mchsub_name', $data['mchsub_name'])
+            $mchsub = \App\Models\Mchsub::where('mch_sub_name', $bizContentFormat['mch_sub_name'])
                                             ->where('mch_sub_no', $mch_sub_no)
                                             ->first();
             if($mchsub){
@@ -66,33 +66,33 @@ class GearDepositCommand extends GearCommandBase
             $mchsub = new \App\Models\Mchsub;
             $mchsub->mch_no = $data['mch_no']; 
             $mchsub->mch_sub_no = $mch_sub_no; 
-            $mchsub->mchsub_name = $bizContentFormat['mchsub_name']; 
+            $mchsub->mch_sub_name = $bizContentFormat['mch_sub_name']; 
             $mchsub->link_name = $bizContentFormat['link_name']; 
             $mchsub->link_phone = $bizContentFormat['link_phone'];
             $mchsub->link_email = $bizContentFormat['link_email'];
             $flight->save();
             
-            foreach($bizContentFormat['bankcard'] as $k => $bankcard){
-                if(empty($bankcard['bank_no']) /* && other bankcard info checks*/){
+            foreach($bizContentFormat['bank_card'] as $k => $bank_card){
+                if(empty($bank_card['bank_no']) /* && other bank_card info checks*/){
 
                     DB::rollBack();
                     $ret->setError('MCHSUB.CREATE.BANKCARD.ERROR');
                     return $this->_signReturn($ret->getData());
                 }
                 
-                $bankcard = new \App\Models\Bankcard;
-                $bankcard->mch_no = $data['mch_no']; 
-                $bankcard->mch_sub_no = $mch_sub_no; 
-                $bankcard->bank_no = $bankcard['bank_no']; 
-                $bankcard->bank_name = $bankcard['bank_name']; 
-                $bankcard->bank_branch_name = $bankcard['bank_branch_name']; 
-                $bankcard->card_type = $bankcard['card_type']; 
-                $bankcard->card_no = $bankcard['card_no']; 
-                $bankcard->card_cvn = $bankcard['card_cvn']; 
-                $bankcard->card_expire_date = $bankcard['card_expire_date']; 
-                $bankcard->cardholder_name = $bankcard['cardholder_name']; 
-                $bankcard->cardholder_phone = $bankcard['cardholder_phone']; 
-                $bankcard->save();
+                $bank_card = new \App\Models\Bankcard;
+                $bank_card->mch_no = $data['mch_no']; 
+                $bank_card->mch_sub_no = $mch_sub_no; 
+                $bank_card->bank_no = $bank_card['bank_no']; 
+                $bank_card->bank_name = $bank_card['bank_name']; 
+                $bank_card->bank_branch_name = $bank_card['bank_branch_name']; 
+                $bank_card->card_type = $bank_card['card_type']; 
+                $bank_card->card_no = $bank_card['card_no']; 
+                $bank_card->card_cvn = $bank_card['card_cvn']; 
+                $bank_card->card_expire_date = $bank_card['card_expire_date']; 
+                $bank_card->cardholder_name = $bank_card['cardholder_name']; 
+                $bank_card->cardholder_phone = $bank_card['cardholder_phone']; 
+                $bank_card->save();
             }
             
             DB::commit();
