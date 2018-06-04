@@ -82,8 +82,8 @@ class GearCommandBase extends Command
                 'ga_traceno' => $ga_traceno, 
             ]), 'worker_deposit', 'WorkerLoaded');
     
+
             $realDoRet = $realDo($dataOri, $sign, $data, $bizContent);
-             
             return $realDoRet;
         }, array(
             'funcName' => $funcName,
