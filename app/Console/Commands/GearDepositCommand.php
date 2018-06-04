@@ -95,6 +95,7 @@ class GearDepositCommand extends GearCommandBase
             
             $bank_card = $bizContentFormat['bank_card'];
             $bank_card['card_type'] = in_array($bank_card['card_type'], \App\Models\Bankcard::CARD_TYPE)? $bank_card['card_type'] : '0';
+            $bank_card['card_expire_date'] = date('Y-m-d', strtotime($bank_card['card_expire_date']));
             if(empty($bank_card['card_no']) /* && other bank_card info checks*/){
                 $ret->setError('MCHSUB.CREATE.BANKCARD.ERROR');
                 return $this->_signReturn($ret->getData());
