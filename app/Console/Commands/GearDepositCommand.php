@@ -55,7 +55,7 @@ class GearDepositCommand extends GearCommandBase
             }
             
             $mchsub = \App\Models\Mchsub::where('mch_sub_name', $bizContentFormat['mch_sub_name'])
-                                            ->where('mch_sub_no', $mch_sub_no)
+                                            ->where('mch_no', $data['mch_no'])
                                             ->first();
             if($mchsub){
                 $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
