@@ -113,19 +113,19 @@ class GearDepositCommand extends GearCommandBase
                 return $this->_signReturn($ret->getData());
             }
         
-            $bank_card = new \App\Models\Bankcard;
-            $bank_card->mch_no = $data['mch_no'];
-            $bank_card->mch_sub_no = $bizContentFormat['mch_sub_no'];
-            $bank_card->bank_no = $bank_card['bank_no'];
-            $bank_card->bank_name = $bank_card['bank_name'];
-            $bank_card->bank_branch_name = $bank_card['bank_branch_name'];
-            $bank_card->card_type = $bank_card['card_type'];
-            $bank_card->card_no = $bank_card['card_no'];
-            $bank_card->card_cvn = $bank_card['card_cvn'];
-            $bank_card->card_expire_date = $bank_card['card_expire_date'];
-            $bank_card->cardholder_name = $bank_card['cardholder_name'];
-            $bank_card->cardholder_phone = $bank_card['cardholder_phone'];
-            $bank_card->save();
+            $bankCardModel = new \App\Models\Bankcard;
+            $bankCardModel->mch_no = $data['mch_no'];
+            $bankCardModel->mch_sub_no = $bizContentFormat['mch_sub_no'];
+            $bankCardModel->bank_no = $bank_card['bank_no'];
+            $bankCardModel->bank_name = $bank_card['bank_name'];
+            $bankCardModel->bank_branch_name = $bank_card['bank_branch_name'];
+            $bankCardModel->card_type = $bank_card['card_type'];
+            $bankCardModel->card_no = $bank_card['card_no'];
+            $bankCardModel->card_cvn = $bank_card['card_cvn'];
+            $bankCardModel->card_expire_date = $bank_card['card_expire_date'];
+            $bankCardModel->cardholder_name = $bank_card['cardholder_name'];
+            $bankCardModel->cardholder_phone = $bank_card['cardholder_phone'];
+            $bankCardModel->save();
         
             DB::commit();
             $ret->setError('SUCCESS');
