@@ -11,6 +11,6 @@ class ModelBase extends Model
     protected $dateFormat = 'Y-m-d H:i:s';
     
     public function getUpdatedAtColumn() {
-        parent::getUpdatedAtColumn();
+        return null;
     }
 }
