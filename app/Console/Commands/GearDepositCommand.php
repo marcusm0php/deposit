@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
-use phpDocumentor\Reflection\Types\Parent_;
+use App\Libs\FormatResult;
 
 class GearDepositCommand extends GearCommandBase
 {
