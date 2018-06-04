@@ -32,6 +32,7 @@ class GearDepositCommand extends GearCommandBase
                 'bank_card' => [],
             ], $bizContent);
             $bank_cardFormat = [
+                'bank_no' => '', 
                 'bank_name' => '', 
                 'bank_branch_name' => '', 
                 'card_type' => '', 
@@ -75,7 +76,7 @@ class GearDepositCommand extends GearCommandBase
             $mchsub->save();
             
             foreach($bizContentFormat['bank_card'] as $k => $bank_card){
-                if(empty($bank_card['bank_no']) /* && other bank_card info checks*/){
+                if(empty($bank_card['card_no']) /* && other bank_card info checks*/){
 
                     DB::rollBack();
                     $ret->setError('MCHSUB.CREATE.BANKCARD.ERROR');
