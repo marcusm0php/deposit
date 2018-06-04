@@ -130,8 +130,16 @@ class GearDepositCommand extends GearCommandBase
             DB::commit();
             $ret->setError('SUCCESS');
             $ret->biz_content = [
-                'mch_sub_no' => $mch_sub_no, 
-                'bank_no' => $bank_no
+                'mch_sub_no' => $bizContentFormat['mch_sub_no'], 
+                'bank_name' => $bank_card['bank_name'] ,
+                'bank_no' => $bank_no, 
+                'bank_branch_name' => $bank_card['bank_branch_name'], 
+                'card_no' => $bank_card['card_no'], 
+                'card_type' => $bank_card['card_type'], 
+                'card_cvn' => $bank_card['card_cvn'], 
+                'card_expire_date' => $bank_card['card_expire_date'], 
+                'cardholder_name' => $bank_card['cardholder_name'], 
+                'cardholder_phone' => $bank_card['cardholder_phone'], 
             ];
             return $this->_signReturn($ret->getData());
         });
