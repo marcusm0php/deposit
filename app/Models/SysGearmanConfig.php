@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class SysGearmanConfig extends ModelBase

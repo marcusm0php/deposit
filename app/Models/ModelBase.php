@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class ModelBase extends ModelBase
+class ModelBase extends Model
 {
     const CREATED_AT = 'create_time';
     const UPDATED_AT = '';
