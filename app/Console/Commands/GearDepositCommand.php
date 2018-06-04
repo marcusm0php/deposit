@@ -72,7 +72,7 @@ class GearDepositCommand extends GearCommandBase
             $mchsub->link_name = $bizContentFormat['link_name']; 
             $mchsub->link_phone = $bizContentFormat['link_phone'];
             $mchsub->link_email = $bizContentFormat['link_email'];
-            $flight->save();
+            $mchsub->save();
             
             foreach($bizContentFormat['bank_card'] as $k => $bank_card){
                 if(empty($bank_card['bank_no']) /* && other bank_card info checks*/){
