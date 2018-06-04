@@ -10,7 +10,4 @@ class ModelBase extends Model
     const UPDATED_AT = 'update_time';
     protected $dateFormat = 'Y-m-d H:i:s';
     
-    public function getUpdatedAtColumn() {
-        return null;
-    }
 }
