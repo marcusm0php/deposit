@@ -9,7 +9,8 @@ class InterfaceConfig extends ModelBase
     const BIZ_TYPES = [
         'sign.verify' => 'deposit.sign.verify',					// 验签
         
-        'mchsub.create' => 'deposit.mchsub.create'              //创建子商户
+        'mchsub.create' => 'deposit.mchsub.create',              // 创建子商户
+        'mchsub.bind.bankcard' => 'deposit.mchsub.bind.bankcard'       // 子商户绑定银行卡
     ];
     
     
