@@ -34,18 +34,23 @@ class TestController extends Controller
 			'code' => '',
 			'message' => '',
 			'biz_content' => [
-				'mchsub_no' => '',
-				'mchsub_name' => '',
-				'bankcard' => [
+				'mch_sub_name' => 'sub1',
+                'link_name' => '', 
+                'link_phone' => '', 
+                'link_email' => '', 
+                'bank_card' => [
 					[
-						'mchno' => '',
-						'mchsub_no' => '',
-						'bankname' => '',
-						'bankname_branch' => '',
-						'cardno' => '',
-						'createtime' => '',
-					],
-				],
+						'bank_name' => '农业银行', 
+						'bank_branch_name' => '', 
+						'card_type' => '', 
+						'card_no' => '111', 
+						'card_cvn' => '', 
+						'card_expire_date' => '', 
+						'cardholder_name' => '', 
+						'cardholder_phone' => '', 
+						'createtime' => '', 
+					]
+				], 
 			], 
 			'sign_type' => ''
         ]);
@@ -60,14 +65,44 @@ class TestController extends Controller
 			'sign' => $sign
 		));
 		$ret = curl_exec($this->_curl);	dump($ret);echo '<br /><br />';die();
-		//$ret = json_decode($ret, true);
+    }
 
-		//dump(json_decode($ret['data'], true));
+    public function subBind(Request $request)
+    {
+        $data = json_encode([ 
+			'mch_no' => '8AAA',
+			'timestamp' => date('YmdHis'),
+			'biz_type' => 'mchsub.create',
+			'code' => '',
+			'message' => '',
+			'biz_content' => [
+                'mch_sub_no' => '', 
+                'bank_card' => [
+                    'bank_no' => '',
+                    'bank_name' => '',
+                    'bank_branch_name' => '',
+                    'card_type' => '',
+                    'card_no' => '',
+                    'card_cvn' => '',
+                    'card_expire_date' => '',
+                    'cardholder_name' => '',
+                    'cardholder_phone' => '',
+                    'createtime' => '',
+                ],
+			], 
+			'sign_type' => ''
+        ]);
+        $token = 'TOKENTOKEN';
+        $sign = SignMD5Helper::genSign($data, $token);
 		
-		
-		die();
-		
-		
+		dump($data);
+		dump($sign);
+
+		curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+			'data' => $data,
+			'sign' => $sign
+		));
+		$ret = curl_exec($this->_curl);	dump($ret);echo '<br /><br />';die();
     }
 
 }
