@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bankcard extends ModelBase
 {
+    const CARD_TYPE = [
+        '0', '1'
+    ];
+    
     protected $table = 'bank_card';
     protected $primaryKey = 'id_bank_card';
     
