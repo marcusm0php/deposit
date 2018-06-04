@@ -132,7 +132,7 @@ class GearDepositCommand extends GearCommandBase
             $ret->biz_content = [
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'], 
                 'bank_name' => $bank_card['bank_name'] ,
-                'bank_no' => $bank_no, 
+                'bank_no' => $bank_card['bank_no'], 
                 'bank_branch_name' => $bank_card['bank_branch_name'], 
                 'card_no' => $bank_card['card_no'], 
                 'card_type' => $bank_card['card_type'], 
