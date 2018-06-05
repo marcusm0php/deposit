@@ -18,4 +18,5 @@ Route::get('/', function () {
 Route::group(['prefix'=>'merchant'],function(){
     Route::get('create','TestController@subCreate');
     Route::get('subbind','TestController@subBind');
+    Route::get('subquery','TestController@subQuery');
 });

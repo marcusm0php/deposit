@@ -33,4 +33,9 @@ class Mchsub extends ModelBase
         
         return $mchno;
     }
+
+    public function bankCards()
+    {
+        return $this->hasMany(Bankcard::class,'mch_sub_no','mch_sub_no');
+    }
 }

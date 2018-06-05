@@ -45,11 +45,13 @@ class GearCommandBase extends Command
             return false;
         }
     }
-    
+    protected $_formatResult;
     public function addWorkerFunction($funcName, $realDo)
     {
         $this->_worker->addFunction($funcName, function($job, $outParamEntities){
+
             extract($outParamEntities);
+
             $workLoadArgs = json_decode($job->workload(), true);
             
             $mch_md5_token = isset($workLoadArgs['mch_md5_token'])? $workLoadArgs['mch_md5_token'] : null;
@@ -82,7 +84,7 @@ class GearCommandBase extends Command
                 'ga_traceno' => $ga_traceno, 
             ]), 'worker_deposit', 'WorkerLoaded');
     
-
+            $this->_formatResult = new FormatResult($data);
             $realDoRet = $realDo($dataOri, $sign, $data, $bizContent);
             return $realDoRet;
         }, array(
@@ -95,7 +97,6 @@ class GearCommandBase extends Command
     { 
         $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent){
             $mch_no = $data['mch_no'];
-            $ret = new FormatResult($data);
             
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
 			
@@ -103,15 +104,15 @@ class GearCommandBase extends Command
                 $signCal = \App\Libs\SignMD5Helper::genSign($dataOri, $interfaceConfig->md5_token);
 				
                 if($signCal == $sign){
-                    $ret->setSuccess([
+                    $this->_formatResult->setSuccess([
                         'mch_md5_token' => $interfaceConfig->md5_token
                     ]);
-					return $this->_signReturn($ret->getData());
+					return $this->_signReturn($this->_formatResult->getData());
                 }
             }
 
-            $ret->setError('SIGN.VERIFY.FAIL');
-            return $this->_signReturn($ret->getData());
+            $this->_formatResult->setError('SIGN.VERIFY.FAIL');
+            return $this->_signReturn($this->_formatResult->getData());
         });
         echo "Command:Gear:Deposit.sign.verify is registered.\n";
         

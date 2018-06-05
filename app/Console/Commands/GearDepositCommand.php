@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Bankcard;
+use App\Models\Mchsub;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use App\Libs\FormatResult;
@@ -30,7 +32,6 @@ class GearDepositCommand extends GearCommandBase
                 'link_phone' => '', 
                 'link_email' => '', 
             ], $bizContent);
-            $ret = new FormatResult($data);
             
             DB::beginTransaction();
             
@@ -38,8 +39,8 @@ class GearDepositCommand extends GearCommandBase
                                             ->where('mch_no', $data['mch_no'])
                                             ->first();
             if($mchsub){
-                $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
-                return $this->_signReturn($ret->getData());
+                $this->_formatResult->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
+                return $this->_signReturn($this->_formatResult->getData());
             }
 
             $mch_sub_no = \App\Models\Mchsub::generateMchSubNo();
@@ -54,10 +55,10 @@ class GearDepositCommand extends GearCommandBase
             $mchsub->save();
             
             DB::commit();
-            $ret->setSuccess([
+            $this->_formatResult->setSuccess([
                 'mch_sub_no' => $mch_sub_no
             ]);
-            return $this->_signReturn($ret->getData());
+            return $this->_signReturn($this->_formatResult->getData());
         });
         echo "Command:Gear:Deposit.mchsub.create is registered.\n";
         
@@ -80,7 +81,6 @@ class GearDepositCommand extends GearCommandBase
                 'createtime' => '',
             ];
             $bizContentFormat['bank_card'] = array_merge($bank_cardFormat, $bizContentFormat['bank_card']);
-            $ret = new FormatResult($data);
             
             DB::beginTransaction();
             
@@ -88,16 +88,16 @@ class GearDepositCommand extends GearCommandBase
                                         ->where('mch_sub_no', $bizContentFormat['mch_sub_no'])
                                         ->first();
             if(empty($mchsub)){
-                $ret->setError('MCHSUB.MCHSUBNO.INVALID');
-                return $this->_signReturn($ret->getData());
+                $this->_formatResult->setError('MCHSUB.MCHSUBNO.INVALID');
+                return $this->_signReturn($this->_formatResult->getData());
             }
             
             $bank_card = $bizContentFormat['bank_card'];
             $bank_card['card_type'] = in_array($bank_card['card_type'], \App\Models\Bankcard::CARD_TYPE)? $bank_card['card_type'] : '0';
             $bank_card['card_expire_date'] = date('Y-m-d', strtotime($bank_card['card_expire_date']));
             if(empty($bank_card['card_no']) /* && other bank_card info checks*/){
-                $ret->setError('MCHSUB.CREATE.BANKCARD.ERROR');
-                return $this->_signReturn($ret->getData());
+                $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR');
+                return $this->_signReturn($this->_formatResult->getData());
             }
 
             
@@ -110,8 +110,8 @@ class GearDepositCommand extends GearCommandBase
                                                      ->where('card_cvn', $bank_card['card_cvn'])
                                                      ->first();
             if($bank_card_existed){
-                $ret->setError('MCHSUB.CREATE.BANKCARD.REPEAT');
-                return $this->_signReturn($ret->getData());
+                $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.REPEAT');
+                return $this->_signReturn($this->_formatResult->getData());
             }
         
             $bankCardModel = new \App\Models\Bankcard;
@@ -129,7 +129,7 @@ class GearDepositCommand extends GearCommandBase
             $bankCardModel->save();
         
             DB::commit();
-            $ret->setSuccess([
+            $this->_formatResult->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'], 
                 'bank_name' => $bank_card['bank_name'] ,
                 'bank_no' => $bank_card['bank_no'], 
@@ -141,31 +141,56 @@ class GearDepositCommand extends GearCommandBase
                 'cardholder_name' => $bank_card['cardholder_name'], 
                 'cardholder_phone' => $bank_card['cardholder_phone'], 
             ]);
-            return $this->_signReturn($ret->getData());
+            return $this->_signReturn($this->_formatResult->getData());
         });
         echo "Command:Gear:Deposit.mchsub.bind.bankcard is registered.\n";
-        
+
         // 回填手机验证码
         $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent){
             $bizContentFormat = array_merge([
                 
             ], $bizContent);
-            $ret = new FormatResult($data);
             
             DB::beginTransaction();
             
             
             
             DB::commit();
-            $ret->setSuccess([
+            $this->_formatResult->setSuccess([
                 'mch_sub_no' => $mch_sub_no
             ]);
-            return $this->_signReturn($ret->getData());
+            return $this->_signReturn($this->_formatResult->getData());
         });
         echo "Command:Gear:Deposit.mchsub.bind.bankcardverify is registered.\n";
         
-        
-        
+        //商户查询
+        $this->addWorkerFunction('deposit.mchsub.query',function($dataOri,$sign,$data,$bizContent){
+
+            $ret = new FormatResult($data);
+
+            if(!isset($data['mch_no'])){
+                $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
+                return $this->_signReturn($ret->getData());
+            }
+
+            if(!isset($bizContent['mch_sub_no'])){
+                $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
+                return $this->_signReturn($ret->getData());
+            }
+
+            $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$data['biz_content']['mch_sub_no'])->first();
+
+            if(empty($mch_sub)){
+                $ret->setError('MCHSUB.QUERY.NOTFOUND');
+                return $this->_signReturn($ret->getData());
+            }
+
+            $bank_card = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_card)->get()->toArray();
+
+            return $mch_sub->toArray();
+
+        });
+        echo "Command:Gear:Deposit.mchsub.qurery is registered.\n";
 
         echo "Command:Gear:Deposit Is Launched Successfully\n";
         while ($this->_worker->work());
