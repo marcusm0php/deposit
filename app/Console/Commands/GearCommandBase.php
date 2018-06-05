@@ -49,7 +49,9 @@ class GearCommandBase extends Command
     public function addWorkerFunction($funcName, $realDo)
     {
         $this->_worker->addFunction($funcName, function($job, $outParamEntities){
+
             extract($outParamEntities);
+
             $workLoadArgs = json_decode($job->workload(), true);
             
             $mch_md5_token = isset($workLoadArgs['mch_md5_token'])? $workLoadArgs['mch_md5_token'] : null;

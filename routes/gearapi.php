@@ -16,6 +16,7 @@ use App\Models\InterfaceConfig;
 */
 
 Route::any('/gclients', function (Request $request) {
+
     $dataOri = $request->input('data', '');
     $sign = $request->input('sign', '');
     $data = json_decode($dataOri, true);
