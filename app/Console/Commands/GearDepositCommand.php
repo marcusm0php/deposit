@@ -169,7 +169,7 @@ class GearDepositCommand extends GearCommandBase
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
-            $bank_cards = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_card)->get()->toArray();
+            $bank_cards = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_no)->get()->toArray();
 
             $mch_sub_arr = $mch_sub->toarray();
             $mch_sub_arr['bank_cards'] = $bank_cards;
