@@ -45,8 +45,8 @@ class GearCommandBase extends Command
             return false;
         }
     }
-    
-    public function addWorkerFunction($funcName, $realDo)
+    protected $_formatResult;
+    public function addWorkerFunction($funcName, $realDo, $bizContentFormat = [])
     {
         $this->_worker->addFunction($funcName, function($job, $outParamEntities){
 
@@ -84,8 +84,9 @@ class GearCommandBase extends Command
                 'ga_traceno' => $ga_traceno, 
             ]), 'worker_deposit', 'WorkerLoaded');
     
-
-            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent);
+            $this->_formatResult = new FormatResult($data);
+            $bizContentFormat = array_merge($bizContentFormat, $bizContent);
+            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent, $bizContentFormat);
             return $realDoRet;
         }, array(
             'funcName' => $funcName,
@@ -95,9 +96,8 @@ class GearCommandBase extends Command
 
     public function handle()
     { 
-        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent){
+        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
             $mch_no = $data['mch_no'];
-            $ret = new FormatResult($data);
             
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
 			
@@ -105,16 +105,15 @@ class GearCommandBase extends Command
                 $signCal = \App\Libs\SignMD5Helper::genSign($dataOri, $interfaceConfig->md5_token);
 				
                 if($signCal == $sign){
-                    $ret->setError('SUCCESS');
-                    $ret->biz_content = [
+                    $this->_formatResult->setSuccess([
                         'mch_md5_token' => $interfaceConfig->md5_token
-                    ];
-					return $this->_signReturn($ret->getData());
+                    ]);
+					return $this->_signReturn($this->_formatResult->getData());
                 }
             }
 
-            $ret->setError('SIGN.VERIFY.FAIL');
-            return $this->_signReturn($ret->getData());
+            $this->_formatResult->setError('SIGN.VERIFY.FAIL');
+            return $this->_signReturn($this->_formatResult->getData());
         });
         echo "Command:Gear:Deposit.sign.verify is registered.\n";
         
