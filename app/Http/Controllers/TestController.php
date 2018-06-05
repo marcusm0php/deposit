@@ -109,7 +109,7 @@ class TestController extends Controller
         die();
     }
 
-    public function subSearch()
+    public function subQuery()
     {
         $data = json_encode([
             'mch_no' => '8AAA',
