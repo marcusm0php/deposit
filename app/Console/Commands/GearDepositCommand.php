@@ -54,10 +54,9 @@ class GearDepositCommand extends GearCommandBase
             $mchsub->save();
             
             DB::commit();
-            $ret->setError('SUCCESS');
-            $ret->biz_content = [
+            $ret->setSuccess([
                 'mch_sub_no' => $mch_sub_no
-            ];
+            ]);
             return $this->_signReturn($ret->getData());
         });
         echo "Command:Gear:Deposit.mchsub.create is registered.\n";
@@ -130,8 +129,7 @@ class GearDepositCommand extends GearCommandBase
             $bankCardModel->save();
         
             DB::commit();
-            $ret->setError('SUCCESS');
-            $ret->biz_content = [
+            $ret->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'], 
                 'bank_name' => $bank_card['bank_name'] ,
                 'bank_no' => $bank_card['bank_no'], 
@@ -142,10 +140,29 @@ class GearDepositCommand extends GearCommandBase
                 'card_expire_date' => $bank_card['card_expire_date'], 
                 'cardholder_name' => $bank_card['cardholder_name'], 
                 'cardholder_phone' => $bank_card['cardholder_phone'], 
-            ];
+            ]);
             return $this->_signReturn($ret->getData());
         });
-        echo "Command:Gear:Deposit.mchsub.create is registered.\n";
+        echo "Command:Gear:Deposit.mchsub.bind.bankcard is registered.\n";
+        
+        // 回填手机验证码
+        $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent){
+            $bizContentFormat = array_merge([
+                
+            ], $bizContent);
+            $ret = new FormatResult($data);
+            
+            DB::beginTransaction();
+            
+            
+            
+            DB::commit();
+            $ret->setSuccess([
+                'mch_sub_no' => $mch_sub_no
+            ]);
+            return $this->_signReturn($ret->getData());
+        });
+        echo "Command:Gear:Deposit.mchsub.bind.bankcardverify is registered.\n";
         
         
         

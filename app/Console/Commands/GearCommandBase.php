@@ -103,10 +103,9 @@ class GearCommandBase extends Command
                 $signCal = \App\Libs\SignMD5Helper::genSign($dataOri, $interfaceConfig->md5_token);
 				
                 if($signCal == $sign){
-                    $ret->setError('SUCCESS');
-                    $ret->biz_content = [
+                    $ret->setSuccess([
                         'mch_md5_token' => $interfaceConfig->md5_token
-                    ];
+                    ]);
 					return $this->_signReturn($ret->getData());
                 }
             }
