@@ -171,6 +171,7 @@ class GearDepositCommand extends GearCommandBase
 
             $mch_sub_arr = $mch_sub->toarray();
             $mch_sub_arr['bank_cards'] = $bank_cards;
+            $ret->setError('SUCCESS');
             $ret->biz_content = [
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'],
                 'mch_sub'=>$mch_sub_arr,
