@@ -47,4 +47,13 @@ class FormatResult
         $this->code = $codemap['code'];
         $this->message = $codemap['message'];
 	}
+	
+	public function setSuccess($biz_content)
+	{
+	    $codemap = FormatResultErrors::CODE_MAP['SUCCESS'];
+	    $this->code = $codemap['code'];
+	    $this->message = $codemap['message'];
+	    
+	    $this->biz_content = $biz_content;
+	}
 }
