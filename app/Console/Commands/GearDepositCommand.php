@@ -70,6 +70,7 @@ class GearDepositCommand extends GearCommandBase
                 'mch_sub_no' => '', 
                 'bank_card' => [],
             ], $bizContent);
+
             $bank_cardFormat = [
                 'bank_no' => '',
                 'bank_name' => '',
@@ -153,28 +154,30 @@ class GearDepositCommand extends GearCommandBase
         //商户查询
         $this->addWorkerFunction('deposit.mchsub.query',function($dataOri,$sign,$data,$bizContent){
 
+            $bizContentFormat = array_merge([
+                'mch_sub_no' => '',
+            ], $bizContent);
+
             $ret = new FormatResult($data);
 
-            if(!isset($data['mch_no'])){
-                $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
-                return $this->_signReturn($ret->getData());
-            }
-
-            if(!isset($bizContent['mch_sub_no'])){
-                $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
-                return $this->_signReturn($ret->getData());
-            }
-
-            $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$data['biz_content']['mch_sub_no'])->first();
+            $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$bizContentFormat['mch_sub_no'])->first();
 
             if(empty($mch_sub)){
-                $ret->setError('MCHSUB.QUERY.NOTFOUND');
+                $ret->setError('MCHSUB.MCHSUBNO.INVALID');
                 return $this->_signReturn($ret->getData());
             }
 
-            $bank_card = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_card)->get()->toArray();
+            $bank_cards = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_card)->get()->toArray();
 
-            return $mch_sub->toArray();
+            $mch_sub_arr = $mch_sub->toarray();
+            $mch_sub_arr['bank_cards'] = $bank_cards;
+            $ret->biz_content = [
+                'mch_sub_no' => $bizContentFormat['mch_sub_no'],
+                'mch_sub'=>$mch_sub_arr,
+
+            ];
+            return $this->_signReturn($ret->getData());
+
 
         });
         echo "Command:Gear:Deposit.mchsub.qurery is registered.\n";
