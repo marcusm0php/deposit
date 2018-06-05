@@ -90,7 +90,8 @@ class GearCommandBase extends Command
             return $realDoRet;
         }, array(
             'funcName' => $funcName,
-            'realDo' => $realDo
+            'realDo' => $realDo,
+            'bizContentFormat'=>$bizContentFormat
         ));
     }
 
