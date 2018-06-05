@@ -69,20 +69,20 @@ class TestController extends Controller
 
     public function subBind(Request $request)
     {
-        $data = json_encode([ 
+		$data = json_encode([ 
 			'mch_no' => '8AAA',
 			'timestamp' => date('YmdHis'),
 			'biz_type' => 'mchsub.bind.bankcard',
 			'code' => '',
 			'message' => '',
 			'biz_content' => [
-                'mch_sub_no' => '', 
+                'mch_sub_no' => '9115418458655591', 
                 'bank_card' => [
-                    'bank_no' => '',
+                    'bank_no' => '1',
                     'bank_name' => '',
                     'bank_branch_name' => '',
                     'card_type' => '',
-                    'card_no' => '',
+                    'card_no' => '1', 
                     'card_cvn' => '',
                     'card_expire_date' => '',
                     'cardholder_name' => '',
