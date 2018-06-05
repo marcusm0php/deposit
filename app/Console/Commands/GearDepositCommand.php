@@ -171,26 +171,22 @@ class GearDepositCommand extends GearCommandBase
                 'mch_sub_no' => '',
             ], $bizContent);
 
-            $ret = new FormatResult($data);
-
             $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$bizContentFormat['mch_sub_no'])->first();
 
             if(empty($mch_sub)){
-                $ret->setError('MCHSUB.MCHSUBNO.INVALID');
-                return $this->_signReturn($ret->getData());
+                $this->_formatResult->setError('MCHSUB.MCHSUBNO.INVALID');
+                return $this->_signReturn($this->_formatResult->getData());
             }
 
             $bank_cards = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_card)->get()->toArray();
 
             $mch_sub_arr = $mch_sub->toarray();
             $mch_sub_arr['bank_cards'] = $bank_cards;
-            $ret->setError('SUCCESS');
-            $ret->biz_content = [
+            $this->_formatResult->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'],
                 'mch_sub'=>$mch_sub_arr,
-
-            ];
-            return $this->_signReturn($ret->getData());
+            ]);
+            return $this->_signReturn($this->_formatResult->getData());
 
 
         });
