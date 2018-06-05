@@ -46,7 +46,7 @@ class GearCommandBase extends Command
         }
     }
     protected $_formatResult;
-    public function addWorkerFunction($funcName, $realDo)
+    public function addWorkerFunction($funcName, $realDo, $bizContentFormat = [])
     {
         $this->_worker->addFunction($funcName, function($job, $outParamEntities){
 
@@ -85,7 +85,8 @@ class GearCommandBase extends Command
             ]), 'worker_deposit', 'WorkerLoaded');
     
             $this->_formatResult = new FormatResult($data);
-            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent);
+            $bizContentFormat = array_merge($bizContentFormat, $bizContent);
+            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent, $bizContentFormat);
             return $realDoRet;
         }, array(
             'funcName' => $funcName,
@@ -95,7 +96,7 @@ class GearCommandBase extends Command
 
     public function handle()
     { 
-        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent){
+        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
             $mch_no = $data['mch_no'];
             
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();

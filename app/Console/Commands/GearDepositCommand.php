@@ -25,13 +25,7 @@ class GearDepositCommand extends GearCommandBase
         parent::handle();
         
         // 商户开设子账户
-        $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent){
-            $bizContentFormat = array_merge([
-                'mch_sub_name' => '',
-                'link_name' => '', 
-                'link_phone' => '', 
-                'link_email' => '', 
-            ], $bizContent);
+        $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
             
             DB::beginTransaction();
             
@@ -59,15 +53,16 @@ class GearDepositCommand extends GearCommandBase
                 'mch_sub_no' => $mch_sub_no
             ]);
             return $this->_signReturn($this->_formatResult->getData());
-        });
+        }, [
+            'mch_sub_name' => '',
+            'link_name' => '',
+            'link_phone' => '',
+            'link_email' => '',
+        ]);
         echo "Command:Gear:Deposit.mchsub.create is registered.\n";
         
         // 子商户绑定银行卡
-        $this->addWorkerFunction('deposit.mchsub.bind.bankcard', function($dataOri, $sign, $data, $bizContent){
-            $bizContentFormat = array_merge([
-                'mch_sub_no' => '', 
-                'bank_card' => [],
-            ], $bizContent);
+        $this->addWorkerFunction('deposit.mchsub.bind.bankcard', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
 
             $bank_cardFormat = [
                 'bank_no' => '',
@@ -143,33 +138,29 @@ class GearDepositCommand extends GearCommandBase
                 'cardholder_phone' => $bank_card['cardholder_phone'], 
             ]);
             return $this->_signReturn($this->_formatResult->getData());
-        });
+        }, [
+            'mch_sub_no' => '',
+            'bank_card' => [],
+        ]);
         echo "Command:Gear:Deposit.mchsub.bind.bankcard is registered.\n";
 
         // 回填手机验证码
-        $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent){
-            $bizContentFormat = array_merge([
-                
-            ], $bizContent);
+        $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
             
             DB::beginTransaction();
-            
-            
-            
+
             DB::commit();
             $this->_formatResult->setSuccess([
                 'mch_sub_no' => $mch_sub_no
             ]);
             return $this->_signReturn($this->_formatResult->getData());
-        });
+        }, [
+            'mch_no'
+        ]);
         echo "Command:Gear:Deposit.mchsub.bind.bankcardverify is registered.\n";
         
         //商户查询
-        $this->addWorkerFunction('deposit.mchsub.query',function($dataOri,$sign,$data,$bizContent){
-
-            $bizContentFormat = array_merge([
-                'mch_sub_no' => '',
-            ], $bizContent);
+        $this->addWorkerFunction('deposit.mchsub.query',function($dataOri,$sign,$data,$bizContent, $bizContentFormat){
 
             $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$bizContentFormat['mch_sub_no'])->first();
 
@@ -189,8 +180,10 @@ class GearDepositCommand extends GearCommandBase
             return $this->_signReturn($this->_formatResult->getData());
 
 
-        });
-        echo "Command:Gear:Deposit.mchsub.qurery is registered.\n";
+        }, [
+            'mch_sub_no' => '',
+        ]);
+        echo "Command:Gear:Deposit.mchsub.query is registered.\n";
 
         echo "Command:Gear:Deposit Is Launched Successfully\n";
         while ($this->_worker->work());
