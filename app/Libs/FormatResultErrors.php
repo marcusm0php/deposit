@@ -14,6 +14,9 @@ class FormatResultErrors
         'MCHSUB.MCHSUBNO.INVALID' => ['code' => '204', 'message' => '子商户号无效', ],
         'MCHSUB.CREATE.BANKCARD.REPEAT' =>  ['code' => '205', 'message' => '子商户绑定银行卡信息重复', ],
 
+        'MCHNO.REQUIRED'=>['code' => '402', 'message' => '商户号不能为空',],
+        'MCHSUBNO.REQUIRED'=>['code' => '403', 'message' => '子商户号不能为空',],
+
         'MCHSUB.QUERY.NOTFOUND' =>  ['code' => '404', 'message' => '子商户不存在',],
     ];
 }
