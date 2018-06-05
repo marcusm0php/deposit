@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Bankcard;
+use App\Models\Mchsub;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use App\Libs\FormatResult;
@@ -145,10 +147,37 @@ class GearDepositCommand extends GearCommandBase
             ];
             return $this->_signReturn($ret->getData());
         });
-        echo "Command:Gear:Deposit.mchsub.create is registered.\n";
+        echo "Command:Gear:Deposit.mchsub.bind.bankcard is registered.\n";
         
         
-        
+        //商户查询
+        $this->addWorkerFunction('deposit.mchsub.query',function($dataOri,$sign,$data,$bizContent){
+
+            $ret = new FormatResult($data);
+
+            if(!isset($data['mch_no'])){
+                $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
+                return $this->_signReturn($ret->getData());
+            }
+
+            if(!isset($bizContent['mch_sub_no'])){
+                $ret->setError('MCHSUB.CREATE.MCHSUB.NAME.REPEAT');
+                return $this->_signReturn($ret->getData());
+            }
+
+            $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$data['biz_content']['mch_sub_no'])->first();
+
+            if(empty($mch_sub)){
+                $ret->setError('MCHSUB.QUERY.NOTFOUND');
+                return $this->_signReturn($ret->getData());
+            }
+
+            $bank_card = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_card)->get()->toArray();
+
+            return $mch_sub->toArray();
+
+        });
+        echo "Command:Gear:Deposit.mchsub.qurery is registered.\n";
 
         echo "Command:Gear:Deposit Is Launched Successfully\n";
         while ($this->_worker->work());
