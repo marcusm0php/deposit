@@ -48,7 +48,7 @@ class GearDepositCommand extends GearCommandBase
                 
                 $hisAccntModel = $mchAccnt->createHisAccntModel();
                 $hisAccntModel->event = $split_accnt_detail['dispatch_event'];
-                $hisAccntModel->event_amt = $split_accnt_detail['amount'];
+                $hisAccntModel->event_amt = $split_accnt_detail['amount'] * 100;
                 $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before + $hisAccntModel->event_amt;
                 $hisAccntModel->save();
                 
@@ -58,8 +58,8 @@ class GearDepositCommand extends GearCommandBase
                 $split_accnt_detail_return[] = [
                     'mch_accnt_no' => $mchAccnt->mch_accnt_no, 
                     'dispatch_event' => $hisAccntModel->event, 
-                    'amount' => $hisAccntModel->event_amt, 
-                    'amount_after_event' => $hisAccntModel->accnt_amt_after
+                    'amount' => round($hisAccntModel->event_amt / 100, 2), 
+                    'amount_after_event' => round($hisAccntModel->accnt_amt_after / 100, 2), 
                 ];
             }
             
