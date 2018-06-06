@@ -38,7 +38,7 @@ class GearDepositCommand extends GearCommandBase
             DB::beginTransaction();
             $split_accnt_detail_return = [];
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
-                $mchAccnt = MchAccnt::where('mch_accnt_no',$bizContentFormat['mch_accnt_no'])->first();
+                $mchAccnt = MchAccnt::where('mch_accnt_no',$split_accnt_detail['mch_accnt_no'])->first();
                 
                 if(empty($mchAccnt)){
                     DB::rollBack();
