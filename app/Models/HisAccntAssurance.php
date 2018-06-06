@@ -10,7 +10,7 @@ class HisAccntAssurance extends ModelBase
     protected $primaryKey = 'id_his_accnt_assurance';
     
     protected $fillable = [
-        'mch_no', 'transaction_no', 'event', 'event_amt', 'event_time', 'mch_assurance_amt_before', 'mch_assurance_amt_after', 'create_time'
+        'mch_no', 'transaction_no', 'event', 'event_amt', 'event_time', 'accnt_amt_before', 'accnt_amt_after', 'create_time'
     ];
     
 }

@@ -10,7 +10,7 @@ class HisAccntOnway extends ModelBase
     protected $primaryKey = 'id_his_accnt_onway';
     
     protected $fillable = [
-        'mch_no', 'transaction_no', 'event', 'event_amt', 'event_time', 'mch_onway_amt_before', 'mch_onway_amt_after', 'create_time'
+        'mch_no', 'transaction_no', 'event', 'event_amt', 'event_time', 'accnt_amt_before', 'accnt_amt_after', 'create_time'
     ];
     
     

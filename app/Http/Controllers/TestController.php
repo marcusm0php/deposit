@@ -138,4 +138,37 @@ class TestController extends Controller
         die();
     }
 
+    public function accntDispatch(Request $request)
+    {
+        $data = json_encode([
+            'mch_no' => '8AAA',
+            'timestamp' => date('YmdHis'),
+            'biz_type' => 'mchaccnt.dispatch',
+            'biz_content' => [
+                'split_accnt_detail' => [
+                    [
+                        'mch_accnt_no' => '1',
+                        'dispatch_event' => 'withdraw',
+                        'amount' => '1.1',
+                    ]
+                ]
+            ],
+            'sign_type' => ''
+        ]);
+        $token = 'TOKENTOKEN';
+        $sign = SignMD5Helper::genSign($data, $token);
+
+        dump($data);
+        dump($sign);
+
+        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+            'data' => $data,
+            'sign' => $sign
+        ));
+        $ret = curl_exec($this->_curl);
+        dump($ret);
+        echo '<br /><br />';
+        die();
+    }
+
 }

@@ -19,4 +19,12 @@ Route::group(['prefix'=>'merchant'],function(){
     Route::get('create','TestController@subCreate');
     Route::get('subbind','TestController@subBind');
     Route::get('subquery','TestController@subQuery');
+    Route::get('accntDispatch','TestController@accntDispatch');
+});
+
+Route::group(['prefix'=>'epay'],function(){
+
+    Route::get('epay','TestEpayController@pyPay');
+    Route::get('acSingleAuth','TestEpayController@acSingleAuth');
+
 });

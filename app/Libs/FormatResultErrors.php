@@ -18,5 +18,7 @@ class FormatResultErrors
         'MCHSUBNO.REQUIRED'=>['code' => '403', 'message' => '子商户号不能为空',],
 
         'MCHSUB.QUERY.NOTFOUND' =>  ['code' => '404', 'message' => '子商户不存在',],
+
+        'MCHACCNT.MCHACCNTNO.INVALID' => ['code' => '301', 'message' => '账户号无效',],
     ];
 }
