@@ -801,11 +801,6 @@ class EpayHandler
         $param_array['expireDate'] = $expireDate;
         $param_array['cvn'] = $cvn;
 
-
-
-        $param_array['sub_mrch']	= $this -> epay_config['sub_mrch'];
-        $param_array['cur']			= 'CNY';
-
         if($this -> epay_config['isDevEnv'])
             return $this -> postService(EpayHandler::PY_DEV_API, $param_array, null);
         else

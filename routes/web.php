@@ -24,5 +24,6 @@ Route::group(['prefix'=>'merchant'],function(){
 Route::group(['prefix'=>'epay'],function(){
 
     Route::get('epay','TestEpayController@pyPay');
+    Route::get('acSingleAuth','TestEpayController@acSingleAuth');
 
 });
