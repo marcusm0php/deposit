@@ -20,3 +20,9 @@ Route::group(['prefix'=>'merchant'],function(){
     Route::get('subbind','TestController@subBind');
     Route::get('subquery','TestController@subQuery');
 });
+
+Route::group(['prefix'=>'epay'],function(){
+
+    Route::get('epay','TestEpayController@pyPay');
+
+});
