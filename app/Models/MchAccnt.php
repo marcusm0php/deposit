@@ -68,6 +68,7 @@ class MchAccnt extends ModelBase
             $hisAccntModel->transaction_no = $transaction_no;
             $hisAccntModel->mch_no = $this->mch_no;
             $hisAccntModel->accnt_amt_before = $this->remain_amt;
+            $hisAccntModel->event_time = date('Y-m-d H:i:s');
         }
 
         return $hisAccntModel;
