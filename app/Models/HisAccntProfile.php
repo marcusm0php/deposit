@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HisAccntMch extends ModelBase
+class HisAccntProfile extends ModelBase
 {
-    protected $table = 'his_mch_acnt';
-    protected $primaryKey = 'id_his_mch_acnt';
+    protected $table = 'his_accnt_profile';
+    protected $primaryKey = 'id_his_accnt_profile';
     
     protected $fillable = [
         'mch_no', 'transaction_no', 'event', 'event_amt', 'event_time', 'accnt_amt_before', 'accnt_amt_after', 'create_time'

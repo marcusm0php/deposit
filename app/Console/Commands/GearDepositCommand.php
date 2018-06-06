@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Bankcard;
 use App\Models\Mchsub;
+use App\Models\MchAccnt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use App\Libs\FormatResult;
@@ -24,9 +25,56 @@ class GearDepositCommand extends GearCommandBase
     {
         parent::handle();
         
+        //商户分账
+        $this->addWorkerFunction('deposit.mchaccnt.dispatch',function($dataOri,$sign,$data,$bizContent, $bizContentFormat){
+            foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
+                $bizContentFormat['split_accnt_detail'][$k] = array_merge([
+                    'mch_accnt_no' => '', 
+                    'dispatch_event' => '', 
+                    'amount' => '', 
+                ], $split_accnt_detail);
+            }
+            
+            DB::beginTransaction();
+            $split_accnt_detail_return = [];
+            foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
+                $mchAccnt = MchAccnt::where('mch_accnt_no',$bizContentFormat['mch_accnt_no'])->first();
+                
+                if(empty($mchAccnt)){
+                    DB::rollBack();
+                    $this->_formatResult->setError('MCHACCNT.MCHACCNTNO.INVALID');
+                    return $this->_signReturn($this->_formatResult->getData());
+                }
+                
+                $hisAccntModel = $mchAccnt->createHisAccntModel();
+                $hisAccntModel->event = $split_accnt_detail['dispatch_event'];
+                $hisAccntModel->event_amt = $split_accnt_detail['amount'];
+                $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before + $hisAccntModel->event_amt;
+                $hisAccntModel->save();
+                
+                $mchAccnt->remain_amt = $hisAccntModel->accnt_amt_after;
+                $mchAccnt->save();
+                
+                $split_accnt_detail_return[] = [
+                    'mch_accnt_no' => $mchAccnt->mch_accnt_no, 
+                    'dispatch_event' => $hisAccntModel->event, 
+                    'amount' => $hisAccntModel->event_amt, 
+                    'amount_after_event' => $hisAccntModel->accnt_amt_after
+                ];
+            }
+            
+            DB::commit();
+            $this->_formatResult->setSuccess([
+                'mch_sub_no' => $mch_sub_no
+            ]);
+            return $this->_signReturn($this->_formatResult->getData());
+        }, [
+            'split_accnt_detail' => [],
+        ]);
+            echo "Command:Gear:Deposit.mchaccnt.dispatch is registered.\n";
+        
         // 商户开设子账户
         $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
-            
             DB::beginTransaction();
             
             $mchsub = \App\Models\Mchsub::where('mch_sub_name', $bizContentFormat['mch_sub_name'])
@@ -63,7 +111,6 @@ class GearDepositCommand extends GearCommandBase
         
         // 子商户绑定银行卡
         $this->addWorkerFunction('deposit.mchsub.bind.bankcard', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
-
             $bank_cardFormat = [
                 'bank_no' => '',
                 'bank_name' => '',
@@ -95,7 +142,6 @@ class GearDepositCommand extends GearCommandBase
                 $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR');
                 return $this->_signReturn($this->_formatResult->getData());
             }
-
             
             //TODO call cib_interface 
             $bank_card_existed = \App\Models\Bankcard::where('mch_no', $data['mch_no'])
@@ -124,9 +170,18 @@ class GearDepositCommand extends GearCommandBase
             $bankCardModel->cardholder_phone = $bank_card['cardholder_phone'];
             $bankCardModel->save();
         
+            $mchAccntSub = new \App\Models\MchAccnt;
+            $mchAccntSub->mch_no = $data['mch_no'];
+            $mchAccntSub->mch_sub_no = $mch_sub_no;
+            $mchAccntSub->accnt_type = \App\Models\MchAccnt::ACCNT_TYPE_MCHSUB;
+            $mchAccntSub->id_bank_card = $bankCardModel->id_bank_card;
+            $mchAccntSub->mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
+            $mchAccntSub->save();
+            
             DB::commit();
             $this->_formatResult->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'], 
+                'mch_accnt_no' => $mchAccntSub->mch_accnt_no, 
                 'bank_name' => $bank_card['bank_name'] ,
                 'bank_no' => $bank_card['bank_no'], 
                 'bank_branch_name' => $bank_card['bank_branch_name'], 
@@ -161,7 +216,6 @@ class GearDepositCommand extends GearCommandBase
         
         //商户查询
         $this->addWorkerFunction('deposit.mchsub.query',function($dataOri,$sign,$data,$bizContent, $bizContentFormat){
-
             $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$bizContentFormat['mch_sub_no'])->first();
 
             if(empty($mch_sub)){
@@ -178,13 +232,12 @@ class GearDepositCommand extends GearCommandBase
                 'mch_sub'=>$mch_sub_arr,
             ]);
             return $this->_signReturn($this->_formatResult->getData());
-
-
         }, [
             'mch_sub_no' => '',
         ]);
         echo "Command:Gear:Deposit.mchsub.query is registered.\n";
 
+        
         echo "Command:Gear:Deposit Is Launched Successfully\n";
         while ($this->_worker->work());
     }

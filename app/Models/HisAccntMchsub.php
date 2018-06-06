@@ -10,7 +10,7 @@ class HisAccntMchsub extends ModelBase
     protected $primaryKey = 'id_his_accnt_mch_sub';
     
     protected $fillable = [
-        'mch_no', 'mch_sub_no', 'transaction_no', 'event', 'event_amt', 'event_time', 'mchsub_remain_amt_before', 'mchsub_remain_amt_after', 'create_time'
+        'mch_no', 'mch_sub_no', 'transaction_no', 'event', 'event_amt', 'event_time', 'accnt_amt_before', 'accnt_amt_after', 'create_time'
     ];
     
     
