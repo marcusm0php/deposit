@@ -21,3 +21,10 @@ Route::group(['prefix'=>'merchant'],function(){
     Route::get('subquery','TestController@subQuery');
     Route::get('accntDispatch','TestController@accntDispatch');
 });
+
+Route::group(['prefix'=>'epay'],function(){
+
+    Route::get('epay','TestEpayController@pyPay');
+    Route::get('acSingleAuth','TestEpayController@acSingleAuth');
+
+});
