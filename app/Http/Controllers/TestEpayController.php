@@ -36,7 +36,7 @@ class TestEpayController extends Controller
         // 返回结果为JSON格式的字符串，具体含义请参看收付直通车代收接口文档
     }
 
-
+    //无页面独立鉴权接口
     public function acSingleAuth()
     {
         $trac_no       = date('YmdHis');       //系统跟踪号
