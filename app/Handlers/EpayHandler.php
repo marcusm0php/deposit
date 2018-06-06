@@ -56,7 +56,9 @@ class EpayHandler
         'cib.epay.payment.get' => 'RSA',
 
         'cib.epay.acquire.settleFile' => 'SHA1',
-        'cib.epay.payment.receiptFile' => 'SHA1'
+        'cib.epay.payment.receiptFile' => 'SHA1',
+
+        'cib.epay.acquire.singleauth.quickSingleAuth' => 'RSA',
     );
 
     /**
@@ -139,8 +141,8 @@ class EpayHandler
 
         if(array_key_exists('service', $param_array) && array_key_exists($param_array['service'], EpayHandler::$sign_type))
             $param_array['sign_type'] = EpayHandler::$sign_type[$param_array['service']];
-        $param_array['mac'] = $this -> Signature($param_array, $this -> epay_config['commKey'], $this -> epay_config['mrch_cert'], $this -> epay_config['mrch_cert_pwd']);
-        $response = null;
+            $param_array['mac'] = $this -> Signature($param_array, $this -> epay_config['commKey'], $this -> epay_config['mrch_cert'], $this -> epay_config['mrch_cert_pwd']);
+            $response = null;
 
         if($this -> epay_config['isDevEnv'])
             $response = EpayUntil::getHttpPostResponse($url, $param_array, true, $save_file_name, $this -> epay_config['proxy_ip'], $this -> epay_config['proxy_port']);
@@ -763,5 +765,50 @@ class EpayHandler
             $response = $this -> postService(EpayHandler::GP_PROD_API, $param_array, $save_file_name);
 
         return $response;
+    }
+
+    /**
+     * 无页面独立鉴权接口
+     * @param $trac_no      系统跟踪号
+     * @param $card_no      卡号
+     * @param $bank_no      银行代码
+     * @param $acct_type    银行账户类型：0-储蓄卡;1-信用卡
+     * @param $cert_type    证件类型 0-身份证(目前仅支持身份证)
+     * @param $cert_no      证件号
+     * @param $card_phone   银行预留手机号码
+     * @param string $expireDate    信用卡有效期(信用卡认证必填)
+     * @param $cvn          信用卡背面末三位安全码(信用卡认证必填)
+     * @return mixed
+     */
+    public function acSingleAuth($trac_no, $card_no, $bank_no, $acct_type, $cert_type, $cert_no, $card_phone, $expireDate='', $cvn='')
+    {
+        $param_array = array();
+
+        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['appid']		= $this -> epay_config['appid'];
+        $param_array['service']		= 'cib.epay.acquire.singleauth.quickSingleAuth';
+        $param_array['ver']			= '01'; //接口版本号，固定 01
+
+        $param_array['trac_no'] = $trac_no;
+        $param_array['card_no'] = $card_no;
+        $param_array['bank_no'] = $bank_no;
+        $param_array['acct_type'] = $acct_type;
+        $param_array['cert_type'] = $cert_type;
+        $param_array['cert_no'] = $cert_no;
+        $param_array['card_phone'] = $card_phone;
+
+        //可选
+        $param_array['expireDate'] = $expireDate;
+        $param_array['cvn'] = $cvn;
+
+
+
+        $param_array['sub_mrch']	= $this -> epay_config['sub_mrch'];
+        $param_array['cur']			= 'CNY';
+
+        if($this -> epay_config['isDevEnv'])
+            return $this -> postService(EpayHandler::PY_DEV_API, $param_array, null);
+        else
+            return $this -> postService(EpayHandler::PY_PROD_API, $param_array, null);
     }
 }

@@ -23,7 +23,7 @@ class TestEpayController extends Controller
         // 流程：商户系统 --post--> 收付直通车
         // $order_no是商户订单号，由商户系统生成，应当注意订单号在商户系统中应当全局唯一，即不会出现两笔订单有相同的订单号
 
-        $order_no       = "SDK".now()->toDateTimeString();       //这里示例使用SDK20150806120001格式的订单号
+        $order_no       = "SDK".date('YmdHis');       //这里示例使用SDK20150806120001格式的订单号
         $trans_amt      = "10.00";                                  //支付金额
         $to_bank_no     = "309391000011";                           //收款行行号
         $to_acct_no     = "622909115001762912";                     //收款人账号
@@ -34,6 +34,21 @@ class TestEpayController extends Controller
         $result    = $this->_epay->pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, '0', $trans_amt, $trans_usage);
         dd($result);
         // 返回结果为JSON格式的字符串，具体含义请参看收付直通车代收接口文档
+    }
+
+
+    public function acSingleAuth()
+    {
+        $trac_no       = date('YmdHis');       //系统跟踪号
+        $card_no      = "622909115001762912";        //卡号
+        $bank_no     = "309391000011";               //银行代码
+        $card_phone     = "622909115001762912";      //银行预留手机号码
+        $cert_no   = "华英雄";                        //证件号
+        $cert_type    = "1";                         //证件类型 0-身份证(目前仅支持身份证)
+        $acct_type       = 0;                        //账户类型(0-储蓄卡;1-信用卡;)
+
+        $result    = $this->_epay->acSingleAuth($trac_no, $card_no, $bank_no, $acct_type, $cert_type, $cert_no, $card_phone, $expireDate='', $cvn='');
+        dd($result);
     }
 
 }
