@@ -42,7 +42,7 @@ class TestEpayController extends Controller
         $trac_no       = date('YmdHis');       //系统跟踪号
         $card_no      = "622909115001762912";        //卡号
         $bank_no     = "309391000011";               //银行代码 //http://220.250.30.210:7052/cibhall/images/bank.unl
-        $card_phone     = "13264706948";      //银行预留手机号码
+        $card_phone     = "13264706948";             //银行预留手机号码
         $cert_no   = "420281199410057236";           //证件号
         $cert_type    = "1";                         //证件类型 0-身份证(目前仅支持身份证)
         $acct_type       = 0;                        //账户类型(0-储蓄卡;1-信用卡;)
