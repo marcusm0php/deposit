@@ -65,7 +65,7 @@ class GearDepositCommand extends GearCommandBase
             
             DB::commit();
             $this->_formatResult->setSuccess([
-                'mch_sub_no' => $mch_sub_no
+                'split_accnt_detail' => $split_accnt_detail_return
             ]);
             return $this->_signReturn($this->_formatResult->getData());
         }, [
