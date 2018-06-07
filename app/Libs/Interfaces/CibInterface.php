@@ -4,185 +4,14 @@ namespace App\Libs\Interfaces;
  * @author MarcusM. works for yinzhun. QQ:2453302174
  */
  
-
-class CibReq
-{
-	protected $_params = array();
-	protected $_key;
-	
-	public function __construct($appid, $mch_id, $key)
-	{
-		$this->initParams();
-
-		$this->setParam('appid', $appid);
-		$this->setParam('mch_id', $mch_id);
-		$this->setKey($key);
-	}
-	
-	public function initParams()
-	{
-		$this->_params = array(
-			'version' => '2.0',
-			'charset' => 'UTF-8',
-			'sign_type' => 'MD5',
-			'is_raw' => '1',
-			'sign' => '',
-		);
-	}
-
-	public static function toXml($array){
-		$xml = '<xml>';
-		forEach($array as $k=>$v){
-			$xml.='<'.$k.'><![CDATA['.$v.']]></'.$k.'>';
-		}
-		$xml.='</xml>';
-		return $xml;
-	}
-	
-	public function setKey($key)
-	{
-		$this->_key = $key;
-	}
-	
-	public function getKey()
-	{
-		return $this->_key;
-	}
-	
-	public function setParam($key, $value)
-	{
-		$this->_params[$key] = $value;
-	}
-	
-	public function getParams($format = 'xml', $filter = true)
-	{
-		$params = $this->_params;
-		if($filter){
-			$params = array_filter($params, function($v){
-				return !($v == '' || $v == null);
-			});
-		}
-		
-		if($format == 'xml'){
-			$paramsRet = self::toXml($params);
-		}else{
-			$paramsRet = $params;
-		}
-		
-		return $paramsRet;
-	}
-	
-	public function createSign()
-	{   
-		$signPars = '';
-		ksort($this->_params);
-		foreach($this->_params as $k => $v){
-			if("" != $v && "sign" != $k){
-				$signPars .= $k . "=" . $v . "&";
-			}
-		}
-		$signPars .= "key=" . $this->getKey();
-		$sign = strtoupper(md5($signPars));
-		$this->setParam("sign", $sign);
-		
-		return $sign;
-	}
-}
-
-class CibRes
-{
-	protected $_data = array();
-
-	const STATUS_OK = '0';
-	const RETURN_CODE_OK = '0';
-	const ERROR_CODE_USERPAYING = 'USERPAYING';
-
-	const TRADE_STATE_USERPAYING = 'USERPAYING';
-	const TRADE_STATE_SUCCESS = 'SUCCESS';
-	const TRADE_STATE_REVOKED = 'REVOKED';
-	const TRADE_STATE_NOTPAY = 'NOTPAY';
-
-	const NEED_QUERY_Y = 'Y';
-	const NEED_QUERY_N = 'N';
-	
-	public function __construct($xml)
-	{
-		$this->_data = self::parseXML($xml);
-	}
-	
-	public function getData($key = null)
-	{
-		if($key !== null){
-			return isset($this->_data[$key])? $this->_data[$key] : null;
-		}
-		
-		return $this->_data;
-	}
-
-	public static function parseXML($xmlSrc){
-		if(empty($xmlSrc)){
-			return false;
-		}
-		$array = array();
-		
-		try{
-    		@$xml = simplexml_load_string($xmlSrc);
-    		@$encode = self::getXmlEncode($xmlSrc);
-		}catch (Exception $e){
-		    return false;
-		}
-		
-		if(empty($xml)){
-		    echo 'xmlSrc error: ' . $xmlSrc;
-		    
-		    return array(
-		        'status' => CibRes::STATUS_OK, 
-		        'result_code' => '1', 
-                'err_code' => 'ACQ.SYSTEM_ERROR', 
-                'err_msg' => '网关响应错误', 
-		    );
-		}
-	
-		if($xml && $xml->children()) {
-			foreach ($xml->children() as $node){
-				//有子节点
-				if($node->children()) {
-					$k = $node->getName();
-					$nodeXml = $node->asXML();
-					$v = substr($nodeXml, strlen($k)+2, strlen($nodeXml)-2*strlen($k)-5);
-						
-				} else {
-					$k = $node->getName();
-					$v = (string)$node;
-				}
-	
-				$k = iconv("UTF-8", $encode, $k);
-				$v = iconv("UTF-8", $encode, $v);
-				$array[$k] = $v;
-			}
-		}
-		return $array;
-	}
-	
-	public static function getXmlEncode($xml) {
-		$ret = preg_match ("/<?xml[^>]* encoding=\"(.*)\"[^>]* ?>/i", $xml, $arr);
-		if($ret) {
-			return strtoupper ( $arr[1] );
-		} else {
-			return "";
-		}
-	}
-}
-
-
 class CibInterface
 {
     // EPay配置参数，示例中在epay.config.php中定义
-    private $epay_config;
+    private $cib_config;
 
     // 构造函数
     public function __construct() {
-        $this -> epay_config = config('cibpay');
+        $this->cib_config = config('cib');
     }
 
     // 快捷支付API地址，测试环境地址可根据需要修改
@@ -307,21 +136,21 @@ class CibInterface
 
         if(array_key_exists('service', $param_array) && array_key_exists($param_array['service'], self::$sign_type))
             $param_array['sign_type'] = self::$sign_type[$param_array['service']];
-        $param_array['mac'] = $this -> Signature($param_array, $this -> epay_config['epay']['commKey'], $this -> epay_config['epay']['mrch_cert'], $this -> epay_config['epay']['mrch_cert_pwd']);
+        $param_array['mac'] = $this->Signature($param_array, $this->cib_config['commKey'], $this->cib_config['mrch_cert'], $this->cib_config['mrch_cert_pwd']);
         $response = null;
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            $response = EpayUntil::getHttpPostResponse($url, $param_array, true, $save_file_name, $this -> epay_config['epay']['proxy_ip'], $this -> epay_config['epay']['proxy_port']);
+        if($this->cib_config['isDevEnv'])
+            $response = CibUtil::getHttpPostResponse($url, $param_array, true, $save_file_name, $this->cib_config['proxy_ip'], $this->cib_config['proxy_port']);
 
         else
-            $response = EpayUntil::getHttpPostResponse($url, $param_array, false, $save_file_name, $this -> epay_config['epay']['proxy_ip'], $this -> epay_config['epay']['proxy_port']);
+            $response = CibUtil::getHttpPostResponse($url, $param_array, false, $save_file_name, $this->cib_config['proxy_ip'], $this->cib_config['proxy_port']);
 
         if(!$response)
             return SYS_ERROR_RESULT;
         else {
             if(TXN_ERROR_RESULT !== $response && SYS_ERROR_RESULT !== $response && FILE_ERROR_RESULT !== $response && SUCCESS_RESULT !== $response) {
-                if($this -> epay_config['epay']['needChkSign']
-                    && !$this -> VerifyMac(json_decode($response, true), $this -> epay_config['epay']['commKey'], ($this -> epay_config['epay']['isDevEnv'] ? $this -> epay_config['epay']['epay_cert_test'] : $this -> epay_config['epay']['epay_cert_prod'])))
+                if($this->cib_config['needChkSign']
+                    && !$this->VerifyMac(json_decode($response, true), $this->cib_config['commKey'], ($this->cib_config['isDevEnv'] ? $this->cib_config['epay_cert_test'] : $this->cib_config['epay_cert_prod'])))
                     return SIGN_ERROR_RESULT;
             }
             return $response;
@@ -336,7 +165,7 @@ class CibInterface
      */
     protected function redirectService($url, $param_array) {
 
-        $param_array['mac'] = $this -> Signature($param_array, $this -> epay_config['epay']['commKey']);
+        $param_array['mac'] = $this->Signature($param_array, $this->cib_config['commKey']);
 
         $html = '';
         $html .= "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">";
@@ -390,15 +219,15 @@ class CibInterface
         if($expireDate) $param_array['expireDate'] = $expireDate;
         if($cvn) $param_array['cvn'] = $cvn;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay.acctAuth';
         $param_array['ver']			= '01';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> redirectService(self::EP_DEV_API, $param_array);
+        if($this->cib_config['isDevEnv'])
+            return $this->redirectService(self::EP_DEV_API, $param_array);
         else
-            return $this -> redirectService(self::EP_PROD_API, $param_array);
+            return $this->redirectService(self::EP_PROD_API, $param_array);
     }
 
     /**
@@ -431,16 +260,16 @@ class CibInterface
         if($cvn !== null)
             $param_array['cvn']			= $cvn;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay.quickAuthSMS';
         $param_array['ver']			= '01';
         $param_array['cert_type']	= '0';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -456,15 +285,15 @@ class CibInterface
         $param_array['trac_no']		= $trac_no;
         $param_array['sms_code']	= $sms_code;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.checkSms';
         $param_array['ver']			= '01';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -478,15 +307,15 @@ class CibInterface
 
         $param_array['card_no']		= $card_no;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay.cancelAuth';
         $param_array['ver']			= '01';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -500,15 +329,15 @@ class CibInterface
 
         $param_array['trac_no']		= $trac_no;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay.acctAuth.query';
         $param_array['ver']			= '01';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -530,19 +359,19 @@ class CibInterface
         $param_array['order_desc']	= $order_desc;
         $param_array['card_no']		= $card_no;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay';
         $param_array['ver']			= '01';
-        $param_array['sub_mrch']	= $this -> epay_config['epay']['sub_mrch'];
+        $param_array['sub_mrch']	= $this->cib_config['sub_mrch'];
         $param_array['cur']			= 'CNY';
-        $param_array['order_time']	= EpayUntil::getDateTime();
-        $param_array['order_ip']	= EpayUntil::getLocalIp();
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['order_time']	= CibUtil::getDateTime();
+        $param_array['order_ip']	= CibUtil::getLocalIp();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -556,17 +385,17 @@ class CibInterface
         $param_array = array();
 
         $param_array['order_no']	= $order_no;
-        $param_array['order_date']	= $order_date ? $order_date : EpayUntil::getDate();
+        $param_array['order_date']	= $order_date ? $order_date : CibUtil::getDate();
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay.query';
         $param_array['ver']			= '02';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -584,15 +413,15 @@ class CibInterface
         $param_array['order_date']	= $order_date;
         $param_array['order_amount']= $order_amount;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay.refund';
         $param_array['ver']			= '02';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -606,17 +435,17 @@ class CibInterface
         $param_array = array();
 
         $param_array['order_no']	= $order_no;
-        $param_array['order_date']	= $order_date ? $order_date : EpayUntil::getDate();
+        $param_array['order_date']	= $order_date ? $order_date : CibUtil::getDate();
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.easypay.refund.query';
         $param_array['ver']			= '01';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::EP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::EP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::EP_PROD_API, $param_array, null);
+            return $this->postService(self::EP_PROD_API, $param_array, null);
     }
 
     /**
@@ -662,18 +491,18 @@ class CibInterface
         if($expireDate !== null) $param_array['expireDate'] = $expireDate;
         if($cvn !== null) $param_array['cvn'] = $cvn;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.authAndPay';
         $param_array['ver']			= '01';
-        $param_array['sub_mrch']	= $this -> epay_config['epay']['sub_mrch'];
+        $param_array['sub_mrch']	= $this->cib_config['sub_mrch'];
         $param_array['cur']			= 'CNY';
-        $param_array['order_time']	= EpayUntil::getDateTime();
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['order_time']	= CibUtil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> redirectService(self::EP_DEV_API, $param_array);
+        if($this->cib_config['isDevEnv'])
+            return $this->redirectService(self::EP_DEV_API, $param_array);
         else
-            return $this -> redirectService(self::EP_PROD_API, $param_array);
+            return $this->redirectService(self::EP_PROD_API, $param_array);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -699,18 +528,18 @@ class CibInterface
         $param_array['order_desc']	= $order_desc;
         $param_array['order_ip']	= $remote_ip;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.cashier.netPay';
         $param_array['ver']			= '01';
-        $param_array['sub_mrch']	= $this -> epay_config['epay']['sub_mrch'];
+        $param_array['sub_mrch']	= $this->cib_config['sub_mrch'];
         $param_array['cur']			= 'CNY';
-        $param_array['order_time']	= EpayUntil::getDateTime();
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['order_time']	= CibUtil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> redirectService(self::GP_DEV_API, $param_array);
+        if($this->cib_config['isDevEnv'])
+            return $this->redirectService(self::GP_DEV_API, $param_array);
         else
-            return $this -> redirectService(self::GP_PROD_API, $param_array);
+            return $this->redirectService(self::GP_PROD_API, $param_array);
     }
 
     /**
@@ -724,17 +553,17 @@ class CibInterface
         $param_array = array();
 
         $param_array['order_no']	= $order_no;
-        $param_array['order_date']	= $order_date ? $order_date : EpayUntil::getDate();
+        $param_array['order_date']	= $order_date ? $order_date : CibUtil::getDate();
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.cashier.query';
         $param_array['ver']			= '02';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::GP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::GP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::GP_PROD_API, $param_array, null);
+            return $this->postService(self::GP_PROD_API, $param_array, null);
     }
 
     /**
@@ -752,15 +581,15 @@ class CibInterface
         $param_array['order_date']	= $order_date;
         $param_array['order_amount']= $order_amount;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.cashier.refund';
         $param_array['ver']			= '02';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::GP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::GP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::GP_PROD_API, $param_array, null);
+            return $this->postService(self::GP_PROD_API, $param_array, null);
     }
 
     /**
@@ -774,17 +603,17 @@ class CibInterface
         $param_array = array();
 
         $param_array['order_no']	= $order_no;
-        $param_array['order_date']	= $order_date ? $order_date : EpayUntil::getDate();
+        $param_array['order_date']	= $order_date ? $order_date : CibUtil::getDate();
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.cashier.refund.query';
         $param_array['ver']			= '01';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::GP_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::GP_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::GP_PROD_API, $param_array, null);
+            return $this->postService(self::GP_PROD_API, $param_array, null);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -813,17 +642,17 @@ class CibInterface
         $param_array['trans_amt'] = $trans_amt;
         $param_array['trans_usage'] = $trans_usage;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.payment.pay';
         $param_array['ver']			= '02';
-        $param_array['sub_mrch']	= $this -> epay_config['epay']['sub_mrch'];
+        $param_array['sub_mrch']	= $this->cib_config['sub_mrch'];
         $param_array['cur']			= 'CNY';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::PY_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::PY_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::PY_PROD_API, $param_array, null);
+            return $this->postService(self::PY_PROD_API, $param_array, null);
     }
 
     /**
@@ -838,15 +667,15 @@ class CibInterface
 
         $param_array['order_no'] = $order_no;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.payment.get';
         $param_array['ver']			= '02';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::PY_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::PY_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::PY_PROD_API, $param_array, null);
+            return $this->postService(self::PY_PROD_API, $param_array, null);
     }
 
     /**
@@ -858,15 +687,15 @@ class CibInterface
 
         $param_array = array();
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.payment.getMrch';
         $param_array['ver']			= '02';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::PY_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::PY_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::PY_PROD_API, $param_array, null);
+            return $this->postService(self::PY_PROD_API, $param_array, null);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -882,10 +711,10 @@ class CibInterface
 
         $param_array = array();
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['ver']			= '01';
         $param_array['trans_date']	= $trans_date;
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
         if($rcpt_type === '6' || $rcpt_type === '7' || $rcpt_type === '8') {
             if($rcpt_type === '6') $param_array['rcpt_type'] = '0';
@@ -893,17 +722,17 @@ class CibInterface
             else $param_array['rcpt_type'] = '2';
 
             $param_array['service']		= 'cib.epay.payment.receiptFile';
-            if($this -> epay_config['epay']['isDevEnv'])
-                $response = $this -> postService(self::PY_DEV_API, $param_array, $save_file_name);
+            if($this->cib_config['isDevEnv'])
+                $response = $this->postService(self::PY_DEV_API, $param_array, $save_file_name);
             else
-                $response = $this -> postService(self::PY_PROD_API, $param_array, $save_file_name);
+                $response = $this->postService(self::PY_PROD_API, $param_array, $save_file_name);
         } else {
             $param_array['rcpt_type']	= $rcpt_type;
             $param_array['service']		= 'cib.epay.acquire.settleFile';
-            if($this -> epay_config['epay']['isDevEnv'])
-                $response = $this -> postService(self::GP_DEV_API, $param_array, $save_file_name);
+            if($this->cib_config['isDevEnv'])
+                $response = $this->postService(self::GP_DEV_API, $param_array, $save_file_name);
             else
-                $response = $this -> postService(self::GP_PROD_API, $param_array, $save_file_name);
+                $response = $this->postService(self::GP_PROD_API, $param_array, $save_file_name);
         }
         return $response;
     }
@@ -920,15 +749,15 @@ class CibInterface
 
         $param_array['download_type']	= $download_type;
 
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.download';
         $param_array['ver']			= '01';
-        $param_array['timestamp']	= EpayUntil::getDateTime();
+        $param_array['timestamp']	= CibUtil::getDateTime();
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            $response = $this -> postService(self::GP_DEV_API, $param_array, $save_file_name);
+        if($this->cib_config['isDevEnv'])
+            $response = $this->postService(self::GP_DEV_API, $param_array, $save_file_name);
         else
-            $response = $this -> postService(self::GP_PROD_API, $param_array, $save_file_name);
+            $response = $this->postService(self::GP_PROD_API, $param_array, $save_file_name);
 
         return $response;
     }
@@ -950,8 +779,8 @@ class CibInterface
     {
         $param_array = array();
 
-        $param_array['timestamp']	= EpayUntil::getDateTime();
-        $param_array['appid']		= $this -> epay_config['epay']['appid'];
+        $param_array['timestamp']	= CibUtil::getDateTime();
+        $param_array['appid']		= $this->cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.singleauth.quickSingleAuth';
         $param_array['ver']			= '01'; //接口版本号，固定 01
 
@@ -967,10 +796,10 @@ class CibInterface
         $param_array['expireDate'] = $expireDate;
         $param_array['cvn'] = $cvn;
 
-        if($this -> epay_config['epay']['isDevEnv'])
-            return $this -> postService(self::PY_DEV_API, $param_array, null);
+        if($this->cib_config['isDevEnv'])
+            return $this->postService(self::PY_DEV_API, $param_array, null);
         else
-            return $this -> postService(self::PY_PROD_API, $param_array, null);
+            return $this->postService(self::PY_PROD_API, $param_array, null);
     }
 
 

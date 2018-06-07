@@ -20,7 +20,7 @@ define('SIGN_ERROR_RESULT', "{\"errcode\":\"EPAY_29098\",\"errmsg\":\"[EPAY_2909
 // 对账文件下载，下载成功返回报文
 define('SUCCESS_RESULT', "{\"errcode\":\"EPAY_00000\",\"errmsg\":\"[EPAY_00000]下载成功\"}");
 
-class EpayUntil
+class CibUtil
 {
     /**
      * 获取当前系统日期
