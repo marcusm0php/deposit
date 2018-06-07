@@ -85,13 +85,15 @@ class GearCommandBase extends Command
             ]), 'worker_deposit', 'WorkerLoaded');
     
             DB::beginTransaction();
-            $depoTrans = null;
             if($funcName != 'deposit.sign.verify'){
                 $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
                 $depoTrans->save();
+                $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);
+            }else{
+                $depoTrans = null;
+                $this->_formatResult = new FormatResult($data);
             }
             
-            $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);
             $bizContentFormat = array_merge($bizContentFormat, $bizContent);
             $realDoRet = $realDo($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans);
             
