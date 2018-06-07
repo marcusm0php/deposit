@@ -50,7 +50,6 @@ class GearCommandBase extends Command
     public function addWorkerFunction($funcName, $realDo, $bizContentFormat = [])
     {
         $this->_worker->addFunction($funcName, function($job, $outParamEntities){
-
             extract($outParamEntities);
 
             $workLoadArgs = json_decode($job->workload(), true);
@@ -86,8 +85,11 @@ class GearCommandBase extends Command
             ]), 'worker_deposit', 'WorkerLoaded');
     
             DB::beginTransaction();
-            $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
-            $depoTrans->save();
+            $depoTrans = null;
+            if($funcName != 'deposit.sign.verify'){
+                $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
+                $depoTrans->save();
+            }
             
             $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);
             $bizContentFormat = array_merge($bizContentFormat, $bizContent);
