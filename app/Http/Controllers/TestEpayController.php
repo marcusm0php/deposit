@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Handlers\EpayHandler;
+use App\Libs\Interfaces\CibInterface;
 use Illuminate\Http\Request;
 
 class TestEpayController extends Controller
 {
-    protected  $_epay;
+    protected  $_cibpay;
 
-    public function __construct(EpayHandler $epay)
+    public function __construct(CibInterface $cibpay)
     {
-        $this->_epay = $epay;
+        $this->_cibpay = $cibpay;
     }
 
     /**
@@ -31,7 +31,7 @@ class TestEpayController extends Controller
         $trans_usage    = "这笔订单是由SDK发起的示例订单";          //订单详情
         $acc_type       = 0;                                    //账户类型(0-储蓄卡;1-信用卡;2-企业账户)
 
-        $result    = $this->_epay->pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, '0', $trans_amt, $trans_usage);
+        $result    = $this->_cibpay->pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, '0', $trans_amt, $trans_usage);
         dd($result);
         // 返回结果为JSON格式的字符串，具体含义请参看收付直通车代收接口文档
     }
@@ -48,7 +48,7 @@ class TestEpayController extends Controller
         $acct_type       = 0;                        //账户类型(0-储蓄卡;1-信用卡;)
         //$expireDate='', $cvn=''                    //行用卡认证必填
 
-        $result    = $this->_epay->acSingleAuth($trac_no, $card_no, $bank_no, $acct_type, $cert_type, $cert_no, $card_phone);
+        $result    = $this->_cibpay->acSingleAuth($trac_no, $card_no, $bank_no, $acct_type, $cert_type, $cert_no, $card_phone);
         dd($result);
     }
 
