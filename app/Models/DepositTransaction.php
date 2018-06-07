@@ -19,5 +19,13 @@ class DepositTransaction extends ModelBase
         return create_uuid();
     }
     
+    public static function Factory($transaction_no = '', $transaction_type = '')
+    {
+        $transaction = new self();
+        $transaction->transaction_no = empty($transaction_no)? self::generateTransNo() : $transaction_no;
+        $transaction->transaction_type = $transaction_type;
+        
+        return $transaction;
+    }
     
 }

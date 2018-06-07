@@ -84,9 +84,20 @@ class GearCommandBase extends Command
                 'ga_traceno' => $ga_traceno, 
             ]), 'worker_deposit', 'WorkerLoaded');
     
-            $this->_formatResult = new FormatResult($data);
+            DB::beginTransaction();
+            $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
+            $depoTrans->save();
+            
+            $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);
             $bizContentFormat = array_merge($bizContentFormat, $bizContent);
-            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent, $bizContentFormat);
+            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans);
+            
+            if($this->_formatResult->code == FormatResultErrors::CODE_MAP['SUCCESS']['code']){
+                DB::commit();
+            }else{
+                DB::rollBack();
+            }
+            
             return $realDoRet;
         }, array(
             'funcName' => $funcName,
@@ -97,7 +108,7 @@ class GearCommandBase extends Command
 
     public function handle()
     { 
-        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
+        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
             $mch_no = $data['mch_no'];
             
             $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
