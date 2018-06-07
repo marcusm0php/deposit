@@ -22,9 +22,9 @@ Route::group(['prefix'=>'merchant'],function(){
     Route::get('accntDispatch','TestController@accntDispatch');
 });
 
-Route::group(['prefix'=>'epay'],function(){
+Route::group(['prefix'=>'cibpay'],function(){
 
-    Route::get('epay','TestEpayController@pyPay');
+    Route::get('pyPay','TestEpayController@pyPay');
     Route::get('acSingleAuth','TestEpayController@acSingleAuth');
 
 });

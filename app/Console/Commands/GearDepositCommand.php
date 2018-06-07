@@ -26,7 +26,7 @@ class GearDepositCommand extends GearCommandBase
         parent::handle();
         
         //商户分账
-        $this->addWorkerFunction('deposit.mchaccnt.dispatch',function($dataOri,$sign,$data,$bizContent, $bizContentFormat){
+        $this->addWorkerFunction('deposit.mchaccnt.dispatch',function($dataOri,$sign,$data,$bizContent, $bizContentFormat, $depoTrans){
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
                 $bizContentFormat['split_accnt_detail'][$k] = array_merge([
                     'mch_accnt_no' => '', 
@@ -35,18 +35,18 @@ class GearDepositCommand extends GearCommandBase
                 ], $split_accnt_detail);
             }
             
-            DB::beginTransaction();
             $split_accnt_detail_return = [];
+            
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
                 $mchAccnt = MchAccnt::where('mch_accnt_no',$split_accnt_detail['mch_accnt_no'])->first();
                 
                 if(empty($mchAccnt)){
-                    DB::rollBack();
                     $this->_formatResult->setError('MCHACCNT.MCHACCNTNO.INVALID');
                     return $this->_signReturn($this->_formatResult->getData());
                 }
                 
                 $hisAccntModel = $mchAccnt->createHisAccntModel();
+                $hisAccntModel->transaction_no = $depoTrans->transaction_no;
                 $hisAccntModel->event = $split_accnt_detail['dispatch_event'];
                 $hisAccntModel->event_amt = $split_accnt_detail['amount'] * 100;
                 $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before + $hisAccntModel->event_amt;
@@ -63,7 +63,6 @@ class GearDepositCommand extends GearCommandBase
                 ];
             }
             
-            DB::commit();
             $this->_formatResult->setSuccess([
                 'split_accnt_detail' => $split_accnt_detail_return
             ]);
@@ -74,9 +73,7 @@ class GearDepositCommand extends GearCommandBase
             echo "Command:Gear:Deposit.mchaccnt.dispatch is registered.\n";
         
         // 商户开设子账户
-        $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
-            DB::beginTransaction();
-            
+        $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
             $mchsub = \App\Models\Mchsub::where('mch_sub_name', $bizContentFormat['mch_sub_name'])
                                             ->where('mch_no', $data['mch_no'])
                                             ->first();
@@ -96,7 +93,6 @@ class GearDepositCommand extends GearCommandBase
             $mchsub->link_email = $bizContentFormat['link_email'];
             $mchsub->save();
             
-            DB::commit();
             $this->_formatResult->setSuccess([
                 'mch_sub_no' => $mch_sub_no
             ]);
@@ -110,7 +106,7 @@ class GearDepositCommand extends GearCommandBase
         echo "Command:Gear:Deposit.mchsub.create is registered.\n";
         
         // 子商户绑定银行卡
-        $this->addWorkerFunction('deposit.mchsub.bind.bankcard', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
+        $this->addWorkerFunction('deposit.mchsub.bind.bankcard', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
             $bank_cardFormat = [
                 'bank_no' => '',
                 'bank_name' => '',
@@ -124,8 +120,6 @@ class GearDepositCommand extends GearCommandBase
                 'createtime' => '',
             ];
             $bizContentFormat['bank_card'] = array_merge($bank_cardFormat, $bizContentFormat['bank_card']);
-            
-            DB::beginTransaction();
             
             $mchsub = \App\Models\Mchsub::where('mch_no', $data['mch_no'])
                                         ->where('mch_sub_no', $bizContentFormat['mch_sub_no'])
@@ -178,7 +172,6 @@ class GearDepositCommand extends GearCommandBase
             $mchAccntSub->mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
             $mchAccntSub->save();
             
-            DB::commit();
             $this->_formatResult->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'], 
                 'mch_accnt_no' => $mchAccntSub->mch_accnt_no, 
@@ -200,11 +193,9 @@ class GearDepositCommand extends GearCommandBase
         echo "Command:Gear:Deposit.mchsub.bind.bankcard is registered.\n";
 
         // 回填手机验证码
-        $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat){
+        $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
             
-            DB::beginTransaction();
 
-            DB::commit();
             $this->_formatResult->setSuccess([
                 'mch_sub_no' => $mch_sub_no
             ]);
@@ -215,18 +206,20 @@ class GearDepositCommand extends GearCommandBase
         echo "Command:Gear:Deposit.mchsub.bind.bankcardverify is registered.\n";
         
         //商户查询
-        $this->addWorkerFunction('deposit.mchsub.query',function($dataOri,$sign,$data,$bizContent, $bizContentFormat){
-            $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no',$bizContentFormat['mch_sub_no'])->first();
+        $this->addWorkerFunction('deposit.mchsub.query',function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
+            $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no', $bizContentFormat['mch_sub_no'])->first();
 
             if(empty($mch_sub)){
                 $this->_formatResult->setError('MCHSUB.MCHSUBNO.INVALID');
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
-            $bank_cards = Bankcard::where('mch_sub_no',$mch_sub->mch_sub_no)->get()->toArray();
+            $bank_cards = Bankcard::where('mch_sub_no', $mch_sub->mch_sub_no)->get()->toArray();
 
             $mch_sub_arr = $mch_sub->toarray();
             $mch_sub_arr['bank_cards'] = $bank_cards;
+            
+
             $this->_formatResult->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'],
                 'mch_sub'=>$mch_sub_arr,

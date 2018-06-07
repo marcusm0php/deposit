@@ -6,7 +6,7 @@
  * Time: 10:33
  */
 
-namespace App\Handlers;
+namespace App\Libs\Interfaces;
 
 // 以下四个常量为SDK出现错误时，返回的字符串，可以根据需要自己设置（注意不是服务端返回的）
 // 通讯失败时返回的报文
@@ -19,7 +19,8 @@ define('FILE_ERROR_RESULT', "{\"errcode\":\"EPAY_29002\",\"errmsg\":\"[EPAY_2900
 define('SIGN_ERROR_RESULT', "{\"errcode\":\"EPAY_29098\",\"errmsg\":\"[EPAY_29098]应答消息验签失败，交易未决\"}");
 // 对账文件下载，下载成功返回报文
 define('SUCCESS_RESULT', "{\"errcode\":\"EPAY_00000\",\"errmsg\":\"[EPAY_00000]下载成功\"}");
-class EpayUntil
+
+class CibUtil
 {
     /**
      * 获取当前系统日期

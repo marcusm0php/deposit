@@ -3,6 +3,7 @@ namespace App\Libs;
 
 class FormatResult
 {
+	public $transaction_no = '';
 	public $mch_no = '';
 	public $timestamp = '';
 	public $biz_type = '';
@@ -11,13 +12,14 @@ class FormatResult
 	public $biz_content = array();
 	public $sign_type = '';
 
-	public function __construct($data)
+	public function __construct($data, $transaction_no = '')
 	{
 		foreach($data as $k => $v){
 			if(isset($this->$k) && $k != 'biz_content'){
 				$this->$k = $v;
 			}
 		}
+		$this->transaction_no = $transaction_no;
 		$this->sign_type = 'MD5';
 		$this->timestamp = date('YmdHis');
 	}
