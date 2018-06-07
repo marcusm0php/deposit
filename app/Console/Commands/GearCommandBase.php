@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Libs\FormatResult;
+use App\Libs\FormatResultErrors;
 
 class GearCommandBase extends Command 
 {
