@@ -24,7 +24,7 @@ Route::group(['prefix'=>'merchant'],function(){
 
 Route::group(['prefix'=>'cibpay'],function(){
 
-    Route::get('pyPay','TestEpayController@pyPay');
-    Route::get('acSingleAuth','TestEpayController@acSingleAuth');
+    Route::get('pyPay','TestCibController@pyPay');
+    Route::get('acSingleAuth','TestCibController@acSingleAuth');
 
 });

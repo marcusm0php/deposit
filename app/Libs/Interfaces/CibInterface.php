@@ -150,7 +150,7 @@ class CibInterface
         else {
             if(TXN_ERROR_RESULT !== $response && SYS_ERROR_RESULT !== $response && FILE_ERROR_RESULT !== $response && SUCCESS_RESULT !== $response) {
                 if($this->cib_config['needChkSign']
-                    && !$this->VerifyMac(json_decode($response, true), $this->cib_config['commKey'], ($this->cib_config['isDevEnv'] ? $this->cib_config['epay_cert_test'] : $this->cib_config['epay_cert_prod'])))
+                    && !$this->VerifyMac(json_decode($response, true), $this->cib_config['commKey'], ($this->cib_config['isDevEnv'] ? $this->cib_config['cib_cert_test'] : $this->cib_config['cib_cert_prod'])))
                     return SIGN_ERROR_RESULT;
             }
             return $response;
@@ -804,7 +804,3 @@ class CibInterface
 
 
 }
-
-
-
-
