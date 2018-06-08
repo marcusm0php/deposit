@@ -166,6 +166,7 @@ return [
          */
         App\Providers\GearApiInterfaceProvider::class,
         App\Providers\GearApiLogProvider::class,
+        App\Providers\SmsProvider::class,
     ],
 
     /*

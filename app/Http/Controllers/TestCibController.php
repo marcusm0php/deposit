@@ -19,7 +19,6 @@ class TestCibController extends Controller
      */
     public function pyPay()
     {
-
         // 流程：商户系统 --post--> 收付直通车
         // $order_no是商户订单号，由商户系统生成，应当注意订单号在商户系统中应当全局唯一，即不会出现两笔订单有相同的订单号
 

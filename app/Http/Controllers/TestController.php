@@ -75,13 +75,11 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.bind.bankcard',
-            'code' => '',
-            'message' => '',
             'biz_content' => [
-                'mch_sub_no' => '',
+                'mch_sub_no' => '9115418458655591',
                 'bank_card' => [
-                    'bank_no' => '1',
-                    'bank_name' => '',
+                    'bank_no' => '155846881',
+                    'bank_name' => '中国银行',
                     'bank_branch_name' => '',
                     'card_type' => '',
                     'card_no' => '1', 
@@ -91,6 +89,35 @@ class TestController extends Controller
                     'cardholder_phone' => '',
                     'createtime' => '',
                 ],
+            ],
+            'sign_type' => ''
+        ]);
+        $token = 'TOKENTOKEN';
+        $sign = SignMD5Helper::genSign($data, $token);
+
+        dump($data);
+        dump($sign);
+
+        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+            'data' => $data,
+            'sign' => $sign
+        ));
+        $ret = curl_exec($this->_curl);
+        dump($ret);
+        echo '<br /><br />';
+        die();
+    }
+
+    public function validateCode()
+    {
+        $data = json_encode([
+            'mch_no' => '8AAA',
+            'timestamp' => date('YmdHis'),
+            'biz_type' => 'deposit.mchsub.verfication.code',
+            'biz_content' => [
+                'mch_sub_no' => '',
+                'verfication_key' => '',
+                'code' => ''
             ],
             'sign_type' => ''
         ]);
