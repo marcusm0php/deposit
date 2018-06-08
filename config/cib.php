@@ -15,8 +15,8 @@ return [
     // 以下证书参数一般为默认值，无需更改
     'mrch_cert_pwd'	=> '123456',
     // 收付直通车服务器证书，RSA算法验签使用
-    'epay_cert_test'	=> dirname(__FILE__).'/key/appsvr_server_test.pem',
-    'epay_cert_prod'	=> dirname(__FILE__).'/key/appsvr_server_prod.pem',
+    'cib_cert_test'	=> dirname(__FILE__).'/key/appsvr_server_test.pem',
+    'cib_cert_prod'	=> dirname(__FILE__).'/key/appsvr_server_prod.pem',
 
     // 二级商户名称，可为空
     'sub_mrch'	=> "SDK-PHP测试商城",

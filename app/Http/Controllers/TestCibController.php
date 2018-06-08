@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\Interfaces\CibInterface;
 use Illuminate\Http\Request;
 
-class TestEpayController extends Controller
+class TestCibController extends Controller
 {
     protected  $_cibpay;
 
