@@ -12,7 +12,8 @@ class FormatResultErrors
 
         'VALIDATE.ERR' => ['code' => '401', 'message' => '验证码非法', ],
 
-        'SIGN.BIZ_TYPE.INVALID' => ['code' => '102', 'message' => 'biz_type无效', ], 
+        'SIGN.BIZ_TYPE.INVALID' => ['code' => '102', 'message' => 'biz_type无效', ],
+
         'SIGN.VERIFY.FAIL' => ['code' => '104', 'message' => '签名验证失败', ], 
         'MCHSUB.CREATE.MCHSUB.NAME.REPEAT' => ['code' => '201', 'message' => '子商户名已存在', ], 
         'MCHSUB.CREATE.BANKCARD.EMPTY' => ['code' => '202', 'message' => '子商户银行卡信息不能为空', ], 

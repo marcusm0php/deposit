@@ -113,11 +113,11 @@ class TestController extends Controller
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
-            'biz_type' => 'deposit.mchsub.verfication.code',
+            'biz_type' => 'deposit.mchsub.bind.bankcardverify',
             'biz_content' => [
-                'mch_sub_no' => '',
-                'verfication_key' => '',
-                'code' => ''
+                'mch_sub_no' => '9115418458655591',
+                'verfication_key' => 'verficationCode_6174bb935a4c0086927f9c65df6e18bd',
+                'code' => '863621'
             ],
             'sign_type' => ''
         ]);

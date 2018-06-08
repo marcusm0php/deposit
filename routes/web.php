@@ -20,7 +20,7 @@ Route::get('/', function () {
 Route::group(['prefix'=>'merchant'],function(){
     Route::get('create','TestController@subCreate');
     Route::get('subbind','TestController@subBind');
-    Route::get('validatecode','TestController@subBind');
+    Route::get('validatecode','TestController@validateCode');
     Route::get('subquery','TestController@subQuery');
     Route::get('accntDispatch','TestController@accntDispatch');
 });
