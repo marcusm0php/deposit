@@ -11,6 +11,7 @@ class InterfaceConfig extends ModelBase
         
         'mchsub.create' => 'deposit.mchsub.create',                     // 创建子商户
         'mchsub.bind.bankcard' => 'deposit.mchsub.bind.bankcard',       // 子商户绑定银行卡
+        'mchsub.verfication.code' => 'deposit.mchsub.verfication.code',       // 回填手机验证码
 
         'mchsub.query' => 'deposit.mchsub.query',                       // 子商户查询
         'mchaccnt.dispatch' => 'deposit.mchaccnt.dispatch'               // 商户分账
