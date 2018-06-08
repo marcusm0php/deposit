@@ -12,6 +12,7 @@ class CibInterface
     // 构造函数
     public function __construct() {
         $this->cib_config = config('cib');
+        $this->cib_config = $this->cib_config[$this->cib_config['current_key']];
     }
 
     // 快捷支付API地址，测试环境地址可根据需要修改
