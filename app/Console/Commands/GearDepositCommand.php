@@ -27,7 +27,7 @@ class GearDepositCommand extends GearCommandBase
         parent::handle();
         
         //商户分账
-        $this->addWorkerFunction('deposit.mchaccnt.dispatch',function($dataOri,$sign,$data,$bizContent, $bizContentFormat, $depoTrans){
+        $this->addWorkerFunction('deposit.mchaccnt.dispatch',function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
                 $bizContentFormat['split_accnt_detail'][$k] = array_merge([
                     'mch_accnt_no' => '', 
@@ -39,7 +39,7 @@ class GearDepositCommand extends GearCommandBase
             $split_accnt_detail_return = [];
             
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
-                $mchAccnt = MchAccnt::where('mch_accnt_no',$split_accnt_detail['mch_accnt_no'])->first();
+                $mchAccnt = MchAccnt::where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])->first();
                 
                 if(empty($mchAccnt)){
                     $this->_formatResult->setError('MCHACCNT.MCHACCNTNO.INVALID');
