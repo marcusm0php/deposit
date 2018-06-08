@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Libs\Interfaces\SmsInterface;
 use App\Models\Bankcard;
 use App\Models\Mchsub;
 use App\Models\MchAccnt;
@@ -119,11 +120,19 @@ class GearDepositCommand extends GearCommandBase
                 'cardholder_phone' => '',
                 'createtime' => '',
             ];
+
             $bizContentFormat['bank_card'] = array_merge($bank_cardFormat, $bizContentFormat['bank_card']);
-            
+
+            //手机号格式错误
+            if(!preg_match("/^1[34578]{1}\d{9}$/",$bizContentFormat['bank_card']['cardholder_phone'])){
+                $this->_formatResult->setError('PHONE.FORMAT.ERR');
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+
             $mchsub = \App\Models\Mchsub::where('mch_no', $data['mch_no'])
                                         ->where('mch_sub_no', $bizContentFormat['mch_sub_no'])
                                         ->first();
+
             if(empty($mchsub)){
                 $this->_formatResult->setError('MCHSUB.MCHSUBNO.INVALID');
                 return $this->_signReturn($this->_formatResult->getData());
@@ -132,6 +141,7 @@ class GearDepositCommand extends GearCommandBase
             $bank_card = $bizContentFormat['bank_card'];
             $bank_card['card_type'] = in_array($bank_card['card_type'], \App\Models\Bankcard::CARD_TYPE)? $bank_card['card_type'] : '0';
             $bank_card['card_expire_date'] = date('Y-m-d', strtotime($bank_card['card_expire_date']));
+
             if(empty($bank_card['card_no']) /* && other bank_card info checks*/){
                 $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR');
                 return $this->_signReturn($this->_formatResult->getData());
@@ -163,7 +173,15 @@ class GearDepositCommand extends GearCommandBase
             $bankCardModel->cardholder_name = $bank_card['cardholder_name'];
             $bankCardModel->cardholder_phone = $bank_card['cardholder_phone'];
             $bankCardModel->save();
-        
+
+            //发送验证码
+            $res = $bankCardModel->sendCode();
+
+            if($res['code'] != 200){
+                $this->_formatResult->setError('SMS.ERR');
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+
             $mchAccntSub = new \App\Models\MchAccnt;
             $mchAccntSub->mch_no = $data['mch_no'];
             $mchAccntSub->mch_sub_no = $mch_sub_no;
@@ -172,19 +190,19 @@ class GearDepositCommand extends GearCommandBase
             $mchAccntSub->mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
             $mchAccntSub->save();
             
-            $this->_formatResult->setSuccess([
-                'mch_sub_no' => $bizContentFormat['mch_sub_no'], 
-                'mch_accnt_no' => $mchAccntSub->mch_accnt_no, 
+            $this->_formatResult->setSuccess(array_merge([
+                'mch_sub_no' => $bizContentFormat['mch_sub_no'],
+                'mch_accnt_no' => $mchAccntSub->mch_accnt_no,
                 'bank_name' => $bank_card['bank_name'] ,
-                'bank_no' => $bank_card['bank_no'], 
-                'bank_branch_name' => $bank_card['bank_branch_name'], 
-                'card_no' => $bank_card['card_no'], 
-                'card_type' => $bank_card['card_type'], 
-                'card_cvn' => $bank_card['card_cvn'], 
-                'card_expire_date' => $bank_card['card_expire_date'], 
-                'cardholder_name' => $bank_card['cardholder_name'], 
-                'cardholder_phone' => $bank_card['cardholder_phone'], 
-            ]);
+                'bank_no' => $bank_card['bank_no'],
+                'bank_branch_name' => $bank_card['bank_branch_name'],
+                'card_no' => $bank_card['card_no'],
+                'card_type' => $bank_card['card_type'],
+                'card_cvn' => $bank_card['card_cvn'],
+                'card_expire_date' => $bank_card['card_expire_date'],
+                'cardholder_name' => $bank_card['cardholder_name'],
+                'cardholder_phone' => $bank_card['cardholder_phone'],
+            ],$res));
             return $this->_signReturn($this->_formatResult->getData());
         }, [
             'mch_sub_no' => '',
@@ -194,18 +212,27 @@ class GearDepositCommand extends GearCommandBase
 
         // 回填手机验证码
         $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
-            
+
+            $res = Bankcard::validateCode($bizContentFormat['verfication_key'],$bizContentFormat['code']);
+
+            if($res['code'] != 200){
+                $this->_formatResult->setError('VALIDATE.ERR');
+                return $this->_signReturn($this->_formatResult->getData());
+            }
 
             $this->_formatResult->setSuccess([
-                'mch_sub_no' => $mch_sub_no
+                'mch_sub_no' => $res['response_data']['mch_sub_no'],
+                'bank_no' => $res['response_data']['bank_no'],
             ]);
             return $this->_signReturn($this->_formatResult->getData());
         }, [
-            'mch_no'
+            'mch_sub_no' => '',
+            'verfication_key' => '',
+            'code' => '',
         ]);
         echo "Command:Gear:Deposit.mchsub.bind.bankcardverify is registered.\n";
         
-        //商户查询
+        //子商户查询
         $this->addWorkerFunction('deposit.mchsub.query',function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
             $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no', $bizContentFormat['mch_sub_no'])->first();
 
