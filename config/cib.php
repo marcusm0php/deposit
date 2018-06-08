@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'current_key' => 'yinzhun ',  
+    'current_key' => 'yinzhun',  
     
     'test' => [
         // 商户号，格式如A0000001
