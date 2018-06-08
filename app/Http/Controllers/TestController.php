@@ -76,10 +76,10 @@ class TestController extends Controller
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.bind.bankcard',
             'biz_content' => [
-                'mch_sub_no' => '',
+                'mch_sub_no' => '9115418458655591',
                 'bank_card' => [
-                    'bank_no' => '1',
-                    'bank_name' => '',
+                    'bank_no' => '155846881',
+                    'bank_name' => '中国银行',
                     'bank_branch_name' => '',
                     'card_type' => '',
                     'card_no' => '1', 
