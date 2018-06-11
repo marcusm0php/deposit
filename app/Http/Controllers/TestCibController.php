@@ -29,7 +29,7 @@ class TestCibController extends Controller
         $to_acct_name   = "华英雄";                                 //收款人户名
         $trans_usage    = "这笔订单是由SDK发起的示例订单";          //订单详情
         $acc_type       = 0;                                    //账户类型(0-储蓄卡;1-信用卡;2-企业账户)
-
+encrypt('11');
         $result    = $this->_cibpay->pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, '0', $trans_amt, $trans_usage);
         dd($result);
         // 返回结果为JSON格式的字符串，具体含义请参看收付直通车代收接口文档
