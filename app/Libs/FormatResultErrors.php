@@ -7,7 +7,7 @@ class FormatResultErrors
         'SUCCESS' => ['code' => '100', 'message' => ''], 
         'SYS.ERR' => ['code' => '101', 'message' => '系统错误', ],
 
-        'SMS.ERR' => ['code' => '500', 'message' => '手机验证码发送错误', ],
+        'SMS.ERR' => ['code' => '500', 'message' => '发送手机验证码出错', ],
         'PHONE.FORMAT.ERR' => ['code' => '403', 'message' => '手机号格式错误', ],
 
         'VALIDATE.ERR' => ['code' => '401', 'message' => '验证码非法', ],
