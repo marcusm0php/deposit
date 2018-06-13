@@ -28,31 +28,29 @@ class Bankcard extends ModelBase
     public function sendCode()
     {
         // 生成4位随机数，左侧补0
-        $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+        $sms_code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
 
-        $sms_data =  [
+        $res = SmsInterface::sendCode($this->cardholder_phone, [
             'template' => 'SMS_126971169',
             'data' => [
-                'code' => $code
+                'code' => $sms_code
             ],
-        ];
+        ]);
 
-        $res = SmsInterface::sendCode($this->cardholder_phone,$sms_data);
-
-        if($res['code']==200){
-            $key = 'verficationCode_'.md5(md5($this->bank_no.'code'));
+        if($res['code'] == 200){
+            $key = 'verifyCode_' . md5($this->bank_no . time());
             $expiredAt = now()->addMinute(self::EXPIRED_TIME);
 
-            \Cache::put($key,['id_bank_card'=>$this->id_bank_card,'code'=>$code],$expiredAt);
+            \Cache::put(
+                $key, 
+                ['id_bank_card'=>$this->id_bank_card, 'sms_code' => $sms_code], 
+                $expiredAt
+            );
 
-            return [
-                'code'=>200,
-                'verfication_key'=>$key,
-                'expired_at' => $expiredAt->toDateTimeString()
-            ];
+            return $verify_code;
         }
 
-        return $res;
+        return false;
     }
 
     /**
@@ -61,14 +59,16 @@ class Bankcard extends ModelBase
      * @param $validate_key 手机验证码key
      * @return array
      */
-    public static function validateCode($verfication_key, $code)
+    public function validateSmsCode($verfication_key, $sms_code)
     {
-
+        $sms_code = $sms_code . '';
         $save_data = \Cache::get($verfication_key);
 
-        if(empty($save_data)) return ['code' => 422,'msg' => '验证码已过期'];
+        if(empty($save_data)) return ['code' => 422, 'msg' => '验证码已过期'];
 
-        if(!hash_equals("{$save_data['code']}","$code")) return ['code' => 401,'msg' => '验证码错误'];
+        if(!hash_equals($save_data['sms_code'], $sms_code)){
+            return ['code' => 401, 'msg' => '验证码错误'];
+        }
 
         $bank_card_model = self::find($save_data['id_bank_card']);
 

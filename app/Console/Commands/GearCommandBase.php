@@ -46,6 +46,7 @@ class GearCommandBase extends Command
             return false;
         }
     }
+    
     protected $_formatResult;
     public function addWorkerFunction($funcName, $realDo, $bizContentFormat = [])
     {

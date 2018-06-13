@@ -23,26 +23,19 @@ class SmsInterface
      */
     public static function sendCode($phone, $sms_data)
     {
+        try {
+            app('easysms')->send($phone,$sms_data);
+        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+            $response = $exception->getResponse();
+            $rel_msg = json_decode($response->getBody()->getContents(), true);
 
-            try {
+            $res = ['code'=>500,'msg'=>'短信验证码发送错误','rel_msg'=>json_encode($rel_msg)];
 
-                app('easysms')->send($phone,$sms_data);
+            \Log::error($res['rel_msg']);
 
-            } catch (\GuzzleHttp\Exception\ClientException $exception) {
-                $response = $exception->getResponse();
-                $rel_msg = json_decode($response->getBody()->getContents(), true);
+            return $res;
+        }
 
-                $res = ['code'=>500,'msg'=>'短信验证码发送错误','rel_msg'=>json_encode($rel_msg)];
-
-                \Log::error($res['rel_msg']);
-
-                return $res;
-            }
-
-            return ['code'=>200,'msg'=>'验证码发送成功','rel_msg'=>'验证码发送成功'];
-//        }
-
-//        return ['code'=>403,'msg'=>'手机号格式不正确','rel_msg'=>'手机号格式不正确'];
-
+        return ['code'=>200,'msg'=>'验证码发送成功','rel_msg'=>'验证码发送成功'];
     }
 }
