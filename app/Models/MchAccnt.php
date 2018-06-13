@@ -73,4 +73,9 @@ class MchAccnt extends ModelBase
 
         return $hisAccntModel;
     }
+    
+    public function getBankcard()
+    {
+        return Bankcard::find($this->id_bank_card);
+    }
 }

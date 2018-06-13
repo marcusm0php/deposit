@@ -106,7 +106,7 @@ class GearDepositCommand extends GearCommandBase
         ]);
         echo "Command:Gear:Deposit.mchsub.create is registered.\n";
         
-        // 子商户绑定银行卡
+        // 子商户绑定银行卡-提交资料
         $this->addWorkerFunction('deposit.mchsub.bind.bankcard', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
             $bank_cardFormat = [
                 'bank_no' => '',
@@ -122,12 +122,6 @@ class GearDepositCommand extends GearCommandBase
             ];
 
             $bizContentFormat['bank_card'] = array_merge($bank_cardFormat, $bizContentFormat['bank_card']);
-
-            //手机号格式错误
-            if(!preg_match("/^1[34578]{1}\d{9}$/",$bizContentFormat['bank_card']['cardholder_phone'])){
-                $this->_formatResult->setError('PHONE.FORMAT.ERR');
-                return $this->_signReturn($this->_formatResult->getData());
-            }
 
             $mchsub = \App\Models\Mchsub::where('mch_no', $data['mch_no'])
                                         ->where('mch_sub_no', $bizContentFormat['mch_sub_no'])
@@ -190,19 +184,22 @@ class GearDepositCommand extends GearCommandBase
             $mchAccntSub->mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
             $mchAccntSub->save();
             
-            $this->_formatResult->setSuccess(array_merge([
+            $this->_formatResult->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'],
                 'mch_accnt_no' => $mchAccntSub->mch_accnt_no,
-                'bank_name' => $bank_card['bank_name'] ,
-                'bank_no' => $bank_card['bank_no'],
-                'bank_branch_name' => $bank_card['bank_branch_name'],
-                'card_no' => $bank_card['card_no'],
-                'card_type' => $bank_card['card_type'],
-                'card_cvn' => $bank_card['card_cvn'],
-                'card_expire_date' => $bank_card['card_expire_date'],
-                'cardholder_name' => $bank_card['cardholder_name'],
-                'cardholder_phone' => $bank_card['cardholder_phone'],
-            ],$res));
+                'verify_code' => '', 
+                'bank_card' => [
+                    'bank_name' => $bank_card['bank_name'] ,
+                    'bank_no' => $bank_card['bank_no'],
+                    'bank_branch_name' => $bank_card['bank_branch_name'],
+                    'card_no' => $bank_card['card_no'],
+                    'card_type' => $bank_card['card_type'],
+                    'card_cvn' => $bank_card['card_cvn'],
+                    'card_expire_date' => $bank_card['card_expire_date'],
+                    'cardholder_name' => $bank_card['cardholder_name'],
+                    'cardholder_phone' => $bank_card['cardholder_phone'],
+                ]
+            ]);
             return $this->_signReturn($this->_formatResult->getData());
         }, [
             'mch_sub_no' => '',
@@ -210,25 +207,23 @@ class GearDepositCommand extends GearCommandBase
         ]);
         echo "Command:Gear:Deposit.mchsub.bind.bankcard is registered.\n";
 
-        // 回填手机验证码
+        // 子商户绑定银行卡-回填手机验证码
         $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
-
-            $res = Bankcard::validateCode($bizContentFormat['verfication_key'],$bizContentFormat['code']);
-
-            if($res['code'] != 200){
-                $this->_formatResult->setError('VALIDATE.ERR');
-                return $this->_signReturn($this->_formatResult->getData());
-            }
-
-            $this->_formatResult->setSuccess([
-                'mch_sub_no' => $res['response_data']['mch_sub_no'],
-                'bank_no' => $res['response_data']['bank_no'],
-            ]);
+            1. 根据mch_accnt_no查找账户$MchAccnt
+            2. 根据账户关联银行卡id_bank_card找到银行卡信息$bankCard = $MchAccnt->getBankcard();
+            
+            $bankCard->validateSmsCode($verify_code, $sms_code);
+            
+            3. 使用银行卡信息$bankCard['cardholder_phone']+verify_code+sms_code进行验证
+            
+            
+            
             return $this->_signReturn($this->_formatResult->getData());
         }, [
             'mch_sub_no' => '',
-            'verfication_key' => '',
-            'code' => '',
+            'mch_accnt_no' => '', 
+            'verify_code' => '', 
+            'sms_code' => '',
         ]);
         echo "Command:Gear:Deposit.mchsub.bind.bankcardverify is registered.\n";
         
