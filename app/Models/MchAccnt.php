@@ -79,4 +79,5 @@ class MchAccnt extends ModelBase
     {
         return $this->hasOne(Bankcard::class,'id_bank_card','id_bank_card');
     }
+
 }

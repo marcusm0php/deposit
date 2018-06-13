@@ -33,4 +33,9 @@ class Mch extends ModelBase
     
         return $mchno;
     }
+
+    public function mchSubs()
+    {
+        return $this->hasMany(Mchsub::class,'mch_no','mch_no');
+    }
 }
