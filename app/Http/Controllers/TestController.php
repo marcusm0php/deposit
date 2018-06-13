@@ -76,17 +76,17 @@ class TestController extends Controller
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.bind.bankcard',
             'biz_content' => [
-                'mch_sub_no' => '',
+                'mch_sub_no' => '9115418458655591',
                 'bank_card' => [
-                    'bank_no' => '1',
-                    'bank_name' => '',
+                    'bank_no' => '155846881',
+                    'bank_name' => '中国银行',
                     'bank_branch_name' => '',
                     'card_type' => '',
                     'card_no' => '1', 
                     'card_cvn' => '',
                     'card_expire_date' => '',
                     'cardholder_name' => '',
-                    'cardholder_phone' => '',
+                    'cardholder_phone' => '13264706948',
                     'createtime' => '',
                 ],
             ],
@@ -113,11 +113,11 @@ class TestController extends Controller
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
-            'biz_type' => 'deposit.mchsub.verfication.code',
+            'biz_type' => 'deposit.mchsub.bind.bankcardverify',
             'biz_content' => [
-                'mch_sub_no' => '',
-                'verfication_key' => '',
-                'code' => ''
+                'mch_sub_no' => '9115418458655591',
+                'verfication_key' => 'verficationCode_6174bb935a4c0086927f9c65df6e18bd',
+                'code' => '863621'
             ],
             'sign_type' => ''
         ]);

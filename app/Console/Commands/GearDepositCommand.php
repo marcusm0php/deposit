@@ -178,7 +178,7 @@ class GearDepositCommand extends GearCommandBase
 
             $mchAccntSub = new \App\Models\MchAccnt;
             $mchAccntSub->mch_no = $data['mch_no'];
-            $mchAccntSub->mch_sub_no = $mch_sub_no;
+            $mchAccntSub->mch_sub_no = $bizContentFormat['mch_sub_no'];
             $mchAccntSub->accnt_type = \App\Models\MchAccnt::ACCNT_TYPE_MCHSUB;
             $mchAccntSub->id_bank_card = $bankCardModel->id_bank_card;
             $mchAccntSub->mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();

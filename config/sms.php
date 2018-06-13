@@ -28,7 +28,7 @@ return [
         'aliyun' => [
             'access_key_id' => env('ALIYUN_KEY_ID','LTAIM9XmC2lNteVe'),
             'access_key_secret' => env('ALIYUN_KEY_SECRET','KF4gy6YwtPyBs5OGsxZBz4YnaXvtOi'),
-            'sign_name' => env('ALIYUN_SIGN_NAME','123'),
+            'sign_name' => env('ALIYUN_SIGN_NAME','摇钱吧'),
         ],
     ],
 ];
