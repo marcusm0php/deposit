@@ -17,16 +17,22 @@ class CibInterface
 
     // 快捷支付API地址，测试环境地址可根据需要修改
     const EP_PROD_API		= "https://pay.cib.com.cn/acquire/easypay.do";
-    const EP_DEV_API		= "https://3gtest.cib.com.cn:37031/acquire/easypay.do";
+    const EP_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/easypay.do";
 
     // 网关支付API地址，测试环境地址可根据需要修改
     const GP_PROD_API		= "https://pay.cib.com.cn/acquire/cashier.do";
-    const GP_DEV_API		= "https://3gtest.cib.com.cn:37031/acquire/cashier.do";
+    const GP_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/cashier.do";
 
     // 智能代付API地址，测试环境地址可根据需要修改
     const PY_PROD_API		= "https://pay.cib.com.cn/payment/api";
-    const PY_DEV_API		= "https://3gtest.cib.com.cn:37031/payment/api";
+    const PY_DEV_API		= "https://www.xingyeguanjia.com:37031/payment/api";
 
+    //托收支付
+    const EASYPAY_PROD_API		= "https://pay.cib.com.cn/acquire/easypay.do";
+    const EASYPAY_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/easypay.do";
+
+    //独立鉴权
+    const ;
 
     private static $sign_type = array(
         'cib.epay.acquire.easypay.acctAuth' => 'SHA1',

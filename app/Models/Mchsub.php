@@ -34,8 +34,18 @@ class Mchsub extends ModelBase
         return $mchno;
     }
 
+    public function mchAccnts()
+    {
+        return $this->hasMany(MchAccnt::class,'mch_sub_no','mch_sub_no');
+    }
+
     public function bankCards()
     {
-        return $this->hasMany(Bankcard::class,'mch_sub_no','mch_sub_no');
+        return $this->belongsToMany(Bankcard::class,'mch_accnt','mch_sub_no','id_bank_card');
+    }
+
+    public function mch()
+    {
+        return $this->belongsTo(Mch::class,'mch_no','mch_no');
     }
 }

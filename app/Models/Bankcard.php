@@ -25,34 +25,34 @@ class Bankcard extends ModelBase
         return create_uuid();
     }
 
-    public function sendCode()
+    public function sendCode($sms_code='')
     {
         // 生成4位随机数，左侧补0
-        $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
-
-        $sms_data =  [
-            'template' => 'SMS_126971169',
-            'data' => [
-                'code' => $code
-            ],
-        ];
-
-        $res = SmsInterface::sendCode($this->cardholder_phone,$sms_data);
-
-        if($res['code']==200){
-            $key = 'verficationCode_'.md5(md5($this->bank_no.'code'));
-            $expiredAt = now()->addMinute(self::EXPIRED_TIME);
-
-            \Cache::put($key,['id_bank_card'=>$this->id_bank_card,'code'=>$code],$expiredAt);
-
-            return [
-                'code'=>200,
-                'verfication_key'=>$key,
-                'expired_at' => $expiredAt->toDateTimeString()
-            ];
+        if(empty($sms_code)){
+            $sms_code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
         }
 
-        return $res;
+        $res = SmsInterface::sendCode($this->cardholder_phone, [
+            'template' => 'SMS_126971169',
+            'data' => [
+                'code' => $sms_code
+            ],
+        ]);
+
+        if($res['code'] == 200){
+            /*$verifykey = 'verifyCode_' . md5($this->bank_no . time());
+            $expiredAt = now()->addMinute(self::EXPIRED_TIME);
+
+            \Cache::put(
+                $verifykey,
+                ['id_bank_card'=>$this->id_bank_card, 'sms_code' => $sms_code], 
+                $expiredAt
+            );*/
+
+            return $sms_code;
+        }
+
+        return false;
     }
 
     /**
@@ -61,25 +61,9 @@ class Bankcard extends ModelBase
      * @param $validate_key 手机验证码key
      * @return array
      */
-    public static function validateCode($verfication_key, $code)
+    public function validateSmsCode($sms_code)
     {
-
-        $save_data = \Cache::get($verfication_key);
-
-        if(empty($save_data)) return ['code' => 422,'msg' => '验证码已过期'];
-
-        if(!hash_equals("{$save_data['code']}","$code")) return ['code' => 401,'msg' => '验证码错误'];
-
-        $bank_card_model = self::find($save_data['id_bank_card']);
-
-        if(!$bank_card_model) return ['code' => 404, 'msg' => '信息验证错误'];
-
-        $bank_card_model->status = 'success';
-        $bank_card_model->save();
-
-        // 清除验证码缓存
-        \Cache::forget($verfication_key);
-
-        return ['code' => 200, 'msg' => '绑卡成功', 'response_data' => ['mch_sub_no' => $bank_card_model->mch_sub_no, 'bank_no' => $bank_card_model->bank_no], ];
+        $sms_code = $sms_code.'';
+        return hash_equals($this->verify_phone_code,$sms_code);
     }
 }
