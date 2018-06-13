@@ -70,7 +70,7 @@ class TestController extends Controller
 
     public function subBind(Request $request)
     {
-
+        dd(empty($tradedatail));
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),

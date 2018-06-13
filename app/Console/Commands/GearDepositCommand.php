@@ -153,7 +153,7 @@ class GearDepositCommand extends GearCommandBase
                 $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.REPEAT');
                 return $this->_signReturn($this->_formatResult->getData());
             }
-        
+
             $bankCardModel = new \App\Models\Bankcard;
             $bankCardModel->mch_no = $data['mch_no'];
             $bankCardModel->mch_sub_no = $bizContentFormat['mch_sub_no'];
@@ -166,15 +166,16 @@ class GearDepositCommand extends GearCommandBase
             $bankCardModel->card_expire_date = $bank_card['card_expire_date'];
             $bankCardModel->cardholder_name = $bank_card['cardholder_name'];
             $bankCardModel->cardholder_phone = $bank_card['cardholder_phone'];
-            $bankCardModel->save();
 
             //发送验证码
-            $res = $bankCardModel->sendCode();
+            $sms_code = $bankCardModel->sendCode();
 
-            if($res['code'] != 200){
+            if(!$sms_code){
                 $this->_formatResult->setError('SMS.ERR');
                 return $this->_signReturn($this->_formatResult->getData());
             }
+            $bankCardModel->verify_phone_code = $sms_code;
+            $bankCardModel->save();
 
             $mchAccntSub = new \App\Models\MchAccnt;
             $mchAccntSub->mch_no = $data['mch_no'];
@@ -187,7 +188,6 @@ class GearDepositCommand extends GearCommandBase
             $this->_formatResult->setSuccess([
                 'mch_sub_no' => $bizContentFormat['mch_sub_no'],
                 'mch_accnt_no' => $mchAccntSub->mch_accnt_no,
-                'verify_code' => '', 
                 'bank_card' => [
                     'bank_name' => $bank_card['bank_name'] ,
                     'bank_no' => $bank_card['bank_no'],
@@ -209,20 +209,32 @@ class GearDepositCommand extends GearCommandBase
 
         // 子商户绑定银行卡-回填手机验证码
         $this->addWorkerFunction('deposit.mchsub.bind.bankcardverify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
-            1. 根据mch_accnt_no查找账户$MchAccnt
+            /*1. 根据mch_accnt_no查找账户$MchAccnt
             2. 根据账户关联银行卡id_bank_card找到银行卡信息$bankCard = $MchAccnt->getBankcard();
-            
-            $bankCard->validateSmsCode($verify_code, $sms_code);
-            
-            3. 使用银行卡信息$bankCard['cardholder_phone']+verify_code+sms_code进行验证
-            
-            
-            
+            3. 使用银行卡信息$bankCard['cardholder_phone']+verify_code+sms_code进行验证*/
+            $mch_acnt = MchAccnt::where('mch_accnt_no',$bizContentFormat['mch_accnt_no'])
+                                ->where('mch_sub_no',$bizContentFormat['mch_sub_no'])
+                                ->with('bankCard')->first();
+
+            if(empty($mch_acnt) || empty($mch_acnt->bankCard)){
+                $this->_formatResult->setError('MCHACCNT.MCHACCNTNO.INVALID');
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+
+            if(!$mch_acnt->bankCard->validateSmsCode($bizContentFormat['sms_code'])){
+
+            }
+            $mch_acnt->bankCard->status = 'success';
+            $mch_acnt->bankCard->save();
+
+            $this->_formatResult->setSuccess([
+                'mch_sub_no' => $mch_acnt->mch_sub_no,
+                'mch_accnt_no' => $mch_acnt->mch_sub_no,
+            ]);
             return $this->_signReturn($this->_formatResult->getData());
         }, [
             'mch_sub_no' => '',
-            'mch_accnt_no' => '', 
-            'verify_code' => '', 
+            'mch_accnt_no' => '',
             'sms_code' => '',
         ]);
         echo "Command:Gear:Deposit.mchsub.bind.bankcardverify is registered.\n";

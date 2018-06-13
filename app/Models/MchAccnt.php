@@ -73,9 +73,10 @@ class MchAccnt extends ModelBase
 
         return $hisAccntModel;
     }
-    
-    public function getBankcard()
+
+    //relation_bank_card
+    public function bankCard()
     {
-        return Bankcard::find($this->id_bank_card);
+        return $this->hasOne(Bankcard::class,'id_bank_card','id_bank_card');
     }
 }

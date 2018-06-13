@@ -25,10 +25,12 @@ class Bankcard extends ModelBase
         return create_uuid();
     }
 
-    public function sendCode()
+    public function sendCode($sms_code='')
     {
         // 生成4位随机数，左侧补0
-        $sms_code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+        if(empty($sms_code)){
+            $sms_code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
+        }
 
         $res = SmsInterface::sendCode($this->cardholder_phone, [
             'template' => 'SMS_126971169',
@@ -38,16 +40,16 @@ class Bankcard extends ModelBase
         ]);
 
         if($res['code'] == 200){
-            $key = 'verifyCode_' . md5($this->bank_no . time());
+            /*$verifykey = 'verifyCode_' . md5($this->bank_no . time());
             $expiredAt = now()->addMinute(self::EXPIRED_TIME);
 
             \Cache::put(
-                $key, 
+                $verifykey,
                 ['id_bank_card'=>$this->id_bank_card, 'sms_code' => $sms_code], 
                 $expiredAt
-            );
+            );*/
 
-            return $verify_code;
+            return $sms_code;
         }
 
         return false;
@@ -59,27 +61,9 @@ class Bankcard extends ModelBase
      * @param $validate_key 手机验证码key
      * @return array
      */
-    public function validateSmsCode($verfication_key, $sms_code)
+    public function validateSmsCode($sms_code)
     {
-        $sms_code = $sms_code . '';
-        $save_data = \Cache::get($verfication_key);
-
-        if(empty($save_data)) return ['code' => 422, 'msg' => '验证码已过期'];
-
-        if(!hash_equals($save_data['sms_code'], $sms_code)){
-            return ['code' => 401, 'msg' => '验证码错误'];
-        }
-
-        $bank_card_model = self::find($save_data['id_bank_card']);
-
-        if(!$bank_card_model) return ['code' => 404, 'msg' => '信息验证错误'];
-
-        $bank_card_model->status = 'success';
-        $bank_card_model->save();
-
-        // 清除验证码缓存
-        \Cache::forget($verfication_key);
-
-        return ['code' => 200, 'msg' => '绑卡成功', 'response_data' => ['mch_sub_no' => $bank_card_model->mch_sub_no, 'bank_no' => $bank_card_model->bank_no], ];
+        $sms_code = $sms_code.'';
+        return hash_equals($this->verify_phone_code,$sms_code);
     }
 }

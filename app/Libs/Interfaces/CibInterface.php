@@ -31,6 +31,9 @@ class CibInterface
     const EASYPAY_PROD_API		= "https://pay.cib.com.cn/acquire/easypay.do";
     const EASYPAY_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/easypay.do";
 
+    //独立鉴权
+    const ;
+
     private static $sign_type = array(
         'cib.epay.acquire.easypay.acctAuth' => 'SHA1',
         'cib.epay.acquire.easypay.quickAuthSMS' => 'RSA',
