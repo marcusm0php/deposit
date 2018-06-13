@@ -171,7 +171,7 @@ class GearDepositCommand extends GearCommandBase
             $sms_code = $bankCardModel->sendCode();
 
             if(!$sms_code){
-                $this->_formatResult->setError('SMS.ERR');
+                $this->_formatResult->setError('SMS.SEND.ERR');
                 return $this->_signReturn($this->_formatResult->getData());
             }
             $bankCardModel->verify_phone_code = $sms_code;
@@ -222,8 +222,10 @@ class GearDepositCommand extends GearCommandBase
             }
 
             if(!$mch_acnt->bankCard->validateSmsCode($bizContentFormat['sms_code'])){
-
+                $this->_formatResult->setError('SMS.VERIFY.ERR');
+                return $this->_signReturn($this->_formatResult->getData());
             }
+
             $mch_acnt->bankCard->status = 'success';
             $mch_acnt->bankCard->save();
 
