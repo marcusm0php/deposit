@@ -253,7 +253,7 @@ class GearDepositCommand extends GearCommandBase
             $mchaccts = MchAccnt::where('mch_sub_no', $mch_sub->mch_sub_no)
                                 ->get()
                                 ->map(function($item){
-                                    return [$item,$item->bankCard];
+                                    return [$item,$item->bankCard()->first()];
                                 })->toArray();
 
             $mch_sub_arr['mch_accnts'] = $mchaccts;
