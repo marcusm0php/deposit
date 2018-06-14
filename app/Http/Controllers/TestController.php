@@ -74,11 +74,11 @@ class TestController extends Controller
             'biz_content' => [
                 'mch_sub_no' => '9116439983111198',
                 'bank_card' => [
-                    'bank_no' => '155846881177',
+                    'bank_no' => '882154761881',
                     'bank_name' => '中国银行',
                     'bank_branch_name' => '',
                     'card_type' => '',
-                    'card_no' => '1',
+                    'card_no' => '882154761881',
                     'card_cvn' => '',
                     'card_expire_date' => '',
                     'cardholder_name' => '',
@@ -109,9 +109,9 @@ class TestController extends Controller
             'biz_type' => 'mchsub.bind.bankcardverify',
             'biz_content' => [
                 'mch_sub_no' => '9116439983111198',
-                'mch_accnt_no' => '1116440036006237',
+                'mch_accnt_no' => '1116441473006016',
                 'verfication_key' => 'verficationCode_6174bb935a4c0086927f9c65df6e18bd',
-                'sms_code' => '612841'
+                'sms_code' => '873191'
             ],
             'sign_type' => ''
         ]);
