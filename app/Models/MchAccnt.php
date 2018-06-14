@@ -17,7 +17,9 @@ class MchAccnt extends ModelBase
 
     protected $table = 'mch_accnt';
     protected $primaryKey = 'id_mch_accnt';
-    
+
+//    protected $hidden = ['id_mch_accnt'];
+
     protected $fillable = [
         'mch_no', 'mch_sub_no', 'mch_accnt_no', 'settle_duration', 'id_bank_card', 'remain_amt', 'accnt_type', 'create_time'
     ];

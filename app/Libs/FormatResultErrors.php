@@ -4,10 +4,10 @@ namespace App\Libs;
 class FormatResultErrors
 {
     const CODE_MAP = [
-        'SUCCESS' => ['code' => '100', 'message' => ''], 
+        'SUCCESS' => ['code' => '100', 'message' => 'success'],
         'SYS.ERR' => ['code' => '101', 'message' => '系统错误', ],
         'SMS.SEND.ERR' => ['code' => '102', 'message' => '发送手机验证码出错', ],
-        'SMS.VERIFY.ERR' => ['code' => '103', 'message' => '发送手机验证码出错', ],
+        'SMS.VERIFY.ERR' => ['code' => '103', 'message' => '验证码错误', ],
         'SIGN.VERIFY.FAIL' => ['code' => '104', 'message' => '签名验证失败', ],
         'SIGN.BIZ_TYPE.INVALID' => ['code' => '105', 'message' => 'biz_type无效', ],
 
