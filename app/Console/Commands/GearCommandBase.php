@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Libs\Interfaces\CibInterface;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Libs\FormatResult;
@@ -48,6 +49,7 @@ class GearCommandBase extends Command
     }
     
     protected $_formatResult;
+    protected $_cibpay;
     public function addWorkerFunction($funcName, $realDo, $bizContentFormat = [])
     {
         $this->_worker->addFunction($funcName, function($job, $outParamEntities){
@@ -84,10 +86,13 @@ class GearCommandBase extends Command
                 'mch_md5_token' => $mch_md5_token, 
                 'ga_traceno' => $ga_traceno, 
             ]), 'worker_deposit', 'WorkerLoaded');
-    
+
+            $this->_cibpay = new CibInterface();
             DB::beginTransaction();
             if($funcName != 'deposit.sign.verify'){
                 $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
+                $depoTrans->out_trant_no = $data['out_trant_no'];
+                $depoTrans->mch_no = $data['mch_no'];
                 $depoTrans->save();
                 $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);
             }else{
@@ -134,10 +139,7 @@ class GearCommandBase extends Command
             return $this->_signReturn($this->_formatResult->getData());
         });
         echo "Command:Gear:Deposit.sign.verify is registered.\n";
-        
-//         $this->addWorkerFunction('worker.router', function($bizContent, $data){
-            
-//         });
+
     }
 
     protected function _signReturn($data, $token = null, $format = 'md5')

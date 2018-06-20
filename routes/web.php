@@ -29,5 +29,7 @@ Route::group(['prefix'=>'cibpay'],function(){
 
     Route::get('pyPay','TestCibController@pyPay');
     Route::get('acSingleAuth','TestCibController@acSingleAuth');
+    Route::get('entrustAuth','TestCibController@entrustAuth');
+    Route::get('quickAuthSMS','TestCibController@quickAuthSMS');
 
 });

@@ -1,5 +1,7 @@
-<?php 
+<?php
+
 namespace App\Libs\Interfaces;
+
 /**
  * @author MarcusM. works for yinzhun. QQ:2453302174
  */
@@ -32,8 +34,6 @@ class CibInterface
     const EASYPAY_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/easypay.do";
 
     //独立鉴权
-    const ;
-
     private static $sign_type = array(
         'cib.epay.acquire.easypay.acctAuth' => 'SHA1',
         'cib.epay.acquire.easypay.quickAuthSMS' => 'RSA',
@@ -782,8 +782,23 @@ class CibInterface
      * @param $cvn          信用卡背面末三位安全码(信用卡认证必填)
      * @return mixed
      */
-    public function acSingleAuth($trac_no, $card_no, $bank_no, $acct_type, $cert_type, $cert_no, $card_phone, $expireDate='', $cvn='')
+    public function acSingleAuth($data)
     {
+
+        /*const EP_PROD_API		= "https://pay.cib.com.cn/acquire/easypay.do";
+        const EP_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/easypay.do";
+
+        // 网关支付API地址，测试环境地址可根据需要修改
+        const GP_PROD_API		= "https://pay.cib.com.cn/acquire/cashier.do";
+        const GP_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/cashier.do";
+
+        // 智能代付API地址，测试环境地址可根据需要修改
+        const PY_PROD_API		= "https://pay.cib.com.cn/payment/api";
+        const PY_DEV_API		= "https://www.xingyeguanjia.com:37031/payment/api";
+
+        //托收支付
+        const EASYPAY_PROD_API		= "https://pay.cib.com.cn/acquire/easypay.do";
+        const EASYPAY_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/easypay.do";*/
         $param_array = array();
 
         $param_array['timestamp']	= CibUtil::getDateTime();
@@ -791,23 +806,59 @@ class CibInterface
         $param_array['service']		= 'cib.epay.acquire.singleauth.quickSingleAuth';
         $param_array['ver']			= '01'; //接口版本号，固定 01
 
-        $param_array['trac_no'] = $trac_no;
-        $param_array['card_no'] = $card_no;
-        $param_array['bank_no'] = $bank_no;
-        $param_array['acct_type'] = $acct_type;
-        $param_array['cert_type'] = $cert_type;
-        $param_array['cert_no'] = $cert_no;
-        $param_array['card_phone'] = $card_phone;
+        $param_array['trac_no'] = $data['trac_no'];
+        $param_array['card_no'] = $data['card_no'];
+        $param_array['bank_no'] = $data['bank_no'];
+        $param_array['acct_type'] = $data['acct_type'];
+        $param_array['cert_type'] = $data['cert_type'];
+        $param_array['cert_no'] = $data['cert_no'];
+        $param_array['card_phone'] = $data['card_phone'];
 
         //可选
-        $param_array['expireDate'] = $expireDate;
-        $param_array['cvn'] = $cvn;
+        $param_array['expireDate'] = $data['expireDate'];
+        $param_array['cvn'] = $data['cvn'];
+        $param_array['user_name'] = $data['user_name'];
 
         if($this->_cib_config['isDevEnv'])
-            return $this->postService(self::PY_DEV_API, $param_array, null);
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
         else
-            return $this->postService(self::PY_PROD_API, $param_array, null);
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
     }
 
 
+    public function entrustAuth($data)
+    {
+
+        $param_array = array();
+
+        $param_array['appid']		= $this->_cib_config['appid'];
+        $param_array['service']		= 'cib.epay.acquire.easypay.entrustAuth';
+        $param_array['ver']			= '01'; //接口版本号，固定 01
+        $param_array['sign_type']	= 'RSA'; //接口版本号，固定 01
+        $param_array = array_merge($data,$param_array);
+
+
+        if($this->_cib_config['isDevEnv'])
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+        else
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+    }
+
+    public function quickAuthSMS($data)
+    {
+
+        $param_array = array();
+
+        $param_array['appid']		= $this->_cib_config['appid'];
+        $param_array['service']		= 'cib.epay.acquire.easypay.quickAuthSMS';
+        $param_array['ver']			= '01'; //接口版本号，固定 01
+        $param_array['sign_type']	= 'RSA'; //接口版本号，固定 01
+        $param_array = array_merge($data,$param_array);
+
+
+        if($this->_cib_config['isDevEnv'])
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+        else
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+    }
 }

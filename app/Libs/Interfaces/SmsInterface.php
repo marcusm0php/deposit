@@ -16,7 +16,6 @@ class SmsInterface
     /**
      * 发送手机验证码
      * @param $phone 手机号
-     * @param $unique 唯一
      * @return array
      * @throws \Overtrue\EasySms\Exceptions\InvalidArgumentException
      * @throws \Overtrue\EasySms\Exceptions\NoGatewayAvailableException
