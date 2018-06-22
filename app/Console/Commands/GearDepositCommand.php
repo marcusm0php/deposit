@@ -367,7 +367,7 @@ class GearDepositCommand extends GearCommandBase
                     return $this->_signReturn($this->_formatResult->getData());
                 }
 
-                //智能代付单笔付款接口
+                //代付
                 $order_no       = uniqid();
                 $trans_amt      = round($split_accnt_detail['amount']/100,2);//支付金额
                 $to_bank_no     = $bank_card->bank_no;//收款行行号

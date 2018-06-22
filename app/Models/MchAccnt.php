@@ -21,7 +21,7 @@ class MchAccnt extends ModelBase
 //    protected $hidden = ['id_mch_accnt'];
 
     protected $fillable = [
-        'mch_no', 'mch_sub_no', 'mch_accnt_no', 'settle_duration', 'id_bank_card', 'remain_amt', 'accnt_type', 'create_time'
+        'mch_no', 'mch_accnt_no', 'out_mch_accnt_no', 'settle_duration', 'remain_amt', 'accnt_type', 'create_time', 'link_name', 'link_phone', 'link_email',
     ];
     
     public static function generateMchAccntNo()
