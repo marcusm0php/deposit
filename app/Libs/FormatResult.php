@@ -43,11 +43,13 @@ class FormatResult
 		return $ret;
 	}
 	
-	public function setError($code)
+	public function setError($code,$biz_content=[])
 	{
 	    $codemap = isset(FormatResultErrors::CODE_MAP[$code])? FormatResultErrors::CODE_MAP[$code] : FormatResultErrors::CODE_MAP['SYS.ERR'];
         $this->code = $codemap['code'];
         $this->message = $codemap['message'];
+
+        $this->biz_content = $biz_content;
 	}
 	
 	public function setSuccess($biz_content)
