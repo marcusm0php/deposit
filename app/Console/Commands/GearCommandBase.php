@@ -37,7 +37,13 @@ class GearCommandBase extends Command
             echo "Gearman Workers工作组端口{$gearmanConfig->gearmand_srv_port}\n";
 
             $this->_worker= new \GearmanWorker();
-            $this->_worker->addServer($gearmanConfig->gearmand_srv_ip, $gearmanConfig->gearmand_srv_port);
+
+            if(env('APP_ENV') == 'local'){//本地工作配置
+                $this->_worker->addServer('127.0.0.1', '4730');
+            }else{
+                $this->_worker->addServer($gearmanConfig->gearmand_srv_ip, $gearmanConfig->gearmand_srv_port);
+            }
+
 
             return true;
         }else{
