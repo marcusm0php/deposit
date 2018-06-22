@@ -221,32 +221,89 @@ class GearDepositCommand extends GearCommandBase
                     ]);
                     return $this->_signReturn($this->_formatResult->getData());
                 }
+
+
+
+                foreach ($mchaccnt['bank_cards'] as $bank_card){
+                    $auth_data = [
+                        'trac_no' => uniqid(),
+                        'card_no' => $bank_card['card_no']??'',
+                        'bank_no' => $bank_card['bank_no']??'',
+                        'acct_type' => $bank_card['acct_type']??'',
+                        'cert_type' => $bank_card['cert_type']??'0',
+                        'cert_no' => $bank_card['cert_no']??'',
+                        'card_phone' => $bank_card['card_phone']??'',
+                        'expireDate' => $bank_card['card_expire_date']??'',
+                        'cvn' => $bank_card['card_cvn']??'',
+                        'user_name' => $bank_card['user_name']??'',
+                    ];
+                    $result    = json_decode($this->_cibpay->acSingleAuth($auth_data),true);
+                    if(empty($result['auth_status']) && $result['auth_status'] != '1'){
+                        $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR', $result);
+                        return $this->_signReturn($this->_formatResult->getData());
+                    }
+                    $bank_card_existed = \App\Models\Bankcard::where('mch_no', $data['mch_no'])
+                        ->where('card_no', $bizContentFormat['card_no'])
+                        ->first();
+
+                    if($bank_card_existed){
+                        $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.REPEAT');
+                        return $this->_signReturn($this->_formatResult->getData());
+                    }
+                }
+
+                $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $bizContentFormat['out_mch_accnt_no'])
+                    ->where('mch_no', $data['mch_no'])
+                    ->first();
+                if($mchaccnt){
+                    $this->_formatResult->setError('MCHSUB.CREATE.MCHSUB.OUTMCHSUBNO.REPEAT');
+                    return $this->_signReturn($this->_formatResult->getData());
+                }
             }
 
-            $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $bizContentFormat['out_mch_accnt_no'])
-                ->where('mch_no', $data['mch_no'])
-                ->first();
-            if($mchaccnt){
-                $this->_formatResult->setError('MCHSUB.CREATE.MCHSUB.OUTMCHSUBNO.REPEAT');
-                return $this->_signReturn($this->_formatResult->getData());
+            $res_data = [];
+            foreach ($bizContentFormat['mch_accnts'] as $k=>$mchaccnt){
+                $mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
+
+                $mchaccnt = new \App\Models\MchAccnt;
+                $mchaccnt->mch_no = $data['mch_no'];
+                $mchaccnt->mch_accnt_no = $mch_accnt_no;
+                $mchaccnt->out_mch_accnt_no = $mchaccnt['out_mch_accnt_no'];
+                $mchaccnt->mch_sub_name = $mchaccnt['mch_sub_name']??'';
+                $mchaccnt->link_name = $mchaccnt['link_name']??'';
+                $mchaccnt->link_phone = $mchaccnt['link_phone']??'';
+                $mchaccnt->link_email = $mchaccnt['link_email']??'';
+                $mchaccnt->save();
+
+                $res_data[$k]['mch_accnts'] = $mchaccnt->mch_accnt_no;
+                $res_data[$k]['out_mch_accnt_no'] = $mchaccnt->out_mch_accnt_no;
+
+                foreach ($mchaccnt['bank_cards'] as $key=>$bank_card){
+
+                    $bankCardModel = new \App\Models\Bankcard;
+                    $bankCardModel->mch_no = $data['mch_no'];
+                    $bankCardModel->mch_accnt_no = $mchaccnt->mch_accnt_no;
+                    $bankCardModel->bank_no = $bank_card['bank_no'];
+                    $bankCardModel->bank_name = $bank_card['bank_name'];
+                    $bankCardModel->card_type = $bank_card['card_type'];
+                    $bankCardModel->card_no = $bank_card['card_no'];
+                    $bankCardModel->card_cvn = $bank_card['card_cvn']??'';
+                    $bankCardModel->card_expire_date = $bank_card['card_expire_date']??'';
+                    $bankCardModel->cardholder_name = $bank_card['user_name'];
+                    $bankCardModel->cardholder_phone = $bank_card['card_phone'];
+                    $bankCardModel->status = Bankcard::SUCCESS;
+                    $bankCardModel->save();
+                    $res_data[$k]['bank_cards'][$key]['card_no'] = $bankCardModel->card_no;
+                }
+
             }
-
-            $mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
-
-            $mchaccnt = new \App\Models\MchAccnt;
-            $mchaccnt->mch_no = $data['mch_no'];
-            $mchaccnt->mch_accnt_no = $mch_accnt_no;
-            $mchaccnt->out_mch_accnt_no = $bizContentFormat['out_mch_accnt_no'];
-            $mchaccnt->mch_sub_name = $bizContentFormat['mch_sub_name'];
-            $mchaccnt->link_name = $bizContentFormat['link_name'];
-            $mchaccnt->link_phone = $bizContentFormat['link_phone'];
-            $mchaccnt->link_email = $bizContentFormat['link_email'];
-            $mchaccnt->save();
 
             $this->_formatResult->setSuccess([
-                'mch_accnt_no' => $mch_accnt_no,
-                'out_mch_accnt_no' => $mchaccnt->out_mch_accnt_no
+                'mch_accnts' => $res_data,
+                'status' => 1,
+                'desc' =>'',
             ]);
+
             return $this->_signReturn($this->_formatResult->getData());
         }, [
             'mch_accnts' => '',
