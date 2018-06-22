@@ -213,7 +213,8 @@ class GearDepositCommand extends GearCommandBase
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
-            foreach ($bizContentFormat['mch_accnts'] as $mchaccnt){
+            foreach ($bizContentFormat['mch_accnts'] as $k=>$mchaccnt){
+
                 if(empty($mchaccnt['bank_cards']) || count($mchaccnt['bank_cards']) > 20){
                     $this->_formatResult->setError('MCHSUB.BATCHCREATE.BANKCARD.TOMANY',[
                         'status' => '2',
@@ -222,7 +223,13 @@ class GearDepositCommand extends GearCommandBase
                     return $this->_signReturn($this->_formatResult->getData());
                 }
 
-
+                $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $bizContentFormat['out_mch_accnt_no'])
+                    ->where('mch_no', $data['mch_no'])
+                    ->first();
+                if($mchaccnt){
+                    $this->_formatResult->setError('MCHSUB.CREATE.MCHSUB.OUTMCHSUBNO.REPEAT');
+                    return $this->_signReturn($this->_formatResult->getData());
+                }
 
                 foreach ($mchaccnt['bank_cards'] as $bank_card){
                     $auth_data = [
@@ -250,14 +257,6 @@ class GearDepositCommand extends GearCommandBase
                         $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.REPEAT');
                         return $this->_signReturn($this->_formatResult->getData());
                     }
-                }
-
-                $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $bizContentFormat['out_mch_accnt_no'])
-                    ->where('mch_no', $data['mch_no'])
-                    ->first();
-                if($mchaccnt){
-                    $this->_formatResult->setError('MCHSUB.CREATE.MCHSUB.OUTMCHSUBNO.REPEAT');
-                    return $this->_signReturn($this->_formatResult->getData());
                 }
             }
 
@@ -343,6 +342,7 @@ class GearDepositCommand extends GearCommandBase
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
                 $bizContentFormat['split_accnt_detail'][$k] = array_merge([
                     'mch_accnt_no' => '',
+                    'card_no' => '',
                     'dispatch_event' => '',
                     'amount' => '',
                 ], $split_accnt_detail);
@@ -353,15 +353,35 @@ class GearDepositCommand extends GearCommandBase
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
                 $mchAccnt = MchAccnt::where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])->first();
 
+                $bank_card = Bankcard::where('card_no',$split_accnt_detail['card_no'])
+                                    ->where('mch_accnt_no',$split_accnt_detail['mch_accnt_no'])
+                                    ->where('status',Bankcard::SUCCESS)
+                                    ->first();
+
                 if(empty($mchAccnt)){
                     $this->_formatResult->setError('MCHACCNT.MCHACCNTNO.INVALID');
                     return $this->_signReturn($this->_formatResult->getData());
                 }
+                if(empty($bank_card)){
+                    $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR');
+                    return $this->_signReturn($this->_formatResult->getData());
+                }
+
+                //智能代付单笔付款接口
+                $order_no       = uniqid();
+                $trans_amt      = round($split_accnt_detail['amount']/100,2);//支付金额
+                $to_bank_no     = $bank_card->bank_no;//收款行行号
+                $to_acct_no     = $bank_card->card_no;//收款人账号
+                $to_acct_name   = $bank_card->cardholder_name;//收款人户名
+                $trans_usage    = "分账";//订单详情
+                $acct_type       = $bank_card->card_type;//账户类型(0-储蓄卡;1-信用卡;2-企业账户)
+
+                $pay_result    = json_decode($this->_cibpay->pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, $acct_type, $trans_amt, $trans_usage),true);
 
                 $hisAccntModel = $mchAccnt->createHisAccntModel();
                 $hisAccntModel->transaction_no = $depoTrans->transaction_no;
                 $hisAccntModel->event = $split_accnt_detail['dispatch_event'];
-                $hisAccntModel->event_amt = $split_accnt_detail['amount'] * 100;
+                $hisAccntModel->event_amt = $split_accnt_detail['amount'];
                 $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before + $hisAccntModel->event_amt;
                 $hisAccntModel->save();
 
@@ -373,6 +393,7 @@ class GearDepositCommand extends GearCommandBase
                     'dispatch_event' => $hisAccntModel->event,
                     'amount' => round($hisAccntModel->event_amt / 100, 2),
                     'amount_after_event' => round($hisAccntModel->accnt_amt_after / 100, 2),
+                    'pay_result' => $pay_result
                 ];
             }
 
