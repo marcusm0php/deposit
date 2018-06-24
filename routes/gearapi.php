@@ -23,36 +23,36 @@ Route::any('/gclients', function (Request $request) {
     $mch_md5_token = $request->get('mch_md5_token');
 
     $ret = new FormatResult($data);
-    if(!empty($data['out_trant_no']) && !empty($data['mch_no'])){
+
+    if(!empty($data['out_trant_no'])){
 
         $transaction = \App\Models\DepositTransaction::where('mch_no',$data['mch_no'])
-                                        ->where('out_trant_no')
-                                        ->first();
-        if($transaction){
-            $ret->setError('OUT_TRANT_NO.INVALID');
-            return [
-                'data' => $ret->getData(),
-                'sign' => ''
-            ];
-        }
-        if(isset($data['biz_type'])){
-            $biz_type = $data['biz_type'];
-            if(!empty(InterfaceConfig::BIZ_TYPES[$biz_type])){
-                $bizRet = app('gclient')->doNormal(InterfaceConfig::BIZ_TYPES[$biz_type], json_encode([
-                    'data' => $dataOri,
-                    'sign' => $sign,
-                    'mch_md5_token' => $mch_md5_token,
-                    'ga_traceno' => app('ga_traceno')
-                ]));
+            ->where('out_trant_no',$data['out_trant_no'])
+            ->first();
 
-                return $bizRet;
+        if(!$transaction){
+            if(isset($data['biz_type'])){
+                $biz_type = $data['biz_type'];
+                if(!empty(InterfaceConfig::BIZ_TYPES[$biz_type])){
+                    $bizRet = app('gclient')->doNormal(InterfaceConfig::BIZ_TYPES[$biz_type], json_encode([
+                        'data' => $dataOri,
+                        'sign' => $sign,
+                        'mch_md5_token' => $mch_md5_token,
+                        'ga_traceno' => app('ga_traceno')
+                    ]));
+
+                    return $bizRet;
+                }
             }
         }
     }
 
-    $ret->setError('SIGN.BIZ_TYPE.INVALID');
-    return [
-        'data' => $ret->getData(),
-        'sign' => ''
-    ];
+    $ret->setError('OUT_TRANT_NO.INVALID');
+
+    return json_encode(array(
+            'data' => $ret->getData(),
+            'sign' => ''
+        ), JSON_UNESCAPED_UNICODE);
+
+
 });

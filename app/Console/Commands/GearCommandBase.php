@@ -75,7 +75,8 @@ class GearCommandBase extends Command
             $data = json_decode($dataOri, true);
             $data = empty($data)? [] : $data;
             $data = array_merge([
-                'mch_no' => '', 
+                'mch_no' => '',
+                'out_trant_no' => '',
                 'timestamp' => '', 
                 'biz_type' => '', 
                 'code' => '', 
@@ -94,6 +95,7 @@ class GearCommandBase extends Command
             ]), 'worker_deposit', 'WorkerLoaded');
 
             $this->_cibpay = new CibInterface();
+
             DB::beginTransaction();
             if($funcName != 'deposit.sign.verify'){
                 $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
@@ -102,8 +104,8 @@ class GearCommandBase extends Command
                 $depoTrans->save();
                 $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);
             }else{
-                $depoTrans = null;
                 $this->_formatResult = new FormatResult($data);
+                $depoTrans = null;
             }
             
             $bizContentFormat = array_merge($bizContentFormat, $bizContent);

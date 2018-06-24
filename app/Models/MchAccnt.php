@@ -15,6 +15,9 @@ class MchAccnt extends ModelBase
     const ACCNT_TYPE_ASSURANCE = 'assurance';
     const ACCNT_TYPE_MCHSUB = 'mchsub';
 
+    //pay(支付)；refund(退款)；transfer(转账);subsidy（补贴）；fine(罚款)；consume(余额消费);award(奖励);
+    const EVENT_TYPES = ['pay', 'refund', 'transfer', 'subsidy', 'fine', 'consume', 'award'];
+
     protected $table = 'mch_accnt';
     protected $primaryKey = 'id_mch_accnt';
 
@@ -79,7 +82,7 @@ class MchAccnt extends ModelBase
     //relation_bank_card
     public function bankCard()
     {
-        return $this->hasOne(Bankcard::class,'id_bank_card','id_bank_card')->where('status','success');
+        return $this->hasMany(Bankcard::class,'mch_accnt_no','mch_accnt_no')->where('status','success');
     }
 
 }

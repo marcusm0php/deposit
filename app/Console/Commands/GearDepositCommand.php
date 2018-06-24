@@ -29,6 +29,11 @@ class GearDepositCommand extends GearCommandBase
         //3.1 商户开设子账户
         $this->addWorkerFunction('deposit.mchsub.create', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
 
+            if(empty($bizContentFormat['out_mch_accnt_no'])){
+                $this->_formatResult->setError('MCHSUB.CREATE.MCHSUB.OUTMCHACCNTNO.INVALID');
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+
             $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $bizContentFormat['out_mch_accnt_no'])
                                             ->where('mch_no', $data['mch_no'])
                                             ->first();
@@ -37,12 +42,13 @@ class GearDepositCommand extends GearCommandBase
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
-            $mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
-            $mchaccnt = new \App\Models\MchAccnt;
+            $mch_accnt_no = MchAccnt::generateMchAccntNo();
+            $mchaccnt = new MchAccnt;
             $mchaccnt->mch_no = $data['mch_no'];
             $mchaccnt->mch_accnt_no = $mch_accnt_no;
             $mchaccnt->out_mch_accnt_no = $bizContentFormat['out_mch_accnt_no'];
-            $mchaccnt->mch_sub_name = $bizContentFormat['mch_sub_name'];
+            $mchaccnt->accnt_type = MchAccnt::ACCNT_TYPE_MCHSUB;
+            $mchaccnt->mch_accnt_name = $bizContentFormat['mch_accnt_name'];
             $mchaccnt->link_name = $bizContentFormat['link_name'];
             $mchaccnt->link_phone = $bizContentFormat['link_phone'];
             $mchaccnt->link_email = $bizContentFormat['link_email'];
@@ -70,7 +76,7 @@ class GearDepositCommand extends GearCommandBase
                                         ->first();
 
             if(empty($mchaccnt)){
-                $this->_formatResult->setError('MCHSUB.MCHSUBNO.INVALID');
+                $this->_formatResult->setError('MCHSUB.MCHACCNTNO.INVALID');
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
@@ -92,7 +98,7 @@ class GearDepositCommand extends GearCommandBase
                 'trac_no' => uniqid(),
                 'card_no' => $bizContentFormat['card_no'],
                 'bank_no' => $bizContentFormat['bank_no'],
-                'acct_type' => $bizContentFormat['acct_type'],
+                'acct_type' => $bizContentFormat['card_type'],
                 'cert_type' => $bizContentFormat['cert_type'],
                 'cert_no' => $bizContentFormat['cert_no'],
                 'card_phone' => $bizContentFormat['card_phone'],
@@ -100,33 +106,35 @@ class GearDepositCommand extends GearCommandBase
                 'cvn' => $bizContentFormat['card_cvn'],
                 'user_name' => $bizContentFormat['user_name'],
             ];
-            $result    = json_decode($this->_cibpay->acSingleAuth($auth_data),true);
 
-            if(!empty($result['auth_status']) && $result['auth_status'] == '1'){
-                $bankCardModel = new \App\Models\Bankcard;
-                $bankCardModel->mch_no = $data['mch_no'];
-                $bankCardModel->mch_accnt_no = $bizContentFormat['mch_accnt_no'];
-                $bankCardModel->bank_no = $bizContentFormat['bank_no'];
-                $bankCardModel->bank_name = $bizContentFormat['bank_name'];
-                $bankCardModel->bank_branch_name = $bizContentFormat['bank_branch_name'];
-                $bankCardModel->card_type = $bizContentFormat['card_type'];
-                $bankCardModel->card_no = $bizContentFormat['card_no'];
-                $bankCardModel->card_cvn = $bizContentFormat['card_cvn'];
-                $bankCardModel->card_expire_date = $bizContentFormat['card_expire_date'];
-                $bankCardModel->cardholder_name = $bizContentFormat['cardholder_name'];
-                $bankCardModel->cardholder_phone = $bizContentFormat['cardholder_phone'];
-                $bankCardModel->status = Bankcard::SUCCESS;
-                $bankCardModel->save();
+            $result = json_decode($this->_cibpay->acSingleAuth($auth_data),true);
 
-                $this->_formatResult->setSuccess([
-                    'mch_sub_no' => $bizContentFormat['mch_sub_no'],
-                    'mch_accnt_no' => $bankCardModel->mch_accnt_no,
-                    'card_no' => $bizContentFormat['card_no'],
-                ]);
+            var_dump($result);
+
+            /*if(empty($result['auth_status']) || $result['auth_status'] != '1'){
+
+                $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR', $result);
                 return $this->_signReturn($this->_formatResult->getData());
-            }
+            }*/
 
-            $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR', $result);
+            $bankCardModel = new \App\Models\Bankcard;
+            $bankCardModel->mch_no = $data['mch_no'];
+            $bankCardModel->mch_accnt_no = $bizContentFormat['mch_accnt_no'];
+            $bankCardModel->bank_no = $bizContentFormat['bank_no'];
+            $bankCardModel->bank_name = $bizContentFormat['bank_name'];
+            $bankCardModel->card_type = $bizContentFormat['card_type'];
+            $bankCardModel->card_no = $bizContentFormat['card_no'];
+            $bankCardModel->card_cvn = $bizContentFormat['card_cvn'];
+            $bankCardModel->card_expire_date = $bizContentFormat['card_expire_date'];
+            $bankCardModel->cardholder_name = $bizContentFormat['user_name'];
+            $bankCardModel->cardholder_phone = $bizContentFormat['card_phone'];
+            $bankCardModel->status = Bankcard::SUCCESS;
+            $bankCardModel->save();
+
+            $this->_formatResult->setSuccess([
+                'mch_accnt_no' => $bankCardModel->mch_accnt_no,
+                'card_no' => $bizContentFormat['card_no'],
+            ]);
             return $this->_signReturn($this->_formatResult->getData());
 
         }, [
@@ -139,6 +147,7 @@ class GearDepositCommand extends GearCommandBase
             'card_expire_date' => '',
             'user_name' => '',
             'card_phone' => '',
+            'cert_type'=>'',
             'cert_no' => '',
         ]);
         echo "Command:Gear:Deposit.mchsub.bind.bankcard is registered.\n";
@@ -311,29 +320,22 @@ class GearDepositCommand extends GearCommandBase
 
         //3.5 子商户查询
         $this->addWorkerFunction('deposit.mchsub.query',function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
-            $mch_sub = Mchsub::where('mch_no',$data['mch_no'])->where('mch_sub_no', $bizContentFormat['mch_sub_no'])->first();
 
-            if(empty($mch_sub)){
-                $this->_formatResult->setError('MCHSUB.MCHSUBNO.INVALID');
+            $mchacct = MchAccnt::where('mch_no', $data['mch_accnt_no'])
+                                ->where('mch_accnt_no',$bizContentFormat['mch_accnt_no'])
+                                ->with('bankCard')->first();
+
+            if(!$mchacct){
+                $this->_formatResult->setError('MCHSUB.MCHACCNTNO.INVALID');
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
-            $mchaccts = MchAccnt::where('mch_sub_no', $mch_sub->mch_sub_no)
-                                ->where('')
-                                ->get()
-                                ->map(function($item){
-                                    return [$item,$item->bankCard()->first()];
-                                })->toArray();
-
-            $mch_sub_arr['mch_accnt'] = $mchaccts;
-
             $this->_formatResult->setSuccess([
-                'mch_sub_no' => $bizContentFormat['mch_sub_no'],
-                'mch_sub'=>$mch_sub_arr,
+                'mch_accnts' => $mchacct,
             ]);
             return $this->_signReturn($this->_formatResult->getData());
         }, [
-            'mch_sub_no' => '',
+            'mch_accnt_no' => '',
         ]);
         echo "Command:Gear:Deposit.mchsub.query is registered.\n";
 
@@ -349,6 +351,7 @@ class GearDepositCommand extends GearCommandBase
             }
 
             $split_accnt_detail_return = [];
+            $split_accnt_fail_detail_return = [];
 
             foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
                 $mchAccnt = MchAccnt::where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])->first();
@@ -358,23 +361,18 @@ class GearDepositCommand extends GearCommandBase
                                     ->where('status',Bankcard::SUCCESS)
                                     ->first();
 
-                if(empty($mchAccnt)){
-                    $this->_formatResult->setError('MCHACCNT.MCHACCNTNO.INVALID');
-                    return $this->_signReturn($this->_formatResult->getData());
-                }
-                if(empty($bank_card)){
-                    $this->_formatResult->setError('MCHSUB.CREATE.BANKCARD.ERROR');
-                    return $this->_signReturn($this->_formatResult->getData());
+                if(empty($mchAccnt) || empty($bank_card)){
+
                 }
 
                 //代付
                 $order_no       = uniqid();
-                $trans_amt      = round($split_accnt_detail['amount']/100,2);//支付金额
-                $to_bank_no     = $bank_card->bank_no;//收款行行号
-                $to_acct_no     = $bank_card->card_no;//收款人账号
-                $to_acct_name   = $bank_card->cardholder_name;//收款人户名
-                $trans_usage    = "分账";//订单详情
-                $acct_type       = $bank_card->card_type;//账户类型(0-储蓄卡;1-信用卡;2-企业账户)
+                $trans_amt      = round($split_accnt_detail['amount']/100,2);
+                $to_bank_no     = $bank_card->bank_no;
+                $to_acct_no     = $bank_card->card_no;
+                $to_acct_name   = $bank_card->cardholder_name;
+                $trans_usage    = "分账";
+                $acct_type       = $bank_card->card_type;
 
                 $pay_result    = json_decode($this->_cibpay->pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, $acct_type, $trans_amt, $trans_usage),true);
 
@@ -398,7 +396,7 @@ class GearDepositCommand extends GearCommandBase
             }
 
             $this->_formatResult->setSuccess([
-                'split_accnt_detail' => $split_accnt_detail_return
+                'split_accnt_detail' => $split_accnt_detail_return,
             ]);
             return $this->_signReturn($this->_formatResult->getData());
         }, [
