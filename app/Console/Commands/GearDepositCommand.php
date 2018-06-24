@@ -411,6 +411,7 @@ class GearDepositCommand extends GearCommandBase
                 if(empty($mchAccnt) || empty($bank_card)){
                     $split_accnt_fail_detail_return[$k] = [
                         'mch_accnt_no'=> $split_accnt_detail['mch_accnt_no'],
+                        'card_no'=>$split_accnt_detail['card_no'],
                         'status' => MchAccnt::BACTH_FAIL_STATUS,
                         'desc' => 'mch_accnt_no或者card_no非法',
                     ];
@@ -418,34 +419,49 @@ class GearDepositCommand extends GearCommandBase
                 }
 
                 //代付
-                $order_no       = uniqid();
-                $trans_amt      = round($split_accnt_detail['amount']/100,2);
-                $to_bank_no     = $bank_card->bank_no;
-                $to_acct_no     = $bank_card->card_no;
-                $to_acct_name   = $bank_card->cardholder_name;
-                $trans_usage    = "分账";
-                $acct_type       = $bank_card->card_type;
-
-                $pay_result    = json_decode($this->_cibpay->pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, $acct_type, $trans_amt, $trans_usage),true);
-
-                $hisAccntModel = $mchAccnt->createHisAccntModel();
-                $hisAccntModel->transaction_no = $depoTrans->transaction_no;
-                $hisAccntModel->event = $split_accnt_detail['dispatch_event'];
-                $hisAccntModel->event_amt = $split_accnt_detail['amount'];
-                $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before + $hisAccntModel->event_amt;
-                $hisAccntModel->save();
-
-                $mchAccnt->remain_amt = $hisAccntModel->accnt_amt_after;
-                $mchAccnt->save();
-
-                $split_accnt_detail_return[$k] = [
-                    'status' => MchAccnt::BACTH_SUCCESS_STATUS,
-                    'mch_accnt_no' => $mchAccnt->mch_accnt_no,
-                    'dispatch_event' => $hisAccntModel->event,
-                    'amount' => $hisAccntModel->event_amt,
-                    'amount_after_event' => $hisAccntModel->accnt_amt_after,
-                    'pay_result' => $pay_result
+                $pay_data = [
+                    'order_no' => $split_accnt_detail['order_no'],
+                    'to_bank_no' => $bank_card->bank_no,
+                    'to_acct_no' => $bank_card->card_no,
+                    'to_acct_name' => $bank_card->cardholder_name,
+                    'acct_type' => $bank_card->card_type,
+                    'trans_amt' => round($split_accnt_detail['amount']/100,2),
+                    'trans_usage' => 'test.分账',
                 ];
+
+                $pay_result    = json_decode($this->_cibpay->pyPay($pay_data),true);
+
+                var_dump($pay_result);
+                if(empty($result['transStatus']) && $result['transStatus'] != '1'){
+                    $hisAccntModel = $mchAccnt->createHisAccntModel();
+                    $hisAccntModel->transaction_no = $depoTrans->transaction_no;
+                    $hisAccntModel->event = $split_accnt_detail['dispatch_event'];
+                    $hisAccntModel->event_amt = $split_accnt_detail['amount'];
+                    $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before + $hisAccntModel->event_amt;
+                    $hisAccntModel->save();
+
+                    $mchAccnt->remain_amt = $hisAccntModel->accnt_amt_after;
+                    $mchAccnt->save();
+                    $split_accnt_detail_return[$k] = [
+                        'status' => MchAccnt::BACTH_SUCCESS_STATUS,
+                        'mch_accnt_no' => $mchAccnt->mch_accnt_no,
+                        'dispatch_event' => $hisAccntModel->event,
+                        'amount' => $hisAccntModel->event_amt,
+                        'amount_after_event' => $hisAccntModel->accnt_amt_after,
+                        'pay_result' => $pay_result
+                    ];
+                }else{
+                    $split_accnt_fail_detail_return[$k] = [
+                        'mch_accnt_no'=> $split_accnt_detail['mch_accnt_no'],
+                        'card_no'=>$split_accnt_detail['card_no'],
+                        'status' => MchAccnt::BACTH_FAIL_STATUS,
+                        'desc' => '转账失败',
+                    ];
+                    continue ;
+                }
+
+
+
             }
 
             $this->_formatResult->setSuccess([
