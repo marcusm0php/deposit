@@ -217,8 +217,9 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.query',
+            'out_trant_no' => time(),
             'biz_content' => [
-                'mch_accnt_no' => '9116439983111198',
+                'mch_accnt_no' => '1117480490396200',
             ],
             'sign_type' => ''
         ]);

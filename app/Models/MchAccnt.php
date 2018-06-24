@@ -15,6 +15,12 @@ class MchAccnt extends ModelBase
     const ACCNT_TYPE_ASSURANCE = 'assurance';
     const ACCNT_TYPE_MCHSUB = 'mchsub';
 
+    const BATCH_ACCNT_MAX = 100;
+    const BATCH_CARD_MAX = 20;
+
+    const BACTH_SUCCESS_STATUS = 2;
+    const BACTH_FAIL_STATUS = 2;
+
     //pay(支付)；refund(退款)；transfer(转账);subsidy（补贴）；fine(罚款)；consume(余额消费);award(奖励);
     const EVENT_TYPES = ['pay', 'refund', 'transfer', 'subsidy', 'fine', 'consume', 'award'];
 
