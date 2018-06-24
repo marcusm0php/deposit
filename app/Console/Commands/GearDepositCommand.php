@@ -107,8 +107,11 @@ class GearDepositCommand extends GearCommandBase
                 'user_name' => $bizContentFormat['user_name'],
             ];
 
-            $result = json_decode($this->_cibpay->acSingleAuth($auth_data),true);
+            app('galog')->log(json_encode($auth_data), 'interface_cib', 'cardAuthRes');
+            $auth_res = $this->_cibpay->acSingleAuth($auth_data);
+            app('galog')->log($auth_res, 'interface_cib', 'cardAuthRep');
 
+            $result = json_decode($auth_res,true);
             var_dump($result);
 
             /*if(empty($result['auth_status']) || $result['auth_status'] != '1'){
@@ -292,7 +295,11 @@ class GearDepositCommand extends GearCommandBase
                         'user_name' => $bank_card['user_name']??'',
                     ];
 
-                    $result = json_decode($this->_cibpay->acSingleAuth($auth_data),true);
+                    app('galog')->log(json_encode($auth_data), 'interface_cib', 'cardAuthRes');
+                    $auth_res = $this->_cibpay->acSingleAuth($auth_data);
+                    app('galog')->log($auth_res, 'interface_cib', 'cardAuthRep');
+
+                    $result = json_decode($auth_res,true);
                     if(empty($result['auth_status']) && $result['auth_status'] != '1'){
                         $bacth_mchaccnt_fail[$k] = [
                             'out_mch_accnt_no' => $mchaccnt['out_mch_accnt_no'],
@@ -302,6 +309,7 @@ class GearDepositCommand extends GearCommandBase
                         $out_contioue_flag = true;
                         break ;
                     }
+
                 }
 
                 if($out_contioue_flag){
@@ -429,7 +437,9 @@ class GearDepositCommand extends GearCommandBase
                     'trans_usage' => 'test.分账',
                 ];
 
-                $pay_result    = json_decode($this->_cibpay->pyPay($pay_data),true);
+                $pay_res = $this->_cibpay->pyPay($pay_data);
+                $pay_result    = json_decode($pay_res,true);
+                app('galog')->log($pay_res, 'interface_cib', 'epayReturn');
 
                 var_dump($pay_result);
                 if(empty($result['transStatus']) && $result['transStatus'] != '1'){
