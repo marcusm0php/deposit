@@ -37,7 +37,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.create',
-            'out_trant_no' => 1,
+            'out_trant_no' => time(),
             'biz_content' => [
                 'mch_accnt_name' => 'sub1',
                 'out_mch_accnt_no' => time(),
@@ -79,7 +79,7 @@ class TestController extends Controller
                 'card_cvn' => '',
                 'card_expire_date' => '',
                 'user_name' => '冷朝',
-                'card_phone' => '1326476948',
+                'card_phone' => '13264706948',
                 'cert_type'=>'0',
                 'cert_no' => '420281199410057236',
             ],
@@ -106,9 +106,11 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.unbind.bankcard',
+            'out_trant_no' => time(),
+
             'biz_content' => [
-                'mch_accnt_no' => '9116439983111198',
-                'bank_no' => '882154761881',
+                'mch_accnt_no' => '1117480490396200',
+                'card_no' => '6228480769101078376',
             ],
             'sign_type' => 'md5'
         ]);
@@ -120,6 +122,8 @@ class TestController extends Controller
             'sign' => $sign
         ));
         $ret = curl_exec($this->_curl);
+        dump($ret);
+        dump(json_decode($ret,1));
         dump(json_decode($ret,true));
         echo '<br /><br />';
         die();
@@ -130,66 +134,73 @@ class TestController extends Controller
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
-            'biz_type' => 'mchsub.bind.bankcard',
+            'biz_type' => 'mchsub.batchcreate',
+            'out_trant_no' => time(),
             'biz_content' => [
                 'mch_accnts'=>[
                     [
-                        'mch_sub_name' => 'sub3',
-                        'link_name' => '',
-                        'link_phone' => '',
-                        'link_email' => '',
+                        'mch_sub_name' => 'sub1',
+                        'out_mch_accnt_no' => 1,
+                        'link_name' => '1',
+                        'link_phone' => '2',
+                        'link_email' => '3',
                         'bank_cards' => [
                             [
-                                'bank_no' => '882154761881',
+                                'bank_no' => '103100000026',
                                 'bank_name' => '中国银行',
-                                'bank_branch_name' => '',
-                                'card_type' => '',
-                                'card_no' => '882154761881',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
                                 'card_cvn' => '',
                                 'card_expire_date' => '',
-                                'cardholder_name' => '',
-                                'cardholder_phone' => '13264706948',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
                             ],
                             [
-                                'bank_no' => '882154761881',
+                                'bank_no' => '103100000026',
                                 'bank_name' => '中国银行',
-                                'bank_branch_name' => '',
-                                'card_type' => '',
-                                'card_no' => '882154761881',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
                                 'card_cvn' => '',
                                 'card_expire_date' => '',
-                                'cardholder_name' => '',
-                                'cardholder_phone' => '13264706948',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
                             ],
                         ],
                     ],
                     [
-                        'mch_sub_name' => 'sub3',
-                        'link_name' => '',
-                        'link_phone' => '',
-                        'link_email' => '',
+                        'mch_sub_name' => 'sub4',
+                        'out_mch_accnt_no' => 1,
+                        'link_name' => '2',
+                        'link_phone' => '2',
+                        'link_email' => '2',
                         'bank_cards' => [
                             [
-                                'bank_no' => '882154761881',
+                                'bank_no' => '103100000026',
                                 'bank_name' => '中国银行',
-                                'bank_branch_name' => '',
-                                'card_type' => '',
-                                'card_no' => '882154761881',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
                                 'card_cvn' => '',
                                 'card_expire_date' => '',
-                                'cardholder_name' => '',
-                                'cardholder_phone' => '13264706948',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
                             ],
                             [
-                                'bank_no' => '882154761881',
+                                'bank_no' => '103100000026',
                                 'bank_name' => '中国银行',
-                                'bank_branch_name' => '',
-                                'card_type' => '',
-                                'card_no' => '882154761881',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
                                 'card_cvn' => '',
                                 'card_expire_date' => '',
-                                'cardholder_name' => '',
-                                'cardholder_phone' => '13264706948',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
                             ],
                         ],
                     ],
@@ -206,7 +217,10 @@ class TestController extends Controller
             'sign' => $sign
         ));
         $ret = curl_exec($this->_curl);
-        dump(json_decode($ret,true));
+        dump($ret);
+        dump(json_decode($ret,1));
+        $res_arr = json_decode($ret,1);
+        dump(json_decode($res_arr['data'],true));
         echo '<br /><br />';
         die();
     }

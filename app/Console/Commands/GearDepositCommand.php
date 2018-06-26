@@ -128,8 +128,8 @@ class GearDepositCommand extends GearCommandBase
             $bankCardModel->card_type = $bizContentFormat['card_type'];
             $bankCardModel->card_no = $bizContentFormat['card_no'];
             $bankCardModel->cert_no = $bizContentFormat['cert_no'];
-            $bankCardModel->cert_type = $bizContentFormat['card_no'];
-            $bankCardModel->card_cvn = $bizContentFormat['cert_type'];
+            $bankCardModel->cert_type = $bizContentFormat['cert_type'];
+            $bankCardModel->card_cvn = $bizContentFormat['card_cvn'];
             $bankCardModel->card_expire_date = $bizContentFormat['card_expire_date'];
             $bankCardModel->cardholder_name = $bizContentFormat['user_name'];
             $bankCardModel->cardholder_phone = $bizContentFormat['card_phone'];
@@ -194,12 +194,12 @@ class GearDepositCommand extends GearCommandBase
         //3.3 子商户解绑银行卡
         $this->addWorkerFunction('deposit.mchsub.unbind.bankcard',function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
 
-            $bankcard = Bankcard::where('mch_no', $data->mch_no)
+            $bankcard = Bankcard::where('mch_no', $data['mch_no'])
                 ->where('mch_accnt_no',$bizContentFormat['mch_accnt_no'])
                 ->where('card_no',$bizContentFormat['card_no'])
                 ->first();
 
-            if($bankcard){
+            if(!$bankcard){
                 $this->_formatResult->setError('MCHSUB.BINKCARD.INVALID');
                 return $this->_signReturn($this->_formatResult->getData());
             }
@@ -223,60 +223,114 @@ class GearDepositCommand extends GearCommandBase
         $this->addWorkerFunction('deposit.mchsub.batchcreate', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
 
             if(count($bizContentFormat['mch_accnts']) > MchAccnt::BATCH_ACCNT_MAX){
-                $this->_formatResult->setError('MCHSUB.BATCHCREATE.ACCNT.TOMANY');
+                $this->_formatResult->setError('MCHSUB.BATCHCREATE.ACCNT.INVALID');
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
-            $batch_mchaccnt_success = [];
-            $bacth_mchaccnt_fail = [];
-            foreach ($bizContentFormat['mch_accnts'] as $k=>$mchaccnt){
+            $return_batch_mchaccnt = [];
+            $fail = true;
 
-                if(empty($mchaccnt['bank_cards']) || count($mchaccnt['bank_cards']) > MchAccnt::BATCH_CARD_MAX){
-                    $bacth_mchaccnt_fail[$k] = [
-                        'out_mch_accnt_no' => $mchaccnt['out_mch_accnt_no'],
-                        'status' => MchAccnt::BACTH_SUCCESS_STATUS,
-                        'desc' => 'out_mch_accnt_no为'.$mchaccnt['out_mch_accnt_no'].'下的银行卡数目非法',
+            $out_mch_accnt_nos = collect($bizContentFormat['mch_accnts'])->pluck('out_mch_accnt_no')->toArray();
+
+            if (count($out_mch_accnt_nos) != count(array_unique($out_mch_accnt_nos))) {
+                $this->_formatResult->setError('MCHSUB.BATCHCREATE.OUT_MCH_ACCNT_NO.REPEAT',[
+                    'mch_accnts' => $bizContentFormat['mch_accnts'],
+                ]);
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+
+
+            foreach ($bizContentFormat['mch_accnts'] as $k=>$mchaccnt){
+                $mchaccnt_format = array_merge([
+                    'mch_accnt_name' => '',
+                    'out_mch_accnt_no' => '',
+                    'link_name' => '',
+                    'link_phone' => '',
+                    'link_email' => '',
+                    'bank_cards' => [],
+                ],$mchaccnt);
+
+                if(empty($mchaccnt_format['out_mch_accnt_no'])){
+                    $return_batch_mchaccnt[$k] = [
+                        'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
+                        'status' => MchAccnt::BACTH_FAIL_STATUS,
+                        'desc' => 'out_mch_accnt_no 不能为空',
+                        'bank_cards' => $mchaccnt_format['bank_cards'],
                     ];
                     continue ;
                 }
 
-                $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $bizContentFormat['out_mch_accnt_no'])
+                if(empty($mchaccnt['bank_cards']) || count($mchaccnt['bank_cards']) > MchAccnt::BATCH_CARD_MAX){
+                    $return_batch_mchaccnt[$k] = [
+                        'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
+                        'status' => MchAccnt::BACTH_FAIL_STATUS,
+                        'desc' => 'out_mch_accnt_no为{'.$mchaccnt_format['out_mch_accnt_no'].'}下的银行卡数目非法',
+                        'bank_cards' => $mchaccnt_format['bank_cards'],
+                    ];
+                    continue ;
+                }
+
+                $card_nos = collect($mchaccnt_format['bank_cards'])->pluck('card_no')->toArray();
+
+                if (count($card_nos) != count(array_unique($card_nos))) {
+                    $return_batch_mchaccnt[$k] = [
+                        'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
+                        'status' => MchAccnt::BACTH_FAIL_STATUS,
+                        'desc' => 'out_mch_accnt_no为{'.$mchaccnt_format['out_mch_accnt_no'].'}中卡号重复',
+                        'bank_cards' => $mchaccnt_format['bank_cards'],
+                    ];
+                    continue ;
+                }
+
+                $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $mchaccnt_format['out_mch_accnt_no'])
                     ->where('mch_no', $data['mch_no'])
                     ->first();
                 if($mchaccnt){
-                    $bacth_mchaccnt_fail[$k] = [
-                        'out_mch_accnt_no' => $mchaccnt['out_mch_accnt_no'],
-                        'status' => MchAccnt::BACTH_SUCCESS_STATUS,
-                        'desc' => 'out_mch_accnt_no为'.$mchaccnt['out_mch_accnt_no'].'已存在',
+                    $return_batch_mchaccnt[$k] = [
+                        'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
+                        'status' => MchAccnt::BACTH_FAIL_STATUS,
+                        'desc' => 'out_mch_accnt_no为{'.$mchaccnt_format['out_mch_accnt_no'].'}已存在',
+                        'bank_cards' => $mchaccnt_format['bank_cards'],
                     ];
                     continue ;
                 }
 
                 $out_contioue_flag = false;
-
-                foreach ($mchaccnt['bank_cards'] as $bank_card){
+                foreach ($mchaccnt_format['bank_cards'] as $bank_card){
                     $bank_card_format = array_merge([
                         'bank_no' => '',
                         'bank_name' => '',
                         'card_type' => '',
                         'card_no' => '',
                         'card_cvn' => '',
-                        'card_expire_date' => '',
+                        'card_expire_date' => null,
                         'user_name' => '',
                         'card_phone' => '',
                         'cert_type'=>'',
                         'cert_no' => '',
                     ],$bank_card);
 
+                    if(empty($bank_card_format['card_no'])){
+                        $return_batch_mchaccnt[$k] = [
+                            'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
+                            'status' => MchAccnt::BACTH_FAIL_STATUS,
+                            'desc' => 'out_mch_accnt_no为{'.$mchaccnt_format['out_mch_accnt_no'].'}下的card_no不能为空',
+                            'bank_cards' => $mchaccnt_format['bank_cards'],
+                        ];
+                        $out_contioue_flag = true;
+                        break ;
+                    }
+
                     $bank_card_existed = \App\Models\Bankcard::where('mch_no', $data['mch_no'])
                         ->where('card_no', $bank_card_format['card_no'])
                         ->first();
 
                     if($bank_card_existed){
-                        $bacth_mchaccnt_fail[$k] = [
-                            'out_mch_accnt_no' => $mchaccnt['out_mch_accnt_no'],
-                            'status' => MchAccnt::BACTH_SUCCESS_STATUS,
-                            'desc' => 'out_mch_accnt_no为'.$mchaccnt['out_mch_accnt_no'].';的卡号{'.$bank_card['card_no'].'}已存在',
+                        $return_batch_mchaccnt[$k] = [
+                            'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
+                            'status' => MchAccnt::BACTH_FAIL_STATUS,
+                            'desc' => 'out_mch_accnt_no为{'.$mchaccnt_format['out_mch_accnt_no'].'}的卡号{'.$bank_card['card_no'].'}已存在',
+                            'bank_cards' => $mchaccnt_format['bank_cards'],
                         ];
                         $out_contioue_flag = true;
                         break ;
@@ -284,15 +338,15 @@ class GearDepositCommand extends GearCommandBase
 
                     $auth_data = [
                         'trac_no' => uniqid(),
-                        'card_no' => $bank_card['card_no']??'',
-                        'bank_no' => $bank_card['bank_no']??'',
-                        'acct_type' => $bank_card['acct_type']??'',
-                        'cert_type' => $bank_card['cert_type']??'0',
-                        'cert_no' => $bank_card['cert_no']??'',
-                        'card_phone' => $bank_card['card_phone']??'',
-                        'expireDate' => $bank_card['card_expire_date']??'',
-                        'cvn' => $bank_card['card_cvn']??'',
-                        'user_name' => $bank_card['user_name']??'',
+                        'card_no' => $bank_card_format['card_no'],
+                        'bank_no' => $bank_card_format['bank_no'],
+                        'acct_type' => $bank_card_format['card_type'],
+                        'cert_type' => $bank_card_format['cert_type']??'0',
+                        'cert_no' => $bank_card_format['cert_no'],
+                        'card_phone' => $bank_card_format['card_phone'],
+                        'expireDate' => $bank_card_format['card_expire_date'],
+                        'cvn' => $bank_card_format['card_cvn'],
+                        'user_name' => $bank_card_format['user_name'],
                     ];
 
                     app('galog')->log(json_encode($auth_data), 'interface_cib', 'cardAuthRes');
@@ -300,11 +354,13 @@ class GearDepositCommand extends GearCommandBase
                     app('galog')->log($auth_res, 'interface_cib', 'cardAuthRep');
 
                     $result = json_decode($auth_res,true);
-                    if(empty($result['auth_status']) && $result['auth_status'] != '1'){
-                        $bacth_mchaccnt_fail[$k] = [
-                            'out_mch_accnt_no' => $mchaccnt['out_mch_accnt_no'],
-                            'status' => MchAccnt::BACTH_SUCCESS_STATUS,
-                            'desc' => 'out_mch_accnt_no为'.$mchaccnt['out_mch_accnt_no'].'的卡号{'.$bank_card['card_no'].'}认证失败；reson:'.$result['errmsg']??'未知',
+
+                    if(!isset($result['auth_status']) || $result['auth_status'] != '1'){
+                        $return_batch_mchaccnt[$k] = [
+                            'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
+                            'status' => MchAccnt::BACTH_FAIL_STATUS,
+                            'desc' => 'out_mch_accnt_no为{'.$mchaccnt_format['out_mch_accnt_no'].'}的卡号{'.$bank_card['card_no'].'}认证失败；reson:'.$result['errmsg']??'未知',
+                            'bank_cards' => $mchaccnt_format['bank_cards'],
                         ];
                         $out_contioue_flag = true;
                         break ;
@@ -315,53 +371,68 @@ class GearDepositCommand extends GearCommandBase
                 if($out_contioue_flag){
                     continue ;
                 }else{
+                    $fail = false;
                     $mch_accnt_no = \App\Models\MchAccnt::generateMchAccntNo();
                     $mchaccnt_model = new \App\Models\MchAccnt;
                     $mchaccnt_model->mch_no = $data['mch_no'];
                     $mchaccnt_model->mch_accnt_no = $mch_accnt_no;
-                    $mchaccnt_model->out_mch_accnt_no = $mchaccnt['out_mch_accnt_no'];
-                    $mchaccnt_model->mch_accnt_name = $mchaccnt['mch_accnt_name']??'';
-                    $mchaccnt_model->link_name = $mchaccnt['link_name']??'';
-                    $mchaccnt_model->link_phone = $mchaccnt['link_phone']??'';
-                    $mchaccnt_model->link_email = $mchaccnt['link_email']??'';
+                    $mchaccnt_model->out_mch_accnt_no = $mchaccnt_format['out_mch_accnt_no'];
+                    $mchaccnt_model->mch_accnt_name = $mchaccnt_format['mch_accnt_name'];
+                    $mchaccnt_model->link_name = $mchaccnt_format['link_name'];
+                    $mchaccnt_model->link_phone = $mchaccnt_format['link_phone'];
+                    $mchaccnt_model->link_email = $mchaccnt_format['link_email'];
                     $mchaccnt_model->save();
-                    $batch_mchaccnt_success[$k]['mch_accnts'] = [
-                        'out_mch_accnt_no' => $mchaccnt['out_mch_accnt_no'],
+                    $return_batch_mchaccnt[$k] = [
+                        'out_mch_accnt_no' => $mchaccnt_format['out_mch_accnt_no'],
                         'mch_accnt_no' => $mch_accnt_no,
                         'status' => MchAccnt::BACTH_SUCCESS_STATUS,
                     ];
-                    foreach ($mchaccnt['bank_cards'] as $bank_card){
+                    foreach ($mchaccnt_format['bank_cards'] as $bank_card){
+                        $bank_card_format = array_merge([
+                            'bank_no' => '',
+                            'bank_name' => '',
+                            'card_type' => '',
+                            'card_no' => '',
+                            'card_cvn' => '',
+                            'card_expire_date' => '',
+                            'user_name' => '',
+                            'card_phone' => '',
+                            'cert_type'=>'',
+                            'cert_no' => '',
+                        ],$bank_card);
+
                         $bankCardModel = new \App\Models\Bankcard;
                         $bankCardModel->mch_no = $data['mch_no'];
                         $bankCardModel->mch_accnt_no = $mch_accnt_no;
-                        $bankCardModel->bank_no = $bank_card['bank_no'];
-                        $bankCardModel->bank_name = $bank_card['bank_name'];
-                        $bankCardModel->card_type = $bank_card['card_type'];
-                        $bankCardModel->card_no = $bank_card['card_no'];
-                        $bankCardModel->cert_no = $bank_card['cert_no'];
-                        $bankCardModel->cert_type = $bank_card['cert_type'];
-                        $bankCardModel->card_cvn = $bank_card['card_cvn']??'';
-                        $bankCardModel->card_expire_date = $bank_card['card_expire_date']??'';
-                        $bankCardModel->cardholder_name = $bank_card['user_name'];
-                        $bankCardModel->cardholder_phone = $bank_card['card_phone'];
+                        $bankCardModel->bank_no = $bank_card_format['bank_no'];
+                        $bankCardModel->bank_name = $bank_card_format['bank_name'];
+                        $bankCardModel->card_type = $bank_card_format['card_type'];
+                        $bankCardModel->card_no = $bank_card_format['card_no'];
+                        $bankCardModel->cert_no = $bank_card_format['cert_no'];
+                        $bankCardModel->cert_type = $bank_card_format['cert_type'];
+                        $bankCardModel->card_cvn = $bank_card_format['card_cvn'];
+                        $bankCardModel->card_expire_date = $bank_card_format['card_expire_date'];
+                        $bankCardModel->cardholder_name = $bank_card_format['user_name'];
+                        $bankCardModel->cardholder_phone = $bank_card_format['card_phone'];
                         $bankCardModel->status = Bankcard::SUCCESS;
                         $bankCardModel->save();
-                        $batch_mchaccnt_success[$k]['mch_accnts']['bank_cards'][] = $bankCardModel->card_no;
+                        $return_batch_mchaccnt[$k]['bank_cards'][]['card_no'] = $bankCardModel->card_no;
                     }
+
+
                 }
 
             }
 
-            if(empty($batch_mchaccnt_success)){
-                $this->_formatResult->setError([
-                    'mch_accnts_fail' => $bacth_mchaccnt_fail,
+            if($fail){
+                $this->_formatResult->setError('MCHSUB.BATCHCREATE.FAIL',[
+                    'mch_accnts' => $return_batch_mchaccnt,
                 ]);
                 return $this->_signReturn($this->_formatResult->getData());
             }
 
             $this->_formatResult->setSuccess([
-                'mch_accnts_fail' => $bacth_mchaccnt_fail,
-                'mch_accnts_success' => $batch_mchaccnt_success,
+                'mch_accnts' => $return_batch_mchaccnt,
 
             ]);
             return $this->_signReturn($this->_formatResult->getData());

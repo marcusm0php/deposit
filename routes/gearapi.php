@@ -31,6 +31,7 @@ Route::any('/gclients', function (Request $request) {
             ->first();
 
         if(!$transaction){
+
             if(isset($data['biz_type'])){
                 $biz_type = $data['biz_type'];
                 if(!empty(InterfaceConfig::BIZ_TYPES[$biz_type])){
@@ -44,6 +45,13 @@ Route::any('/gclients', function (Request $request) {
                     return $bizRet;
                 }
             }
+
+            $ret->setError('SIGN.BIZ_TYPE.INVALID');
+
+            return json_encode(array(
+                'data' => $ret->getData(),
+                'sign' => ''
+            ), JSON_UNESCAPED_UNICODE);
         }
     }
 

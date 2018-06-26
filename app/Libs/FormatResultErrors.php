@@ -20,8 +20,10 @@ class FormatResultErrors
         'MCHSUB.CREATE.BANKCARD.REPEAT' =>  ['code' => '205', 'message' => '子商户绑定银行卡信息重复', ],
         'MCHSUB.BINKCARD.INVALID' =>  ['code' => '206', 'message' => '子商户银行卡信息不存在', ],
         'MCHSUB.BATCHCREATE.TOMANY' =>  ['code' => '207', 'message' => '单次子商户数超目', ],
-        'MCHSUB.BATCHCREATE.ACCNT.TOMANY' =>  ['code' => '207', 'message' => '单次子商户数超目', ],
-        'MCHSUB.BATCHCREATE.BANKCARD.TOMANY' =>  ['code' => '207', 'message' => '银行卡数目非法', ],
+        'MCHSUB.BATCHCREATE.ACCNT.INVALID' =>  ['code' => '207', 'message' => '单次子商户数目非法', ],
+        'MCHSUB.BATCHCREATE.BANKCARD.INVALID' =>  ['code' => '207', 'message' => '银行卡数目非法', ],
+        'MCHSUB.BATCHCREATE.FAIL' =>  ['code' => '208', 'message' => '批量开设子商户失败', ],
+        'MCHSUB.BATCHCREATE.OUT_MCH_ACCNT_NO.REPEAT' =>  ['code' => '208', 'message' => '外部子商户号重复', ],
 
         'MCHNO.REQUIRED'=>['code' => '301', 'message' => '商户号不能为空',],
         'MCHACCNTNO.REQUIRED'=>['code' => '302', 'message' => '子商户号不能为空',],

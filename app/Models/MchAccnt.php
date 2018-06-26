@@ -18,7 +18,7 @@ class MchAccnt extends ModelBase
     const BATCH_ACCNT_MAX = 100;
     const BATCH_CARD_MAX = 20;
 
-    const BACTH_SUCCESS_STATUS = 2;
+    const BACTH_SUCCESS_STATUS = 1;
     const BACTH_FAIL_STATUS = 2;
 
     //pay(支付)；refund(退款)；transfer(转账);subsidy（补贴）；fine(罚款)；consume(余额消费);award(奖励);
