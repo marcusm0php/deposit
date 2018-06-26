@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class MchAccnt extends ModelBase
 {
     const ACCNT_TYPE_DEPOSITORY = 'depository'; //存管
-    const ACCNT_TYPE_PREPAY = 'prepay'; //预付
-    const ACCNT_TYPE_PREPAY2 = 'prepay2'; //预付
+    const ACCNT_TYPE_PREPAY = 'prepay'; //准备金
+    const ACCNT_TYPE_PREPAY2 = 'prepay2'; //准备金
     const ACCNT_TYPE_ONWAY = 'onway'; //在途
     const ACCNT_TYPE_ONWAY2 = 'onway2'; //在途2
     const ACCNT_TYPE_PROFIT = 'profit'; //分润
@@ -28,6 +28,7 @@ class MchAccnt extends ModelBase
 
     //pay(支付)；refund(退款)；transfer(转账);subsidy（补贴）；fine(罚款)；consume(余额消费);award(奖励);
     const EVENTS = ['pay', 'refund', 'transfer', 'subsidy', 'fine', 'consume', 'award'];
+    const EVENT_WITHDRAW = '';
     //1：正交易；2：反交易
     const DISPATCH_TYPE = ['1', '2'];
 

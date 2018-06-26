@@ -463,8 +463,9 @@ class GearDepositCommand extends GearCommandBase
                         'desc' => 'dispatch_type非法',
                     ]);
                 }
-
-                $mchAccnt = MchAccnt::where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])->first();
+                $mchAccnt = MchAccnt::where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])
+                                    ->where('mch_no',$data['mch_no'])
+                                    ->first();
 
                 $bank_card = Bankcard::where('card_no',$split_accnt_detail['card_no'])
                                     ->where('mch_accnt_no',$split_accnt_detail['mch_accnt_no'])
@@ -508,7 +509,74 @@ class GearDepositCommand extends GearCommandBase
             'split_accnt_detail' => [],
         ]);
         echo "Command:Gear:Deposit.mchaccnt.dispatch is registered.\n";
-        
+
+        //3.7 账户提现
+        $this->addWorkerFunction('deposit.mchaccnt.withdraw',function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
+
+            $mchAccnt = MchAccnt::where('mch_accnt_no', $bizContentFormat['mch_accnt_no'])
+                ->where('mch_no',$data['mch_no'])
+                ->first();
+            if(empty($bank_card)){
+                $this->_formatResult->setError('MCHACCNTNO.NOTFOUND');
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+
+            $bank_card = Bankcard::where('card_no',$bizContentFormat['card_no'])
+                ->where('mch_accnt_no',$bizContentFormat['mch_accnt_no'])
+                ->where('status',Bankcard::SUCCESS)
+                ->first();
+            if(empty($bank_card)){
+                $this->_formatResult->setError('BINKCARD.NOTFOUND');
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+
+            $req_data = [
+                'order_no' => create_uuid(),
+                'to_bank_no' => $bank_card->bank_no,
+                'to_acct_no' => $bank_card->card_no,
+                'to_acct_name' => $bank_card->cardholder_name,
+                'acct_type' => $bank_card->card_type,
+                'trans_amt' => round($bizContentFormat['amount'] / 100,2),
+                'trans_usage' => '',
+            ];
+
+            app('galog')->log(json_encode($req_data), 'interface_cib', 'pypayRequest');
+            $pay_result    = $this->_cibpay->pyPay($req_data);
+            $res_arr = json_decode($pay_result,true);
+            app('galog')->log($pay_result, 'interface_cib', 'cardAuthResponse');
+
+            if(isset($res_arr['transStatus']) && $res_arr['transStatus']==1 ){
+
+                $hisAccntModel = $mchAccnt->createHisAccntModel();
+                $hisAccntModel->transaction_no = $depoTrans->transaction_no;
+                $hisAccntModel->event = MchAccnt::EVENT_WITHDRAW;
+                $hisAccntModel->event_amt = $bizContentFormat['amount'];
+                $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before - $hisAccntModel->event_amt;
+                $hisAccntModel->save();
+
+                $mchAccnt->remain_amt = $hisAccntModel->accnt_amt_after;
+                $mchAccnt->save();
+
+                $this->_formatResult->setSuccess([
+                    'split_accnt_detail' => [
+                        'mch_accnt_no' => $mchAccnt->mch_accnt_no,
+                        'out_mch_accnt_no' => $mchAccnt->out_mch_accnt_no,
+                        'amount' => $bizContentFormat['amount'],
+                        'accnt_amt_after' => $hisAccntModel->accnt_amt_after,
+                    ],
+                ]);
+            }
+
+
+            return $this->_signReturn($this->_formatResult->getData());
+        }, [
+            'mch_accnt_no' => '' ,
+            'card_no' => '' ,
+            'bsbank' => '' ,
+            'amount' => '' ,
+        ]);
+        echo "Command:Gear:Deposit.mchaccnt.withdraw is registered.\n";
+
         echo "Command:Gear:Deposit Is Launched Successfully\n";
         while ($this->_worker->work());
     }
