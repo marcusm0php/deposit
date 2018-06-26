@@ -565,9 +565,10 @@ class GearDepositCommand extends GearCommandBase
                         'accnt_amt_after' => $hisAccntModel->accnt_amt_after,
                     ],
                 ]);
+                return $this->_signReturn($this->_formatResult->getData());
             }
 
-
+            $this->_formatResult->setError('MCHACCNT.WITHDARW.FAIL');
             return $this->_signReturn($this->_formatResult->getData());
         }, [
             'mch_accnt_no' => '' ,
