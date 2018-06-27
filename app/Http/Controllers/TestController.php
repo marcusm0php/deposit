@@ -33,6 +33,9 @@ class TestController extends Controller
 //Route::get('accnt-dispatch','TestController@accntDispatch');
     public function subCreate(Request $request)
     {
+        $methods = get_class_methods(__CLASS__);
+
+        dd();
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),

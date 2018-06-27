@@ -10,6 +10,8 @@ use App\Libs\FormatResultErrors;
 
 class GearCommandBase extends Command 
 {
+    use GearCommandWorksConfigTrait;
+
     protected $signature = 'command:name {param}';
 
     protected $description = 'Description';
@@ -43,7 +45,6 @@ class GearCommandBase extends Command
             }else{
                 $this->_worker->addServer($gearmanConfig->gearmand_srv_ip, $gearmanConfig->gearmand_srv_port);
             }
-
 
             return true;
         }else{
@@ -97,7 +98,7 @@ class GearCommandBase extends Command
             $this->_cibpay = new CibInterface();
 
             DB::beginTransaction();
-            if($funcName != 'deposit.sign.verify'){
+            if($funcName != 'deposit.outtransno.verify'){
                 $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
                 $depoTrans->out_trant_no = $data['out_trant_no'];
                 $depoTrans->mch_no = $data['mch_no'];
@@ -126,28 +127,22 @@ class GearCommandBase extends Command
     }
 
     public function handle()
-    { 
-        $this->addWorkerFunction('deposit.sign.verify', function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
-            $mch_no = $data['mch_no'];
-            
-            $interfaceConfig = DB::table('interface_config')->where('mch_no', $mch_no)->first();
-			
-            if(!empty($interfaceConfig)){
-                $signCal = \App\Libs\SignMD5Helper::genSign($dataOri, $interfaceConfig->md5_token);
-				
-                if($signCal == $sign){
-                    $this->_formatResult->setSuccess([
-                        'mch_md5_token' => $interfaceConfig->md5_token
-                    ]);
-					return $this->_signReturn($this->_formatResult->getData());
-                }
+    {
+        $this->beforeRun();
+
+        foreach($this->_gear_works as $gearmanFuncName => $bizContentFormat){
+            if(empty($bizContentFormat['work'])){
+                $workName = 'work'.ucfirst(str_replace('.','',substr($gearmanFuncName,strpos($gearmanFuncName,'.')+1)));
+            }else{
+                $workName = 'work'.$bizContentFormat['work'];
             }
+            $this->addWorkerFunction($gearmanFuncName, function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans) use ($workName){
+                return $this->$workName($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans);
+            });
+            echo "Command:Gear:{$gearmanFuncName} is registered.\n";
+        }
 
-            $this->_formatResult->setError('SIGN.VERIFY.FAIL');
-            return $this->_signReturn($this->_formatResult->getData());
-        });
-        echo "Command:Gear:Deposit.sign.verify is registered.\n";
-
+        while ($this->_worker->work());
     }
 
     protected function _signReturn($data, $token = null, $format = 'md5')
@@ -157,14 +152,14 @@ class GearCommandBase extends Command
         if($format == 'md5'){
             $sign = \App\Libs\SignMD5Helper::genSign($dataJson, $token);
         }
-        
+
         $response = json_encode(array(
             'data' => $dataJson,
             'sign' => $sign
         ), JSON_UNESCAPED_UNICODE);
 
         app('galog')->log($response, 'worker_deposit', 'WorkerReturn');
-    
+
         return $response;
     }
 }
