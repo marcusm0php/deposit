@@ -96,9 +96,9 @@ class GearCommandBase extends Command
             $this->_cibpay = new CibInterface();
 
             DB::beginTransaction();
-            if($funcName != 'deposit.outtransno.verify'){
+            if($funcName != 'deposit.sign.verify'){
                 $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
-                $depoTrans->out_trant_no = $data['out_trant_no'];
+                $depoTrans->out_trans_no = $data['out_trant_no'];
                 $depoTrans->mch_no = $data['mch_no'];
                 $depoTrans->save();
                 $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);

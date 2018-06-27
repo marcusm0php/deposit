@@ -29,9 +29,9 @@ class GearApiOutTransNo
 
         $outtransnoverifyRetDe = json_decode($outtransnoverifyRet, true);
 
-        if(isset($signverifyRetDe['data'])){
-            $Data = json_decode($outtransnoverifyRetDe['data'], true);
-            if(isset($Data['code']) && $Data['code'] == FormatResultErrors::CODE_MAP['SUCCESS']['code']){
+        if(isset($outtransnoverifyRetDe['data'])){
+            $data = json_decode($outtransnoverifyRetDe['data'], true);
+            if(isset($data['code']) && $data['code'] == FormatResultErrors::CODE_MAP['SUCCESS']['code']){
                 return $next($request);
             }
         }

@@ -9,6 +9,8 @@
 namespace App\Console\Commands;
 
 
+use Illuminate\Support\Facades\DB;
+
 trait GearCommandGeneralTrait
 {
     //验证签名
@@ -35,19 +37,18 @@ trait GearCommandGeneralTrait
     //验证外部追宗号
     public function workOuttransnoverify($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
 
-    $transaction = \App\Models\DepositTransaction::where('mch_no',$data['mch_no'])
-        ->where('out_trant_no',$data['out_trant_no'])
-        ->first();
-
-    if($transaction){
+        if(!empty($data['out_trans_no'])){
+            $transaction = \App\Models\DepositTransaction::where('mch_no',$data['mch_no'])
+                ->where('out_trans_no',$data['out_trans_no'])
+                ->first();
+            if(!$transaction){
+                $this->_formatResult->setSuccess([
+                    'out_trans_no' => $data['out_trans_no']
+                ]);
+                return $this->_signReturn($this->_formatResult->getData());
+            }
+        }
         $this->_formatResult->setError('OUT_TRANT_NO.INVALID');
         return $this->_signReturn($this->_formatResult->getData());
     }
-
-    $this->_formatResult->setSuccess([
-        'out_trant_no' => $data['out_trant_no']
-    ]);
-    return $this->_signReturn($this->_formatResult->getData());
-
-}
 }

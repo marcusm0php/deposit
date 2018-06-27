@@ -33,14 +33,11 @@ class TestController extends Controller
 //Route::get('accnt-dispatch','TestController@accntDispatch');
     public function subCreate(Request $request)
     {
-        $methods = get_class_methods(__CLASS__);
-
-        dd(json_decode('edew',1));
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.create',
-            'out_trant_no' => time(),
+            'out_trans_no' => time(),
             'biz_content' => [
                 'mch_accnt_name' => 'sub1',
                 'out_mch_accnt_no' => time(),
