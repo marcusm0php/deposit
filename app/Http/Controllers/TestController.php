@@ -35,7 +35,7 @@ class TestController extends Controller
     {
         $methods = get_class_methods(__CLASS__);
 
-        dd();
+        dd(json_decode('edew',1));
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),

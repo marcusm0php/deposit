@@ -19,39 +19,37 @@ class GearCommandBase extends Command
     public function beforeRun()
     {
         $this->_worker= new \GearmanWorker();
-        $gearmanIp = '127.0.0.1';
-        $gearmanPort = '4730';
+        if(env('APP_ENV') == 'local'){//本地工作配置
+            $this->_worker->addServer('127.0.0.1', '4730');
+        }else{
+            $gearmanIp = '127.0.0.1';
+            $gearmanPort = '4730';
 
-
-        exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
-        $inetIp = empty($out[0])? '' : $out[0];
-        if(empty($inetIp)){
-            echo "启动失败\n";
-            echo "获取inet ip失败\n";
-            exit();
-        }
-
-        echo "本机INETIP: {$inetIp}\n";
-        $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
-
-        if(!empty($gearmanConfig)){
-            echo "Gearman Workers工作组IP: {$gearmanConfig->gearmand_srv_ip}\n";
-            echo "Gearman Workers工作组端口{$gearmanConfig->gearmand_srv_port}\n";
-
-            $this->_worker= new \GearmanWorker();
-
-            if(env('APP_ENV') == 'local'){//本地工作配置
-                $this->_worker->addServer('127.0.0.1', '4730');
-            }else{
-                $this->_worker->addServer($gearmanConfig->gearmand_srv_ip, $gearmanConfig->gearmand_srv_port);
+            exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
+            $inetIp = empty($out[0])? '' : $out[0];
+            if(empty($inetIp)){
+                echo "启动失败\n";
+                echo "获取inet ip失败\n";
+                exit();
             }
 
+            echo "本机INETIP: {$inetIp}\n";
+            $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
+
+            if(!empty($gearmanConfig)){
+                $gearmanIp = $gearmanConfig->gearmand_srv_ip;
+                $gearmanPort = $gearmanConfig->gearmand_srv_port;
+            }else{
+                echo "启动失败\n";
+                echo "获取WORKERS_IP失败\n";
+                exit();
+                return false;
+            }
+
+            echo "Gearman Workers工作组IP: {$gearmanIp}\n";
+            echo "Gearman Workers工作组端口{$gearmanPort}\n";
+            $this->_worker->addServer($gearmanIp, $gearmanPort);
             return true;
-        }else{
-            echo "启动失败\n";
-            echo "获取WORKERS_IP失败\n";
-            exit();
-            return false;
         }
     }
     
