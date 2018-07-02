@@ -10,6 +10,8 @@ class Bankcard extends ModelBase
     const CARD_TYPE = [
         '0', '1'
     ];
+    const SUCCESS='SUCCESS';
+    const UNBIND='unbind';
 
     const EXPIRED_TIME = 10;//短信验证码过期时间（分钟）
 

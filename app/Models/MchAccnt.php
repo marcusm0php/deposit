@@ -6,14 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class MchAccnt extends ModelBase
 {
-    const ACCNT_TYPE_DEPOSITORY = 'depository';
-    const ACCNT_TYPE_PREPAY = 'prepay';
-    const ACCNT_TYPE_PREPAY2 = 'prepay2';
-    const ACCNT_TYPE_ONWAY = 'onway';
-    const ACCNT_TYPE_ONWAY2 = 'onway2';
-    const ACCNT_TYPE_PROFIT = 'profit';
-    const ACCNT_TYPE_ASSURANCE = 'assurance';
-    const ACCNT_TYPE_MCHSUB = 'mchsub';
+    const ACCNT_TYPE_DEPOSITORY = 'depository'; //存管
+    const ACCNT_TYPE_PREPAY = 'prepay'; //准备金
+    const ACCNT_TYPE_PREPAY2 = 'prepay2'; //准备金
+    const ACCNT_TYPE_ONWAY = 'onway'; //在途
+    const ACCNT_TYPE_ONWAY2 = 'onway2'; //在途2
+    const ACCNT_TYPE_PROFIT = 'profit'; //分润
+    const ACCNT_TYPE_ASSURANCE = 'assurance'; //担保
+    const ACCNT_TYPE_MCHSUB = 'mchsub'; //子商户
+
+    const BATCH_ACCNT_MAX = 100; //批量单次最多子商户条数
+    const BATCH_CARD_MAX = 20; //批量单次每个子商户下银行卡最大条数
+
+    const BACTH_SUCCESS_STATUS = 1; //批量开设子商户成功状态
+    const BACTH_FAIL_STATUS = 2; //批量开设子商户失败状态
+
+    const DISPATCH_SUCCESS_STATUS = 1; //分账成功状态
+    const DISPATCH_FAIL_STATUS = 2; //分账失败状态
+
+    const DISPATCH_MAX = 1000; //单次分账最多条数
+
+    //pay(支付)；refund(退款)；transfer(转账);subsidy（补贴）；fine(罚款)；consume(余额消费);award(奖励);
+    const EVENTS = ['pay', 'refund', 'transfer', 'subsidy', 'fine', 'consume', 'award'];
+    const EVENT_WITHDRAW = '';
+    //1：正交易；2：反交易
+    const DISPATCH_TYPE = ['1', '2'];
 
     protected $table = 'mch_accnt';
     protected $primaryKey = 'id_mch_accnt';
@@ -21,7 +38,7 @@ class MchAccnt extends ModelBase
 //    protected $hidden = ['id_mch_accnt'];
 
     protected $fillable = [
-        'mch_no', 'mch_sub_no', 'mch_accnt_no', 'settle_duration', 'id_bank_card', 'remain_amt', 'accnt_type', 'create_time'
+        'mch_no', 'mch_accnt_no', 'out_mch_accnt_no', 'settle_duration', 'remain_amt', 'accnt_type', 'create_time', 'link_name', 'link_phone', 'link_email',
     ];
     
     public static function generateMchAccntNo()
@@ -79,7 +96,7 @@ class MchAccnt extends ModelBase
     //relation_bank_card
     public function bankCard()
     {
-        return $this->hasOne(Bankcard::class,'id_bank_card','id_bank_card');
+        return $this->hasMany(Bankcard::class,'mch_accnt_no','mch_accnt_no')->where('status','success');
     }
 
 }

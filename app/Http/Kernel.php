@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
         'gearapi' => [
             \App\Http\Middleware\GearApiRequestReceiver::class,
             \App\Http\Middleware\GearApiSign::class,
+            \App\Http\Middleware\GearApiOutTransNo::class,
             //\App\Http\Middleware\GearApiRouter::class,
         ], 
 

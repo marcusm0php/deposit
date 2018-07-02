@@ -49,12 +49,12 @@ class CibUtil
      * @return string						服务端返回的结果（若$save_file_name不为null，下载成功返回SUCCESS_RESULT，下载成功写入文件失败返回FILE_ERROR_RESULT，下载失败返回服务端结果）
      */
     public static function getHttpPostResponse($url, $param_array, $skip_ssl_verify = false, $save_file_name = null, $proxy_ip = null, $proxy_port = null) {
-dump('request:');
-$data = [
-    'request_url'=>$url,
-    'data'=>$param_array
-];
-dump($data);
+
+        $data = [
+            'request_url'=>$url,
+            'data'=>$param_array
+        ];
+
         $curl = curl_init($url);
         if(!$skip_ssl_verify) {
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
@@ -64,25 +64,21 @@ dump($data);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
         }
-
         if($proxy_ip) {
             curl_setopt($curl, CURLOPT_PROXY, $proxy_ip);
             curl_setopt($curl, CURLOPT_PROXYPORT, $proxy_port);
         }
-
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param_array));
         $response = curl_exec($curl);
-dump('response:'.$response);
         //需要调试时可以去掉以下两行的注释
         //var_dump(curl_error($curl));
         //var_dump(curl_getinfo($curl));
 
         $header = curl_getinfo($curl);
-dump('reponse_header:');
-dump($header);
+
         curl_close($curl);
 
         if($header['http_code'] >= 300 || $header['http_code'] < 100)

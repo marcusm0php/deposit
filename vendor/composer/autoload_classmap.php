@@ -3265,6 +3265,8 @@ return array(
     'Symfony\\Component\\Routing\\Loader\\ProtectedPhpFileLoader' => $vendorDir . '/symfony/routing/Loader/PhpFileLoader.php',
     'Symfony\\Component\\Routing\\Loader\\XmlFileLoader' => $vendorDir . '/symfony/routing/Loader/XmlFileLoader.php',
     'Symfony\\Component\\Routing\\Loader\\YamlFileLoader' => $vendorDir . '/symfony/routing/Loader/YamlFileLoader.php',
+    'Symfony\\Component\\Routing\\Matcher\\Dumper\\DumperCollection' => $vendorDir . '/symfony/routing/Matcher/Dumper/DumperCollection.php',
+    'Symfony\\Component\\Routing\\Matcher\\Dumper\\DumperRoute' => $vendorDir . '/symfony/routing/Matcher/Dumper/DumperRoute.php',
     'Symfony\\Component\\Routing\\Matcher\\Dumper\\MatcherDumper' => $vendorDir . '/symfony/routing/Matcher/Dumper/MatcherDumper.php',
     'Symfony\\Component\\Routing\\Matcher\\Dumper\\MatcherDumperInterface' => $vendorDir . '/symfony/routing/Matcher/Dumper/MatcherDumperInterface.php',
     'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper' => $vendorDir . '/symfony/routing/Matcher/Dumper/PhpMatcherDumper.php',

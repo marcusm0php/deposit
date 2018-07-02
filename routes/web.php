@@ -17,17 +17,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix'=>'merchant'],function(){
+Route::group(['prefix'=>'mchsub'],function(){
     Route::get('create','TestController@subCreate');
-    Route::get('subbind','TestController@subBind');
-    Route::get('validatecode','TestController@validateCode');
-    Route::get('subquery','TestController@subQuery');
-    Route::get('accntDispatch','TestController@accntDispatch');
+    Route::get('bind-accnt','TestController@bindAccnt');
+    Route::get('unbind-accnt','TestController@unbindAccnt');
+    Route::get('batch-create','TestController@batchCreate');
+    Route::get('query','TestController@query');
+    Route::get('accnt-dispatch','TestController@accntDispatch');
 });
 
 Route::group(['prefix'=>'cibpay'],function(){
 
     Route::get('pyPay','TestCibController@pyPay');
     Route::get('acSingleAuth','TestCibController@acSingleAuth');
+    Route::get('entrustAuth','TestCibController@entrustAuth');
+    Route::get('quickAuthSMS','TestCibController@quickAuthSMS');
 
 });

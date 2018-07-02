@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
     protected $_client;
-    protected $_request_url = 'http://t2.visastandards.com/gclients';
+    protected $_request_url = 'http://yzallpay.test/gclients';
 
     public function __construct(Client $client)
     {
@@ -25,126 +25,30 @@ class TestController extends Controller
         curl_setopt($this->_curl, CURLOPT_RETURNTRANSFER, 1);
     }
 
+//Route::get('create','TestController@subCreate');
+//Route::get('bind-accnt','TestController@bindAccnt');
+//Route::get('unbind-accnt','TestController@unbindAccnt');
+//Route::get('batch-create','TestController@batchCreate');
+//Route::get('query','TestController@query');
+//Route::get('accnt-dispatch','TestController@accntDispatch');
     public function subCreate(Request $request)
     {
         $data = json_encode([
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.create',
+            'out_trans_no' => time(),
             'biz_content' => [
-                'mch_sub_name' => 'sub3',
+                'mch_accnt_name' => 'sub1',
+                'out_mch_accnt_no' => time(),
                 'link_name' => '',
                 'link_phone' => '',
                 'link_email' => '',
-                'bank_card' => [
-                    [
-                        'bank_name' => '农业银行',
-                        'bank_branch_name' => '',
-                        'card_type' => '',
-                        'card_no' => '111',
-                        'card_cvn' => '',
-                        'card_expire_date' => '',
-                        'cardholder_name' => '',
-                        'cardholder_phone' => '',
-                        'createtime' => '',
-                    ]
-                ],
             ],
             'sign_type' => ''
         ]);
         $token = 'TOKENTOKEN';
         $sign = SignMD5Helper::genSign($data, $token);
-
-        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
-            'data' => $data,
-            'sign' => $sign
-        ));
-        $ret = curl_exec($this->_curl);
-        dump(json_decode($ret,true));
-        echo '<br /><br />';
-        die();
-    }
-
-    public function subBind(Request $request)
-    {
-        $data = json_encode([
-            'mch_no' => '8AAA',
-            'timestamp' => date('YmdHis'),
-            'biz_type' => 'mchsub.bind.bankcard',
-            'biz_content' => [
-                'mch_sub_no' => '9116439983111198',
-                'bank_card' => [
-                    'bank_no' => '155846881177',
-                    'bank_name' => '中国银行',
-                    'bank_branch_name' => '',
-                    'card_type' => '',
-                    'card_no' => '1',
-                    'card_cvn' => '',
-                    'card_expire_date' => '',
-                    'cardholder_name' => '',
-                    'cardholder_phone' => '13264706948',
-                    'createtime' => '',
-                ],
-            ],
-            'sign_type' => ''
-        ]);
-        $token = 'TOKENTOKEN';
-        $sign = SignMD5Helper::genSign($data, $token);
-
-        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
-            'data' => $data,
-            'sign' => $sign
-        ));
-        $ret = curl_exec($this->_curl);
-        dump(json_decode($ret,true));
-        echo '<br /><br />';
-        die();
-    }
-
-    public function validateCode()
-    {
-        $data = json_encode([
-            'mch_no' => '8AAA',
-            'timestamp' => date('YmdHis'),
-            'biz_type' => 'mchsub.bind.bankcardverify',
-            'biz_content' => [
-                'mch_sub_no' => '9116439983111198',
-                'mch_accnt_no' => '1116440036006237',
-                'verfication_key' => 'verficationCode_6174bb935a4c0086927f9c65df6e18bd',
-                'sms_code' => '612841'
-            ],
-            'sign_type' => ''
-        ]);
-        $token = 'TOKENTOKEN';
-        $sign = SignMD5Helper::genSign($data, $token);
-
-        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
-            'data' => $data,
-            'sign' => $sign
-        ));
-        $ret = curl_exec($this->_curl);
-        dump(json_decode($ret,true));
-        echo '<br /><br />';
-        die();
-    }
-
-    public function subQuery()
-    {
-        $data = json_encode([
-            'mch_no' => '8AAA',
-            'timestamp' => date('YmdHis'),
-            'biz_type' => 'mchsub.query',
-            'biz_content' => [
-                'mch_sub_no' => '9116439983111198',
-            ],
-            'sign_type' => ''
-        ]);
-
-        $token = 'TOKENTOKEN';
-        $sign = SignMD5Helper::genSign($data, $token);
-
-        dump($data);
-        dump($sign);
 
         curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
             'data' => $data,
@@ -152,9 +56,199 @@ class TestController extends Controller
         ));
         $ret = curl_exec($this->_curl);
         dump($ret);
-        $res = json_decode($ret,true);
-        dump($res);
-        dd(json_decode($res['data'],true));
+        dump(json_decode($ret,1));
+        dump(json_decode($ret,true));
+        echo '<br /><br />';
+        die();
+    }
+
+    public function bindAccnt(Request $request)
+    {
+        $data = json_encode([
+            'mch_no' => '8AAA',
+            'timestamp' => date('YmdHis'),
+            'biz_type' => 'mchsub.bind.bankcard',
+            'out_trant_no' => time(),
+
+            'biz_content' => [
+                'mch_accnt_no' => '1117480490396200',
+                'bank_no' => '103100000026',
+                'bank_name' => '中国银行',
+                'card_type' => '0',
+                'card_no' => '6228480769101078376',
+                'card_cvn' => '',
+                'card_expire_date' => '',
+                'user_name' => '冷朝',
+                'card_phone' => '13264706948',
+                'cert_type'=>'0',
+                'cert_no' => '420281199410057236',
+            ],
+            'sign_type' => 'md5'
+        ]);
+        $token = 'TOKENTOKEN';
+        $sign = SignMD5Helper::genSign($data, $token);
+
+        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+            'data' => $data,
+            'sign' => $sign
+        ));
+        $ret = curl_exec($this->_curl);
+        dump($ret);
+        dump(json_decode($ret,1));
+        dump(json_decode($ret,true));
+        echo '<br /><br />';
+        die();
+    }
+
+    public function unbindAccnt()
+    {
+        $data = json_encode([
+            'mch_no' => '8AAA',
+            'timestamp' => date('YmdHis'),
+            'biz_type' => 'mchsub.unbind.bankcard',
+            'out_trant_no' => time(),
+
+            'biz_content' => [
+                'mch_accnt_no' => '1117480490396200',
+                'card_no' => '6228480769101078376',
+            ],
+            'sign_type' => 'md5'
+        ]);
+        $token = 'TOKENTOKEN';
+        $sign = SignMD5Helper::genSign($data, $token);
+
+        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+            'data' => $data,
+            'sign' => $sign
+        ));
+        $ret = curl_exec($this->_curl);
+        dump($ret);
+        dump(json_decode($ret,1));
+        dump(json_decode($ret,true));
+        echo '<br /><br />';
+        die();
+    }
+
+    public function batchCreate()
+    {
+        $data = json_encode([
+            'mch_no' => '8AAA',
+            'timestamp' => date('YmdHis'),
+            'biz_type' => 'mchsub.batchcreate',
+            'out_trant_no' => time(),
+            'biz_content' => [
+                'mch_accnts'=>[
+                    [
+                        'mch_sub_name' => 'sub1',
+                        'out_mch_accnt_no' => 1,
+                        'link_name' => '1',
+                        'link_phone' => '2',
+                        'link_email' => '3',
+                        'bank_cards' => [
+                            [
+                                'bank_no' => '103100000026',
+                                'bank_name' => '中国银行',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
+                                'card_cvn' => '',
+                                'card_expire_date' => '',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
+                            ],
+                            [
+                                'bank_no' => '103100000026',
+                                'bank_name' => '中国银行',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
+                                'card_cvn' => '',
+                                'card_expire_date' => '',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
+                            ],
+                        ],
+                    ],
+                    [
+                        'mch_sub_name' => 'sub4',
+                        'out_mch_accnt_no' => 1,
+                        'link_name' => '2',
+                        'link_phone' => '2',
+                        'link_email' => '2',
+                        'bank_cards' => [
+                            [
+                                'bank_no' => '103100000026',
+                                'bank_name' => '中国银行',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
+                                'card_cvn' => '',
+                                'card_expire_date' => '',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
+                            ],
+                            [
+                                'bank_no' => '103100000026',
+                                'bank_name' => '中国银行',
+                                'card_type' => '0',
+                                'card_no' => '6228480769101078376',
+                                'card_cvn' => '',
+                                'card_expire_date' => '',
+                                'user_name' => '冷朝',
+                                'card_phone' => '13264706948',
+                                'cert_type'=>'0',
+                                'cert_no' => '420281199410057236',
+                            ],
+                        ],
+                    ],
+                ],
+
+            ],
+            'sign_type' => 'md5'
+        ]);
+        $token = 'TOKENTOKEN';
+        $sign = SignMD5Helper::genSign($data, $token);
+
+        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+            'data' => $data,
+            'sign' => $sign
+        ));
+        $ret = curl_exec($this->_curl);
+        dump($ret);
+        dump(json_decode($ret,1));
+        $res_arr = json_decode($ret,1);
+        dump(json_decode($res_arr['data'],true));
+        echo '<br /><br />';
+        die();
+    }
+
+    public function query()
+    {
+        $data = json_encode([
+            'mch_no' => '8AAA',
+            'timestamp' => date('YmdHis'),
+            'biz_type' => 'mchsub.query',
+            'out_trant_no' => time(),
+            'biz_content' => [
+                'mch_accnt_no' => '1117480490396200',
+            ],
+            'sign_type' => ''
+        ]);
+
+        $token = 'TOKENTOKEN';
+        $sign = SignMD5Helper::genSign($data, $token);
+
+        curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
+            'data' => $data,
+            'sign' => $sign
+        ));
+        $ret = curl_exec($this->_curl);
+        dump($ret);
+        dump(json_decode($ret,1));
+        dump(json_decode($ret,true));
         echo '<br /><br />';
         die();
     }
@@ -170,7 +264,7 @@ class TestController extends Controller
                     [
                         'mch_accnt_no' => '1',
                         'dispatch_event' => 'withdraw',
-                        'amount' => '1.1',
+                        'amount' => '100',
                     ]
                 ]
             ],

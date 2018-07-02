@@ -6,20 +6,21 @@ class FormatResultErrors
     const CODE_MAP = [
         'SUCCESS' => ['code' => '100', 'message' => 'success'],
         'SYS.ERR' => ['code' => '101', 'message' => '系统错误', ],
-        'SMS.SEND.ERR' => ['code' => '102', 'message' => '发送手机验证码出错', ],
-        'SMS.VERIFY.ERR' => ['code' => '103', 'message' => '验证码错误', ],
-        'SIGN.VERIFY.FAIL' => ['code' => '104', 'message' => '签名验证失败', ],
-        'SIGN.BIZ_TYPE.INVALID' => ['code' => '105', 'message' => 'biz_type无效', ],
+        'SIGN.VERIFY.FAIL' => ['code' => '102', 'message' => '签名错误', ],
+        'SIGN.BIZ_TYPE.INVALID' => ['code' => '103', 'message' => 'biz_type无效', ],
+        'OUT_TRANT_NO.INVALID' => ['code' => '104', 'message' => '外部追踪号无效', ],
 
-        'MCHSUB.CREATE.MCHSUB.NAME.REPEAT' => ['code' => '201', 'message' => '子商户名已存在', ], 
-        'MCHSUB.CREATE.BANKCARD.EMPTY' => ['code' => '202', 'message' => '子商户银行卡信息不能为空', ], 
-        'MCHSUB.CREATE.BANKCARD.ERROR' => ['code' => '203', 'message' => '子商户银行卡信息有误', ],
-        'MCHSUB.MCHSUBNO.INVALID' => ['code' => '204', 'message' => '子商户号无效', ],
-        'MCHSUB.CREATE.BANKCARD.REPEAT' =>  ['code' => '205', 'message' => '子商户绑定银行卡信息重复', ],
+        'OUTMCHACCNTNO.REPEAT' => ['code' => '201', 'message' => '外部子商户号重复', ],
+        'OUTMCHACCNTNO.INVALID' => ['code' => '202', 'message' => '外部子商户号非法', ],
+        'MCHACCNTNO.NOTFOUND' => ['code' => '203', 'message' => '子商户帐号不存在', ],
 
-        'MCHNO.REQUIRED'=>['code' => '301', 'message' => '商户号不能为空',],
-        'MCHSUBNO.REQUIRED'=>['code' => '302', 'message' => '子商户号不能为空',],
-        'MCHSUB.QUERY.NOTFOUND' =>  ['code' => '303', 'message' => '子商户不存在',],
-        'MCHACCNT.MCHACCNTNO.INVALID' => ['code' => '304', 'message' => '账户号无效',],
+        'BANKCARD.REPEAT' =>  ['code' => '301', 'message' => '银行卡信息重复', ],
+        'BANKCARD.AUTH.FAIL' =>  ['code' => '302', 'message' => '银行卡信息认证失败', ],
+        'BINKCARD.NOTFOUND' =>  ['code' => '303', 'message' => '银行卡信息不存在', ],
+
+        'BATCHCREATE.ACCNT.INVALID' =>  ['code' => '401', 'message' => '单次批量开设子商户数目非法', ],
+        'MCHSUB.BATCHCREATE.FAIL' =>  ['code' => '402', 'message' => '批量开设子商户失败', ],
+        'ACCNT.INVALID' =>  ['code' => '403', 'message' => '数目非法', ],
+        'MCHACCNT.WITHDARW.FAIL' =>  ['code' => '404', 'message' => '提现失败', ],
     ];
 }

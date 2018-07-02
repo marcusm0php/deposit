@@ -1,5 +1,7 @@
-<?php 
+<?php
+
 namespace App\Libs\Interfaces;
+
 /**
  * @author MarcusM. works for yinzhun. QQ:2453302174
  */
@@ -32,8 +34,6 @@ class CibInterface
     const EASYPAY_DEV_API		= "https://www.xingyeguanjia.com:37031/acquire/easypay.do";
 
     //独立鉴权
-    const ;
-
     private static $sign_type = array(
         'cib.epay.acquire.easypay.acctAuth' => 'SHA1',
         'cib.epay.acquire.easypay.quickAuthSMS' => 'RSA',
@@ -140,6 +140,7 @@ class CibInterface
      * @return mixed					响应内容
      */
     protected function postService($url, $param_array, $save_file_name) {
+        app('galog')->log(json_encode($param_array), 'interface_cib', 'cardAuthRes');
 
         if(array_key_exists('service', $param_array) && array_key_exists($param_array['service'], self::$sign_type))
             $param_array['sign_type'] = self::$sign_type[$param_array['service']];
@@ -153,15 +154,18 @@ class CibInterface
             $response = CibUtil::getHttpPostResponse($url, $param_array, false, $save_file_name, $this->_cib_config['proxy_ip'], $this->_cib_config['proxy_port']);
 
         if(!$response)
-            return SYS_ERROR_RESULT;
+            $result = SYS_ERROR_RESULT;
         else {
             if(TXN_ERROR_RESULT !== $response && SYS_ERROR_RESULT !== $response && FILE_ERROR_RESULT !== $response && SUCCESS_RESULT !== $response) {
                 if($this->_cib_config['needChkSign']
                     && !$this->VerifyMac(json_decode($response, true), $this->_cib_config['commKey'], ($this->_cib_config['isDevEnv'] ? $this->_cib_config['cib_cert_test'] : $this->_cib_config['cib_cert_prod'])))
-                    return SIGN_ERROR_RESULT;
+                    $result = SIGN_ERROR_RESULT;
             }
-            return $response;
+            $result = $response;
         }
+
+        app('galog')->log($result, 'interface_cib', 'cardAuthRep');
+        return $result;
     }
 
     /**
@@ -637,17 +641,17 @@ class CibInterface
      * @param string $trans_usage	用途
      * @return string				json格式结果，返回结果包含字段请参看收付直通车代收接口文档
      */
-    public function pyPay($order_no, $to_bank_no, $to_acct_no, $to_acct_name, $acct_type, $trans_amt, $trans_usage) {
+    public function pyPay($data) {
 
-        $param_array = array();
-
-        $param_array['order_no'] = $order_no;
-        $param_array['to_bank_no'] = $to_bank_no;
-        $param_array['to_acct_no'] = $to_acct_no;
-        $param_array['to_acct_name'] = $to_acct_name;
-        $param_array['acct_type'] = $acct_type;
-        $param_array['trans_amt'] = $trans_amt;
-        $param_array['trans_usage'] = $trans_usage;
+        $param_array = array_merge([
+            'order_no' => '',
+            'to_bank_no' => '',
+            'to_acct_no' => '',
+            'to_acct_name' => '',
+            'acct_type' => '',
+            'trans_amt' => '',
+            'trans_usage' => '',
+        ], $data);
 
         $param_array['appid']		= $this->_cib_config['appid'];
         $param_array['service']		= 'cib.epay.payment.pay';
@@ -782,32 +786,66 @@ class CibInterface
      * @param $cvn          信用卡背面末三位安全码(信用卡认证必填)
      * @return mixed
      */
-    public function acSingleAuth($trac_no, $card_no, $bank_no, $acct_type, $cert_type, $cert_no, $card_phone, $expireDate='', $cvn='')
+    public function acSingleAuth($data)
     {
-        $param_array = array();
+        $param_array = array_merge([
+            'trac_no' => '',
+            'card_no' => '',
+            'bank_no' => '',
+            'acct_type' => '',
+            'cert_type' => '',
+            'cert_no' => '',
+            'card_phone' => '',
+            'user_name' => '',
+            'cvn' => '',
+            'expireDate' => '',
+        ], $data);
 
         $param_array['timestamp']	= CibUtil::getDateTime();
         $param_array['appid']		= $this->_cib_config['appid'];
         $param_array['service']		= 'cib.epay.acquire.singleauth.quickSingleAuth';
         $param_array['ver']			= '01'; //接口版本号，固定 01
 
-        $param_array['trac_no'] = $trac_no;
-        $param_array['card_no'] = $card_no;
-        $param_array['bank_no'] = $bank_no;
-        $param_array['acct_type'] = $acct_type;
-        $param_array['cert_type'] = $cert_type;
-        $param_array['cert_no'] = $cert_no;
-        $param_array['card_phone'] = $card_phone;
-
-        //可选
-        $param_array['expireDate'] = $expireDate;
-        $param_array['cvn'] = $cvn;
-
         if($this->_cib_config['isDevEnv'])
-            return $this->postService(self::PY_DEV_API, $param_array, null);
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
         else
-            return $this->postService(self::PY_PROD_API, $param_array, null);
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
     }
 
 
+    public function entrustAuth($data)
+    {
+
+        $param_array = array();
+
+        $param_array['appid']		= $this->_cib_config['appid'];
+        $param_array['service']		= 'cib.epay.acquire.easypay.entrustAuth';
+        $param_array['ver']			= '01'; //接口版本号，固定 01
+        $param_array['sign_type']	= 'RSA'; //接口版本号，固定 01
+        $param_array = array_merge($data,$param_array);
+
+
+        if($this->_cib_config['isDevEnv'])
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+        else
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+    }
+
+    public function quickAuthSMS($data)
+    {
+
+        $param_array = array();
+
+        $param_array['appid']		= $this->_cib_config['appid'];
+        $param_array['service']		= 'cib.epay.acquire.easypay.quickAuthSMS';
+        $param_array['ver']			= '01'; //接口版本号，固定 01
+        $param_array['sign_type']	= 'RSA'; //接口版本号，固定 01
+        $param_array = array_merge($data,$param_array);
+
+
+        if($this->_cib_config['isDevEnv'])
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+        else
+            return $this->postService(self::EASYPAY_DEV_API, $param_array, null);
+    }
 }
