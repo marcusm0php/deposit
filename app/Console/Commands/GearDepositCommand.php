@@ -93,9 +93,7 @@ class GearDepositCommand extends GearCommandBase
             'user_name' => $bizContentFormat['user_name'],
         ];
 
-        app('galog')->log(json_encode($auth_data), 'interface_cib', 'cardAuthRes');
         $auth_res = $this->_cibpay->acSingleAuth($auth_data);
-        app('galog')->log($auth_res, 'interface_cib', 'cardAuthRep');
 
         $result = json_decode($auth_res, true);
         var_dump($result);

@@ -140,6 +140,7 @@ class CibInterface
      * @return mixed					响应内容
      */
     protected function postService($url, $param_array, $save_file_name) {
+        app('galog')->log(json_encode($param_array), 'interface_cib', 'cardAuthRes');
 
         if(array_key_exists('service', $param_array) && array_key_exists($param_array['service'], self::$sign_type))
             $param_array['sign_type'] = self::$sign_type[$param_array['service']];
@@ -153,15 +154,18 @@ class CibInterface
             $response = CibUtil::getHttpPostResponse($url, $param_array, false, $save_file_name, $this->_cib_config['proxy_ip'], $this->_cib_config['proxy_port']);
 
         if(!$response)
-            return SYS_ERROR_RESULT;
+            $result = SYS_ERROR_RESULT;
         else {
             if(TXN_ERROR_RESULT !== $response && SYS_ERROR_RESULT !== $response && FILE_ERROR_RESULT !== $response && SUCCESS_RESULT !== $response) {
                 if($this->_cib_config['needChkSign']
                     && !$this->VerifyMac(json_decode($response, true), $this->_cib_config['commKey'], ($this->_cib_config['isDevEnv'] ? $this->_cib_config['cib_cert_test'] : $this->_cib_config['cib_cert_prod'])))
-                    return SIGN_ERROR_RESULT;
+                    $result = SIGN_ERROR_RESULT;
             }
-            return $response;
+            $result = $response;
         }
+
+        app('galog')->log($result, 'interface_cib', 'cardAuthRep');
+        return $result;
     }
 
     /**
