@@ -136,7 +136,7 @@ class GearCommandBase extends Command
             }
             $this->addWorkerFunction($gearmanFuncName, function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans) use ($workName){
                 return $this->$workName($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans);
-            });
+            }, $bizContentFormat);
             echo "Command:Gear:{$gearmanFuncName} is registered.\n";
         }
 

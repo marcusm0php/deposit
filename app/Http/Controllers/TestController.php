@@ -14,8 +14,11 @@ class TestController extends Controller
     public function __construct(Client $client)
     {
         $this->_client = $client;
-
-
+        /*`$arr = [
+            'a' =>1,
+            'b' =>1,
+        ];
+        dd(array_search(1,$arr));*/
         $this->_curl = curl_init();
         curl_setopt($this->_curl, CURLOPT_URL, $this->_request_url);
         curl_setopt($this->_curl, CURLOPT_SSL_VERIFYHOST, 0);

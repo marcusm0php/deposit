@@ -18,9 +18,9 @@ class FormatResultErrors
         'BANKCARD.AUTH.FAIL' =>  ['code' => '302', 'message' => '银行卡信息认证失败', ],
         'BINKCARD.NOTFOUND' =>  ['code' => '303', 'message' => '银行卡信息不存在', ],
 
-        'BATCHCREATE.ACCNT.INVALID' =>  ['code' => '401', 'message' => '单次批量开设子商户数目非法', ],
+        'BATCHCREATE.ACCNT.NUM.INVALID' =>  ['code' => '401', 'message' => '单次批量开设子商户数目非法', ],
         'MCHSUB.BATCHCREATE.FAIL' =>  ['code' => '402', 'message' => '批量开设子商户失败', ],
-        'ACCNT.INVALID' =>  ['code' => '403', 'message' => '数目非法', ],
+        'NUM.INVALID' =>  ['code' => '403', 'message' => '数目非法', ],
         'MCHACCNT.WITHDARW.FAIL' =>  ['code' => '404', 'message' => '提现失败', ],
     ];
 }
