@@ -29,7 +29,10 @@ class GearDepositCommand extends GearCommandBase
             ->where('mch_no', $data['mch_no'])
             ->first();
         if ($mchaccnt) {
-            $this->_formatResult->setError('OUTMCHACCNTNO.REPEAT');
+            $this->_formatResult->setError('OUTMCHACCNTNO.REPEAT',[
+                'mch_accnt_no' => $mchaccnt->mch_accnt_no,
+                'out_mch_accnt_no' => $mchaccnt->out_mch_accnt_no，
+            ]);
             return $this->_signReturn($this->_formatResult->getData(), $token);
         }
 
@@ -159,7 +162,7 @@ class GearDepositCommand extends GearCommandBase
 
         $out_mch_accnt_nos = collection($bizContentFormat['mch_accnts'])->pluck('out_mch_accnt_no');
         if(count($out_mch_accnt_nos) != array_unique($out_mch_accnt_nos)){
-            $this->_formatResult->setError('OUTMCHACCNTNO.REPEAT');
+            $this->_formatResult->setError('SEND.OUTMCHACCNTNO.REPEAT');
             return $this->_signReturn($this->_formatResult->getData(), $token);
         }
 
