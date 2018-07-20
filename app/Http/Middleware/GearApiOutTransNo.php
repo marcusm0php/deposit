@@ -20,10 +20,11 @@ class GearApiOutTransNo
         $dataOri = $request->input('data', '');
         $data = json_decode($dataOri, true);
         $sign = $request->input('sign', '');
-
+        $mch_md5_token = $request->get('mch_md5_token');
         $outtransnoverifyRet = app('gclient')->doNormal(InterfaceConfig::BIZ_TYPES['outtransno.verify'], json_encode([
             'data' => $dataOri,
             'ga_traceno' => app('ga_traceno'),
+            'mch_md5_token' => $mch_md5_token,
             'sign' => $sign,
         ]));
 

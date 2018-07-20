@@ -20,7 +20,9 @@ class SignMD5Helper
     {
         $dataDe = json_decode($data, true);
         $timestamp = empty($dataDe['timestamp'])? '' : $dataDe['timestamp'];
-
+        dump($data);
+        dump($timestamp);
+dump($token);
         return strtolower(
             md5(
                 $data . '&' . $timestamp . $token

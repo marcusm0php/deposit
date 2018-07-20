@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
     protected $_client;
-    protected $_request_url = 'http://yzallpay.test/gclients';
+    protected $_request_url = 'http://t2.visastandards.com/gclients';
 
     public function __construct(Client $client)
     {
@@ -37,7 +37,7 @@ class TestController extends Controller
     public function subCreate(Request $request)
     {
         $data = json_encode([
-            'mch_no' => '8AAA',
+            'mch_no' => '80000000',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.create',
             'out_trans_no' => time(),
@@ -50,7 +50,7 @@ class TestController extends Controller
             ],
             'sign_type' => ''
         ]);
-        $token = 'TOKENTOKEN';
+        $token = '9b389216c3c55a7c535510b33b9e6ea5';
         $sign = SignMD5Helper::genSign($data, $token);
 
         curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
@@ -68,13 +68,12 @@ class TestController extends Controller
     public function bindAccnt(Request $request)
     {
         $data = json_encode([
-            'mch_no' => '8AAA',
+            'mch_no' => '80000000',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.bind.bankcard',
-            'out_trant_no' => time(),
-
+            'out_trans_no' => time(),
             'biz_content' => [
-                'mch_accnt_no' => '1117480490396200',
+                'mch_accnt_no' => '1119948220477583',
                 'bank_no' => '103100000026',
                 'bank_name' => '中国银行',
                 'card_type' => '0',
@@ -88,7 +87,7 @@ class TestController extends Controller
             ],
             'sign_type' => 'md5'
         ]);
-        $token = 'TOKENTOKEN';
+        $token = '9b389216c3c55a7c535510b33b9e6ea5';
         $sign = SignMD5Helper::genSign($data, $token);
 
         curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
@@ -109,7 +108,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.unbind.bankcard',
-            'out_trant_no' => time(),
+            'out_trant_no' => '2',
 
             'biz_content' => [
                 'mch_accnt_no' => '1117480490396200',

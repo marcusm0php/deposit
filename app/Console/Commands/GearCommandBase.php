@@ -75,7 +75,7 @@ class GearCommandBase extends Command
             $data = empty($data)? [] : $data;
             $data = array_merge([
                 'mch_no' => '',
-                'out_trant_no' => '',
+                'out_trans_no' => '',
                 'timestamp' => '', 
                 'biz_type' => '', 
                 'code' => '', 
@@ -96,27 +96,32 @@ class GearCommandBase extends Command
             $this->_cibpay = new CibInterface();
 
             DB::beginTransaction();
-            if($funcName != 'deposit.sign.verify'){
+            dump($funcName);
+            if(!in_array($funcName, ['deposit.sign.verify', 'deposit.outtransno.verify'])){
                 $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
-                $depoTrans->out_trans_no = $data['out_trant_no'];
+                $depoTrans->out_trans_no = $data['out_trans_no'];
                 $depoTrans->mch_no = $data['mch_no'];
                 $depoTrans->save();
-                $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);
+                $this->_formatResult = new FormatResult($data, $depoTrans->out_trans_no);
             }else{
                 $this->_formatResult = new FormatResult($data);
                 $depoTrans = null;
             }
-            
-            $bizContentFormat = array_merge($bizContentFormat, $bizContent);
-            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans);
-            
+            if(is_array($bizContent)){
+                $bizContentFormat = array_merge($bizContentFormat, $bizContent);
+            }
+
+            $realDoRet = $realDo($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $mch_md5_token);
+
+            dump($this->_formatResult->code);
             if($this->_formatResult->code == FormatResultErrors::CODE_MAP['SUCCESS']['code']){
                 DB::commit();
             }else{
                 DB::rollBack();
             }
-            
+
             return $realDoRet;
+
         }, array(
             'funcName' => $funcName,
             'realDo' => $realDo,
@@ -134,8 +139,8 @@ class GearCommandBase extends Command
             }else{
                 $workName = 'work'.$bizContentFormat['work'];
             }
-            $this->addWorkerFunction($gearmanFuncName, function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans) use ($workName){
-                return $this->$workName($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans);
+            $this->addWorkerFunction($gearmanFuncName, function($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token) use ($workName){
+                return $this->$workName($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token);
             }, $bizContentFormat);
             echo "Command:Gear:{$gearmanFuncName} is registered.\n";
         }

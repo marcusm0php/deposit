@@ -30,25 +30,26 @@ trait GearCommandGeneralTrait
         }
     }
 
-    $this->_formatResult->setError('OUT_TRANT_NO.INVALID');
+    $this->_formatResult->setError('SIGN.VERIFY.FAIL');
     return $this->_signReturn($this->_formatResult->getData());
 }
 
     //验证外部追宗号
-    public function workOuttransnoverify($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans){
-
+    public function workOuttransnoverify($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token){
+        dump($token);
         if(!empty($data['out_trans_no'])){
             $transaction = \App\Models\DepositTransaction::where('mch_no',$data['mch_no'])
                 ->where('out_trans_no',$data['out_trans_no'])
                 ->first();
+
             if(!$transaction){
                 $this->_formatResult->setSuccess([
                     'out_trans_no' => $data['out_trans_no']
                 ]);
-                return $this->_signReturn($this->_formatResult->getData());
+                return $this->_signReturn($this->_formatResult->getData(), $token);
             }
         }
         $this->_formatResult->setError('OUT_TRANT_NO.INVALID');
-        return $this->_signReturn($this->_formatResult->getData());
+        return $this->_signReturn($this->_formatResult->getData(), $token);
     }
 }
