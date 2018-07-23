@@ -80,9 +80,9 @@ class MchAccnt extends ModelBase
             $hisAccntModel = new \App\Models\HisAccntAssurance;
         }else if($this->accnt_type == self::ACCNT_TYPE_MCHSUB){
             $hisAccntModel = new \App\Models\HisAccntMchsub;
-            $hisAccntModel->mch_sub_no = $this->mch_sub_no;
+            $hisAccntModel->mch_accnt_no = $this->mch_accnt_no;
         }
-        
+
         if($hisAccntModel){
             $hisAccntModel->transaction_no = $transaction_no;
             $hisAccntModel->mch_no = $this->mch_no;
