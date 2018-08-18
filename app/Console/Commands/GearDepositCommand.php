@@ -28,10 +28,11 @@ class GearDepositCommand extends GearCommandBase
         $mchaccnt = \App\Models\MchAccnt::where('out_mch_accnt_no', $bizContentFormat['out_mch_accnt_no'])
             ->where('mch_no', $data['mch_no'])
             ->first();
+        dump($mchaccnt);
         if ($mchaccnt) {
             $this->_formatResult->setError('OUTMCHACCNTNO.REPEAT',[
                 'mch_accnt_no' => $mchaccnt->mch_accnt_no,
-                'out_mch_accnt_no' => $mchaccnt->out_mch_accnt_no，
+                'out_mch_accnt_no' => $bizContentFormat['out_mch_accnt_no'],
             ]);
             return $this->_signReturn($this->_formatResult->getData(), $token);
         }
@@ -58,6 +59,11 @@ class GearDepositCommand extends GearCommandBase
     public function workMchsubbindbankcard($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token)
     {
 
+        if(empty($bizContentFormat['card_no'])){
+            $this->_formatResult->setError('CARDNO.CANNONULL');
+            return $this->_signReturn($this->_formatResult->getData(), $token);
+        }
+        
         $mchaccnt = \App\Models\MchAccnt::where('mch_no', $data['mch_no'])
             ->where('mch_accnt_no', $bizContentFormat['mch_accnt_no'])
             ->first();
@@ -68,6 +74,7 @@ class GearDepositCommand extends GearCommandBase
         }
 
         $bizContentFormat['card_type'] = in_array($bizContentFormat['card_type'], \App\Models\Bankcard::CARD_TYPE) ? $bizContentFormat['card_type'] : '0';
+        
         $bizContentFormat['card_expire_date'] = date('Y-m-d', strtotime($bizContentFormat['card_expire_date']));
 
         //TODO call cib_interface
@@ -76,8 +83,18 @@ class GearDepositCommand extends GearCommandBase
             ->where('card_no', $bizContentFormat['card_no'])
             ->first();
 
-        if ($bank_card_existed) {
+        if ($bank_card_existed && $bank_card_existed->status == Bankcard::SUCCESS) {
             $this->_formatResult->setError('BANKCARD.REPEAT');
+            return $this->_signReturn($this->_formatResult->getData(), $token);
+        }
+
+        if($bank_card_existed && $bank_card_existed->status == Bankcard::UNBIND){
+            $bank_card_existed->status = Bankcard::SUCCESS;
+            $bank_card_existed->save();
+            $this->_formatResult->setSuccess([
+                'mch_accnt_no' => $bank_card_existed->mch_accnt_no,
+                'card_no' => $bizContentFormat['card_no'],
+            ]);
             return $this->_signReturn($this->_formatResult->getData(), $token);
         }
         //鉴权
@@ -99,11 +116,11 @@ class GearDepositCommand extends GearCommandBase
         $result = json_decode($auth_res, true);
         var_dump($result);
 
-        /*if(empty($result['auth_status']) || $result['auth_status'] != '1'){
+        if(empty($result['auth_status']) || $result['auth_status'] != '1'){
 
             $this->_formatResult->setError('BANKCARD.AUTH.FAIL', $result);
             return $this->_signReturn($this->_formatResult->getData(), $token);
-        }*/
+        }
 
         $bankCardModel = new \App\Models\Bankcard;
         $bankCardModel->mch_no = $data['mch_no'];
@@ -132,17 +149,23 @@ class GearDepositCommand extends GearCommandBase
     //3.3 子商户解绑银行卡
     public function workMchsubunbindbankcard($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token)
     {
-        $bankcard = Bankcard::where('mch_no', $data->mch_no)
+        $bankcard = Bankcard::where('mch_no', $data['mch_no'])
             ->where('mch_accnt_no',$bizContentFormat['mch_accnt_no'])
             ->where('card_no',$bizContentFormat['card_no'])
             ->first();
 
-        if($bankcard){
+        if(!$bankcard){
             $this->_formatResult->setError('BINKCARD.NOTFOUND');
             return $this->_signReturn($this->_formatResult->getData(), $token);
         }
-
+        
+        if($bankcard->status == Bankcard::UNBIND){
+            $this->_formatResult->setError('BINKCARD.ALLREADY.UNBING');
+            return $this->_signReturn($this->_formatResult->getData(), $token);
+        }
+        
         $bankcard->status = Bankcard::UNBIND;
+
         $bankcard->save();
 
         $this->_formatResult->setSuccess([
@@ -315,7 +338,7 @@ class GearDepositCommand extends GearCommandBase
             ->with('bankCard')->first();
 
         if(!$mchacct){
-            $this->_formatResult->setError('MCHSUB.MCHACCNTNO.INVALID');
+            $this->_formatResult->setError('MCHACCNTNO.NOTFOUND');
             return $this->_signReturn($this->_formatResult->getData(), $token);
         }
 
@@ -327,7 +350,14 @@ class GearDepositCommand extends GearCommandBase
 
     //3.6 商户分账
     public function workMchaccntdispatch($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token){
+        dump($bizContentFormat['split_accnt_detail']);
+        if(!is_array($bizContentFormat['split_accnt_detail'])){
+            $this->_formatResult->setError('MCHACCNTNO.NOTFOUND');
+            return $this->_signReturn($this->_formatResult->getData(), $token);
+        }
+        $diff_orderno = [];
         foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
+
             $bizContentFormat['split_accnt_detail'][$k] = array_merge([
                 'mch_accnt_no' => '',
                 'card_no' => '',
@@ -336,31 +366,91 @@ class GearDepositCommand extends GearCommandBase
                 'amount' => '',
                 'dispatch_type'=>''
             ], $split_accnt_detail);
+            $order_no = $split_accnt_detail['order_no']??'';
+            if($order_no){
+                $diff_orderno[$order_no] = $order_no;
+            }
+
+        }
+
+        if(count($diff_orderno) != count($bizContentFormat['split_accnt_detail'])){
+            $this->_formatResult->setError('DISPATCH.ORDER.INVALID', [
+                'split_accnt_detail' => $bizContentFormat['split_accnt_detail'],
+            ]);
+            return $this->_signReturn($this->_formatResult->getData(), $token);
         }
 
         $split_accnt_detail_return = [];
 
+        $error_flag = true ; 
         foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
-            $mchAccnt = MchAccnt::where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])->first();
 
-            $bank_card = Bankcard::where('card_no',$split_accnt_detail['card_no'])
-                ->where('mch_accnt_no',$split_accnt_detail['mch_accnt_no'])
-                ->where('status',Bankcard::SUCCESS)
-                ->first();
-
-            if(empty($mchAccnt) || empty($bank_card)){
+            if(empty($split_accnt_detail['order_no'])){
                 $split_accnt_detail_return[$k] = [
                     'mch_accnt_no'=> $split_accnt_detail['mch_accnt_no'],
                     'card_no'=>$split_accnt_detail['card_no'],
                     'status' => MchAccnt::BACTH_FAIL_STATUS,
-                    'desc' => 'mch_accnt_no或者card_no非法',
+                    'desc' => 'order_no非法',
+                ];
+                continue ;
+            }
+
+            $mchAccnt = MchAccnt::where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])->first();
+
+            if(!in_array($split_accnt_detail['dispatch_event'], MchAccnt::EVENTS)){
+                $split_accnt_detail_return[$k] = [
+                    'mch_accnt_no'=> $split_accnt_detail['mch_accnt_no'],
+                    'card_no'=>$split_accnt_detail['card_no'],
+                    'order_no' => $split_accnt_detail['order_no'],
+                    'status' => MchAccnt::BACTH_FAIL_STATUS,
+                    'desc' => 'dispatch_event非法',
+                ];
+                continue ;
+            }
+
+            /*$bank_card = Bankcard::where('card_no',$split_accnt_detail['card_no'])
+                ->where('mch_accnt_no',$split_accnt_detail['mch_accnt_no'])
+                ->where('status',Bankcard::SUCCESS)
+                ->first();*/
+
+            if(empty($mchAccnt)){
+                $split_accnt_detail_return[$k] = [
+                    'mch_accnt_no'=> $split_accnt_detail['mch_accnt_no'],
+                    'status' => MchAccnt::BACTH_FAIL_STATUS,
+                    'order_no' => $split_accnt_detail['order_no'],
+                    'desc' => 'mch_accnt_no非法',
                 ];
                 continue ;
             }
 
             $hisAccntModel = $mchAccnt->createHisAccntModel();
+
+            if(!$hisAccntModel){
+                $split_accnt_detail_return[$k] = [
+                    'mch_accnt_no'=> $split_accnt_detail['mch_accnt_no'],
+                    'status' => MchAccnt::BACTH_FAIL_STATUS,
+                    'order_no' => $split_accnt_detail['order_no'],
+                    'desc' => '账户不存在',
+                ];
+                continue ;
+            }
+            $his_record = $hisAccntModel->where('order_no', $split_accnt_detail['order_no'])
+                ->where('mch_accnt_no', $split_accnt_detail['mch_accnt_no'])->first();
+
+            if(!empty($his_record)){
+                $split_accnt_detail_return[$k] = [
+                    'mch_accnt_no'=> $split_accnt_detail['mch_accnt_no'],
+                    'status' => MchAccnt::BACTH_FAIL_STATUS,
+                    'order_no' => $split_accnt_detail['order_no'],
+                    'desc' => 'order_no重复',
+                ];
+                continue ;
+            }
+
             $hisAccntModel->transaction_no = $depoTrans->transaction_no;
+            $hisAccntModel->mch_accnt_no = $split_accnt_detail['mch_accnt_no'];
             $hisAccntModel->event = $split_accnt_detail['dispatch_event'];
+            $hisAccntModel->order_no = $split_accnt_detail['order_no'];
             $hisAccntModel->event_amt = $split_accnt_detail['amount'];
             $hisAccntModel->accnt_amt_after = $hisAccntModel->accnt_amt_before + $hisAccntModel->event_amt;
             $hisAccntModel->save();
@@ -370,13 +460,23 @@ class GearDepositCommand extends GearCommandBase
             $split_accnt_detail_return[$k] = [
                 'status' => MchAccnt::BACTH_SUCCESS_STATUS,
                 'mch_accnt_no' => $mchAccnt->mch_accnt_no,
+                'order_no' => $split_accnt_detail['order_no'],
                 'dispatch_event' => $hisAccntModel->event,
                 'amount' => $hisAccntModel->event_amt,
                 'amount_after_event' => $hisAccntModel->accnt_amt_after,
             ];
 
+            $error_flag = false ;
+
         }
 
+        if($error_flag){
+            $this->_formatResult->setError('DISPATCH.FAIL', [
+                'split_accnt_detail' => $split_accnt_detail_return,
+            ]);
+            return $this->_signReturn($this->_formatResult->getData(), $token);
+        }
+        
         $this->_formatResult->setSuccess([
             'split_accnt_detail' => $split_accnt_detail_return,
         ]);
