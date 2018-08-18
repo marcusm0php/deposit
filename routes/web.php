@@ -12,8 +12,8 @@
 */
 
 Route::get('/', function () {
-
 //    app('easysms')->send($phone,$sms_data);
+    return ['1'];
     return view('welcome');
 });
 
