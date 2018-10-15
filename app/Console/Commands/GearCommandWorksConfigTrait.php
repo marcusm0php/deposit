@@ -56,6 +56,7 @@ trait GearCommandWorksConfigTrait
         'deposit.mchaccnt.withdraw' => [
             'mch_accnt_no' => '',
             'card_no' => '',
+            'amount' => '',
             'bsbank' => '',
         ],
     ];

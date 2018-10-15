@@ -1,0 +1,988 @@
+Command:Gear:deposit.sign.verify is registered.
+Command:Gear:deposit.outtransno.verify is registered.
+Command:Gear:deposit.mchsub.create is registered.
+Command:Gear:deposit.mchsub.bind.bankcard is registered.
+Command:Gear:deposit.mchsub.unbind.bankcard is registered.
+Command:Gear:deposit.mchsub.batchcreate is registered.
+Command:Gear:deposit.mchsub.query is registered.
+Command:Gear:deposit.mchaccnt.dispatch is registered.
+Command:Gear:deposit.mchaccnt.withdraw is registered.
+deposit.sign.verify(923966f1efc93d6e21ea7bc9b29bb07f) is called at 2018-07-23 13:54:39
+"deposit.sign.verify"
+"{"transaction_no":"","mch_no":"","timestamp":"20180723135440","biz_type":"","code":"102","message":"签名错误","biz_content":{},"sign_type":"MD5"}"
+"20180723135440"
+null
+"102"
+deposit.sign.verify(d168dc8ab3de144e65258f47bc50a72f) is called at 2018-07-23 14:07:04
+"deposit.sign.verify"
+"{"timestamp":"20180713182720","biz_type":"mchsub.create","biz_content":{"mch_accnt_name":"123"},"out_trans_no":"3","sign_type":"4","mch_no":"80000000"}"
+"20180713182720"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723140704","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c55a7c535510b33b9e6ea5"},"sign_type":"MD5"}"
+"20180723140704"
+null
+"100"
+deposit.outtransno.verify(d168dc8ab3de144e65258f47bc50a72f) is called at 2018-07-23 14:07:04
+"deposit.outtransno.verify"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723140704","biz_type":"mchsub.create","code":"104","message":"外部追踪号无效","biz_content":{},"sign_type":"MD5"}"
+"20180723140704"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"104"
+deposit.sign.verify(aa84f12a51cf187310fc59d4bef56408) is called at 2018-07-23 14:10:46
+"deposit.sign.verify"
+"{"timestamp":"20180713182720","biz_type":"mchsub.create","biz_content":{"mch_accnt_name":"123"},"out_trans_no":"3","sign_type":"4","mch_no":"80000000"}"
+"20180713182720"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723141046","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c55a7c535510b33b9e6ea5"},"sign_type":"MD5"}"
+"20180723141046"
+null
+"100"
+deposit.outtransno.verify(aa84f12a51cf187310fc59d4bef56408) is called at 2018-07-23 14:10:46
+"deposit.outtransno.verify"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723141046","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"3"},"sign_type":"MD5"}"
+"20180723141046"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"100"
+deposit.mchsub.create(aa84f12a51cf187310fc59d4bef56408) is called at 2018-07-23 14:10:46
+"deposit.mchsub.create"
+"{"transaction_no":"3","mch_no":"80000000","timestamp":"20180723141046","biz_type":"mchsub.create","code":"202","message":"外部子商户号非法","biz_content":{},"sign_type":"MD5"}"
+"20180723141046"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"202"
+deposit.sign.verify(2f6d5d09a63cd44ecfa95a764171e562) is called at 2018-07-23 14:11:03
+"deposit.sign.verify"
+"{"timestamp":"20180713182720","biz_type":"mchsub.create","biz_content":{"mch_accnt_name":"123"},"out_trans_no":"3123123123","sign_type":"4","mch_no":"80000000"}"
+"20180713182720"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723141103","biz_type":"mchsub.create","code":"102","message":"签名错误","biz_content":{},"sign_type":"MD5"}"
+"20180723141103"
+null
+"102"
+deposit.sign.verify(a03f7d58aa8f8bbbea36c6a68a5d985a) is called at 2018-07-23 15:56:33
+"deposit.sign.verify"
+"{"transaction_no":"","mch_no":"","timestamp":"20180723155633","biz_type":"","code":"102","message":"签名错误","biz_content":{},"sign_type":"MD5"}"
+"20180723155633"
+null
+"102"
+deposit.sign.verify(d581d3c26b276584888bc5ee0df23447) is called at 2018-07-23 15:57:30
+"deposit.sign.verify"
+"{"mch_no":"80000000","timestamp":"20180723155730","biz_type":"mchsub.create","out_trans_no":1532332650,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723155730"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723155730","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c55a7c535510b33b9e6ea5"},"sign_type":"MD5"}"
+"20180723155730"
+null
+"100"
+deposit.outtransno.verify(d581d3c26b276584888bc5ee0df23447) is called at 2018-07-23 15:57:30
+"deposit.outtransno.verify"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723155730","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332650"},"sign_type":"MD5"}"
+"20180723155730"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"100"
+deposit.mchsub.create(d581d3c26b276584888bc5ee0df23447) is called at 2018-07-23 15:57:30
+"deposit.mchsub.create"
+App\Models\MchAccnt {#635
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222496
+    "mch_no" => "80000000"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120036786699471"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-20 10:13:06"
+    "update_time" => "2018-07-20 10:13:06"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222496
+    "mch_no" => "80000000"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120036786699471"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-20 10:13:06"
+    "update_time" => "2018-07-20 10:13:06"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332650,"mch_no":"80000000","timestamp":"20180723155730","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120036786699471","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723155730"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"201"
+deposit.sign.verify(091d1d923b1127ee281cfe66cc91c20a) is called at 2018-07-23 15:57:32
+"deposit.sign.verify"
+"{"transaction_no":"","mch_no":"","timestamp":"20180723155732","biz_type":"","code":"102","message":"签名错误","biz_content":{},"sign_type":"MD5"}"
+"20180723155732"
+null
+"102"
+deposit.sign.verify(1c09e6d30389567043502cedf5132d29) is called at 2018-07-23 16:01:29
+"deposit.sign.verify"
+"{"biz_content":{"split_accnt_detail":"[{\"mchAccntNo\":\"1119948691137657\",\"orderNo\":\"XYYESB285199\",\"dispatchEvent\":\"transfer\",\"dispatchType\":0,\"amount\":211000.340000}]"},"timestamp":"20180723160020","biz_type":"mchaccnt.dispatch","mch_no":"80000000","out_trans_no":"XYYESB285199","sign_type":"MD5"}"
+"20180723160020"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723160129","biz_type":"mchaccnt.dispatch","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c55a7c535510b33b9e6ea5"},"sign_type":"MD5"}"
+"20180723160129"
+null
+"100"
+deposit.outtransno.verify(1c09e6d30389567043502cedf5132d29) is called at 2018-07-23 16:01:29
+"deposit.outtransno.verify"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723160129","biz_type":"mchaccnt.dispatch","code":"100","message":"success","biz_content":{"out_trans_no":"XYYESB285199"},"sign_type":"MD5"}"
+"20180723160129"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"100"
+deposit.mchaccnt.dispatch(1c09e6d30389567043502cedf5132d29) is called at 2018-07-23 16:01:29
+"deposit.mchaccnt.dispatch"
+
+   ErrorException  : Invalid argument supplied for foreach()
+
+  at /home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearDepositCommand.php:353
+    349|     }
+    350| 
+    351|     //3.6 商户分账
+    352|     public function workMchaccntdispatch($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token){
+  > 353|         foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
+    354|             $bizContentFormat['split_accnt_detail'][$k] = array_merge([
+    355|                 'mch_accnt_no' => '',
+    356|                 'card_no' => '',
+    357|                 'order_no'=>'',
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Bootstrap\HandleExceptions::handleError("Invalid argument supplied for foreach()", "/home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearDepositCommand.php")
+      /home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearDepositCommand.php:353
+
+  2   App\Console\Commands\GearDepositCommand::workMchaccntdispatch("{"biz_content":{"split_accnt_detail":"[{\"mchAccntNo\":\"1119948691137657\",\"orderNo\":\"XYYESB285199\",\"dispatchEvent\":\"transfer\",\"dispatchType\":0,\"amount\":211000.340000}]"},"timestamp":"20180723160020","biz_type":"mchaccnt.dispatch","mch_no":"80000000","out_trans_no":"XYYESB285199","sign_type":"MD5"}", "0a193a8348f2003f435d3d14d4102896", ["[{"mchAccntNo":"1119948691137657","orderNo":"XYYESB285199","dispatchEvent":"transfer","dispatchType":0,"amount":211000.340000}]"], ["[{"mchAccntNo":"1119948691137657","orderNo":"XYYESB285199","dispatchEvent":"transfer","dispatchType":0,"amount":211000.340000}]"], Object(App\Models\DepositTransaction), "9b389216c3c55a7c535510b33b9e6ea5")
+      /home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearCommandBase.php:143
+
+  Please use the argument -v to see more details.
+Command:Gear:deposit.sign.verify is registered.
+Command:Gear:deposit.outtransno.verify is registered.
+Command:Gear:deposit.mchsub.create is registered.
+Command:Gear:deposit.mchsub.bind.bankcard is registered.
+Command:Gear:deposit.mchsub.unbind.bankcard is registered.
+Command:Gear:deposit.mchsub.batchcreate is registered.
+Command:Gear:deposit.mchsub.query is registered.
+Command:Gear:deposit.mchaccnt.dispatch is registered.
+Command:Gear:deposit.mchaccnt.withdraw is registered.
+deposit.sign.verify(d1a84ef2cc43834c1063b0141c8186ce) is called at 2018-07-23 16:01:33
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160133","biz_type":"mchsub.create","out_trans_no":1532332893,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160133"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160133","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160133"
+null
+"100"
+deposit.outtransno.verify(d1a84ef2cc43834c1063b0141c8186ce) is called at 2018-07-23 16:01:33
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160133","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332893"},"sign_type":"MD5"}"
+"20180723160133"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(d1a84ef2cc43834c1063b0141c8186ce) is called at 2018-07-23 16:01:33
+"deposit.mchsub.create"
+null
+"{"transaction_no":1532332893,"mch_no":"80000001","timestamp":"20180723160133","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160133"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.sign.verify(76a44d50da078a95804293615797ea67) is called at 2018-07-23 16:01:38
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160138","biz_type":"mchsub.create","out_trans_no":1532332898,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160138"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160138","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160138"
+null
+"100"
+deposit.outtransno.verify(76a44d50da078a95804293615797ea67) is called at 2018-07-23 16:01:38
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160138","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332898"},"sign_type":"MD5"}"
+"20180723160138"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(76a44d50da078a95804293615797ea67) is called at 2018-07-23 16:01:38
+"deposit.mchsub.create"
+App\Models\MchAccnt {#639
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332898,"mch_no":"80000001","timestamp":"20180723160138","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160138"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"201"
+deposit.sign.verify(3a0f1d11b5ceae710b8fb315be359414) is called at 2018-07-23 16:01:40
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160140","biz_type":"mchsub.create","out_trans_no":1532332900,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160140"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160140","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160140"
+null
+"100"
+deposit.outtransno.verify(3a0f1d11b5ceae710b8fb315be359414) is called at 2018-07-23 16:01:40
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160140","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332900"},"sign_type":"MD5"}"
+"20180723160140"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(3a0f1d11b5ceae710b8fb315be359414) is called at 2018-07-23 16:01:40
+"deposit.mchsub.create"
+App\Models\MchAccnt {#626
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332900,"mch_no":"80000001","timestamp":"20180723160140","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160140"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"201"
+deposit.sign.verify(b94803df9d27df9354433c59d7964bbc) is called at 2018-07-23 16:01:41
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","out_trans_no":1532332901,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160141"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160141"
+null
+"100"
+deposit.outtransno.verify(b94803df9d27df9354433c59d7964bbc) is called at 2018-07-23 16:01:41
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332901"},"sign_type":"MD5"}"
+"20180723160141"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(b94803df9d27df9354433c59d7964bbc) is called at 2018-07-23 16:01:41
+"deposit.mchsub.create"
+App\Models\MchAccnt {#637
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332901,"mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160141"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"201"
+deposit.sign.verify(839aeafc0d216504738ec0e138d3a6e7) is called at 2018-07-23 16:01:41
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","out_trans_no":1532332901,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160141"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160141"
+null
+"100"
+deposit.outtransno.verify(839aeafc0d216504738ec0e138d3a6e7) is called at 2018-07-23 16:01:41
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332901"},"sign_type":"MD5"}"
+"20180723160141"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(839aeafc0d216504738ec0e138d3a6e7) is called at 2018-07-23 16:01:41
+"deposit.mchsub.create"
+App\Models\MchAccnt {#635
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332901,"mch_no":"80000001","timestamp":"20180723160141","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160141"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"201"
+deposit.sign.verify(9b76693808c5aab487927fb2ba84c0a1) is called at 2018-07-23 16:01:42
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","out_trans_no":1532332902,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160142"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160142"
+null
+"100"
+deposit.outtransno.verify(9b76693808c5aab487927fb2ba84c0a1) is called at 2018-07-23 16:01:42
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332902"},"sign_type":"MD5"}"
+"20180723160142"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(9b76693808c5aab487927fb2ba84c0a1) is called at 2018-07-23 16:01:42
+"deposit.mchsub.create"
+App\Models\MchAccnt {#636
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332902,"mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160142"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"201"
+deposit.sign.verify(358dee27e3bb90ea2317b898a41db260) is called at 2018-07-23 16:01:42
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","out_trans_no":1532332902,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160142"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160142"
+null
+"100"
+deposit.outtransno.verify(358dee27e3bb90ea2317b898a41db260) is called at 2018-07-23 16:01:42
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332902"},"sign_type":"MD5"}"
+"20180723160142"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(358dee27e3bb90ea2317b898a41db260) is called at 2018-07-23 16:01:42
+"deposit.mchsub.create"
+App\Models\MchAccnt {#643
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332902,"mch_no":"80000001","timestamp":"20180723160142","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160142"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"201"
+deposit.sign.verify(8a2ffabcdcc07013f2658c6d8884856a) is called at 2018-07-23 16:01:45
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160145","biz_type":"mchsub.create","out_trans_no":1532332905,"biz_content":{"mch_accnt_name":"sub1","out_mch_accnt_no":"1532052786","link_name":"","link_phone":"","link_email":""},"sign_type":""}"
+"20180723160145"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160145","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160145"
+null
+"100"
+deposit.outtransno.verify(8a2ffabcdcc07013f2658c6d8884856a) is called at 2018-07-23 16:01:45
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160145","biz_type":"mchsub.create","code":"100","message":"success","biz_content":{"out_trans_no":"1532332905"},"sign_type":"MD5"}"
+"20180723160145"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.create(8a2ffabcdcc07013f2658c6d8884856a) is called at 2018-07-23 16:01:45
+"deposit.mchsub.create"
+App\Models\MchAccnt {#645
+  #table: "mch_accnt"
+  #primaryKey: "id_mch_accnt"
+  #fillable: array:10 [
+    0 => "mch_no"
+    1 => "mch_accnt_no"
+    2 => "out_mch_accnt_no"
+    3 => "settle_duration"
+    4 => "remain_amt"
+    5 => "accnt_type"
+    6 => "create_time"
+    7 => "link_name"
+    8 => "link_phone"
+    9 => "link_email"
+  ]
+  #dateFormat: "Y-m-d H:i:s"
+  #connection: "mysql"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #original: array:14 [
+    "id_mch_accnt" => 222517
+    "mch_no" => "80000001"
+    "mch_accnt_name" => "sub1"
+    "mch_accnt_no" => "1120357693381093"
+    "out_mch_accnt_no" => "1532052786"
+    "settle_duration" => "T1"
+    "id_bank_card" => 0
+    "remain_amt" => 0.0
+    "accnt_type" => "mchsub"
+    "link_email" => ""
+    "link_phone" => ""
+    "link_name" => ""
+    "create_time" => "2018-07-23 16:01:33"
+    "update_time" => "2018-07-23 16:01:33"
+  ]
+  #changes: []
+  #casts: []
+  #dates: []
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: array:1 [
+    0 => "id_mch_accnt"
+  ]
+  #visible: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+"{"transaction_no":1532332905,"mch_no":"80000001","timestamp":"20180723160145","biz_type":"mchsub.create","code":"201","message":"外部子商户号重复","biz_content":{"mch_accnt_no":"1120357693381093","out_mch_accnt_no":"1532052786"},"sign_type":"MD5"}"
+"20180723160145"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"201"
+deposit.sign.verify(4543f19af4898cd3e92f91d8555e1371) is called at 2018-07-23 16:02:30
+"deposit.sign.verify"
+"{"mch_no":"80000001","timestamp":"20180723160230","biz_type":"mchsub.bind.bankcard","out_trans_no":1532332950,"biz_content":{"mch_accnt_no":"1119948220477583","bank_no":"103100000026","bank_name":"\u4e2d\u56fd\u94f6\u884c","card_type":"0","card_no":"6228480769101078376","card_cvn":"","card_expire_date":"","user_name":"\u51b7\u671d","card_phone":"13264706948","cert_type":"0","cert_no":"420281199410057236"},"sign_type":"md5"}"
+"20180723160230"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160230","biz_type":"mchsub.bind.bankcard","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c5vtlwf535510b33b9e6ea7"},"sign_type":"MD5"}"
+"20180723160230"
+null
+"100"
+deposit.outtransno.verify(4543f19af4898cd3e92f91d8555e1371) is called at 2018-07-23 16:02:30
+"deposit.outtransno.verify"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"{"transaction_no":"","mch_no":"80000001","timestamp":"20180723160230","biz_type":"mchsub.bind.bankcard","code":"100","message":"success","biz_content":{"out_trans_no":"1532332950"},"sign_type":"MD5"}"
+"20180723160230"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"100"
+deposit.mchsub.bind.bankcard(4543f19af4898cd3e92f91d8555e1371) is called at 2018-07-23 16:02:30
+"deposit.mchsub.bind.bankcard"
+"{"transaction_no":1532332950,"mch_no":"80000001","timestamp":"20180723160230","biz_type":"mchsub.bind.bankcard","code":"203","message":"子商户帐号不存在","biz_content":{},"sign_type":"MD5"}"
+"20180723160230"
+"9b389216c3c5vtlwf535510b33b9e6ea7"
+"203"
+deposit.sign.verify(8da64b09576f35ecd21841cd481fb694) is called at 2018-07-23 16:04:25
+"deposit.sign.verify"
+"{"biz_content":{"split_accnt_detail":"[{\"mchAccntNo\":\"1119948691137657\",\"orderNo\":\"XYYESB285199\",\"dispatchEvent\":\"transfer\",\"dispatchType\":0,\"amount\":211000.340000}]"},"timestamp":"20180723160020","biz_type":"mchaccnt.dispatch","mch_no":"80000000","out_trans_no":"XYYESB285199","sign_type":"MD5"}"
+"20180723160020"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723160425","biz_type":"mchaccnt.dispatch","code":"100","message":"success","biz_content":{"mch_md5_token":"9b389216c3c55a7c535510b33b9e6ea5"},"sign_type":"MD5"}"
+"20180723160425"
+null
+"100"
+deposit.outtransno.verify(8da64b09576f35ecd21841cd481fb694) is called at 2018-07-23 16:04:25
+"deposit.outtransno.verify"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"{"transaction_no":"","mch_no":"80000000","timestamp":"20180723160425","biz_type":"mchaccnt.dispatch","code":"100","message":"success","biz_content":{"out_trans_no":"XYYESB285199"},"sign_type":"MD5"}"
+"20180723160425"
+"9b389216c3c55a7c535510b33b9e6ea5"
+"100"
+deposit.mchaccnt.dispatch(8da64b09576f35ecd21841cd481fb694) is called at 2018-07-23 16:04:25
+"deposit.mchaccnt.dispatch"
+
+   ErrorException  : Invalid argument supplied for foreach()
+
+  at /home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearDepositCommand.php:353
+    349|     }
+    350| 
+    351|     //3.6 商户分账
+    352|     public function workMchaccntdispatch($dataOri, $sign, $data, $bizContent, $bizContentFormat, $depoTrans, $token){
+  > 353|         foreach($bizContentFormat['split_accnt_detail'] as $k => $split_accnt_detail){
+    354|             $bizContentFormat['split_accnt_detail'][$k] = array_merge([
+    355|                 'mch_accnt_no' => '',
+    356|                 'card_no' => '',
+    357|                 'order_no'=>'',
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Bootstrap\HandleExceptions::handleError("Invalid argument supplied for foreach()", "/home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearDepositCommand.php")
+      /home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearDepositCommand.php:353
+
+  2   App\Console\Commands\GearDepositCommand::workMchaccntdispatch("{"biz_content":{"split_accnt_detail":"[{\"mchAccntNo\":\"1119948691137657\",\"orderNo\":\"XYYESB285199\",\"dispatchEvent\":\"transfer\",\"dispatchType\":0,\"amount\":211000.340000}]"},"timestamp":"20180723160020","biz_type":"mchaccnt.dispatch","mch_no":"80000000","out_trans_no":"XYYESB285199","sign_type":"MD5"}", "0a193a8348f2003f435d3d14d4102896", ["[{"mchAccntNo":"1119948691137657","orderNo":"XYYESB285199","dispatchEvent":"transfer","dispatchType":0,"amount":211000.340000}]"], ["[{"mchAccntNo":"1119948691137657","orderNo":"XYYESB285199","dispatchEvent":"transfer","dispatchType":0,"amount":211000.340000}]"], Object(App\Models\DepositTransaction), "9b389216c3c55a7c535510b33b9e6ea5")
+      /home/marcus/lnmp/nginx/html/deposit/repository/app/Console/Commands/GearCommandBase.php:143
+
+  Please use the argument -v to see more details.
+Command:Gear:deposit.sign.verify is registered.
+Command:Gear:deposit.outtransno.verify is registered.
+Command:Gear:deposit.mchsub.create is registered.
+Command:Gear:deposit.mchsub.bind.bankcard is registered.
+Command:Gear:deposit.mchsub.unbind.bankcard is registered.
+Command:Gear:deposit.mchsub.batchcreate is registered.
+Command:Gear:deposit.mchsub.query is registered.
+Command:Gear:deposit.mchaccnt.dispatch is registered.
+Command:Gear:deposit.mchaccnt.withdraw is registered.
+Command:Gear:deposit.sign.verify is registered.
+Command:Gear:deposit.outtransno.verify is registered.
+Command:Gear:deposit.mchsub.create is registered.
+Command:Gear:deposit.mchsub.bind.bankcard is registered.
+Command:Gear:deposit.mchsub.unbind.bankcard is registered.
+Command:Gear:deposit.mchsub.batchcreate is registered.
+Command:Gear:deposit.mchsub.query is registered.
+Command:Gear:deposit.mchaccnt.dispatch is registered.
+Command:Gear:deposit.mchaccnt.withdraw is registered.

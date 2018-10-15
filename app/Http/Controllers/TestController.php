@@ -9,13 +9,16 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
     protected $_client;
-    protected $_request_url = 'http://deposit.local/gclients';
+    protected $_request_url = 'http://t2.visastandards.com/gclients';
 
     public function __construct(Client $client)
     {
         $this->_client = $client;
-
-
+        /*`$arr = [
+            'a' =>1,
+            'b' =>1,
+        ];
+        dd(array_search(1,$arr));*/
         $this->_curl = curl_init();
         curl_setopt($this->_curl, CURLOPT_URL, $this->_request_url);
         curl_setopt($this->_curl, CURLOPT_SSL_VERIFYHOST, 0);
@@ -33,24 +36,21 @@ class TestController extends Controller
 //Route::get('accnt-dispatch','TestController@accntDispatch');
     public function subCreate(Request $request)
     {
-        $methods = get_class_methods(__CLASS__);
-
-        dd();
         $data = json_encode([
-            'mch_no' => '8AAA',
+            'mch_no' => '80000001',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.create',
             'out_trans_no' => time(),
             'biz_content' => [
                 'mch_accnt_name' => 'sub1',
-                'out_mch_accnt_no' => time(),
+                'out_mch_accnt_no' => '1532052786',
                 'link_name' => '',
                 'link_phone' => '',
                 'link_email' => '',
             ],
             'sign_type' => ''
         ]);
-        $token = 'TOKENTOKEN';
+        $token = '9b389216c3c5vtlwf535510b33b9e6ea7';
         $sign = SignMD5Helper::genSign($data, $token);
 
         curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
@@ -68,13 +68,12 @@ class TestController extends Controller
     public function bindAccnt(Request $request)
     {
         $data = json_encode([
-            'mch_no' => '8AAA',
+            'mch_no' => '80000001',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.bind.bankcard',
             'out_trans_no' => time(),
-
             'biz_content' => [
-                'mch_accnt_no' => '1117480490396200',
+                'mch_accnt_no' => '1119948220477583',
                 'bank_no' => '103100000026',
                 'bank_name' => '中国银行',
                 'card_type' => '0',
@@ -88,7 +87,7 @@ class TestController extends Controller
             ],
             'sign_type' => 'md5'
         ]);
-        $token = 'TOKENTOKEN';
+        $token = '9b389216c3c5vtlwf535510b33b9e6ea7';
         $sign = SignMD5Helper::genSign($data, $token);
 
         curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
@@ -106,18 +105,18 @@ class TestController extends Controller
     public function unbindAccnt()
     {
         $data = json_encode([
-            'mch_no' => '8AAA',
+            'mch_no' => '80000000',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.unbind.bankcard',
             'out_trans_no' => time(),
 
             'biz_content' => [
-                'mch_accnt_no' => '1117480490396200',
+                'mch_accnt_no' => '1119948220477583',
                 'card_no' => '6228480769101078376',
             ],
             'sign_type' => 'md5'
         ]);
-        $token = 'TOKENTOKEN';
+        $token = '9b389216c3c55a7c535510b33b9e6ea5';
         $sign = SignMD5Helper::genSign($data, $token);
 
         curl_setopt($this->_curl, CURLOPT_POSTFIELDS, array(
@@ -138,7 +137,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.batchcreate',
-            'out_trans_no' => time(),
+            'out_trant_no' => time(),
             'biz_content' => [
                 'mch_accnts'=>[
                     [
@@ -234,7 +233,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.query',
-            'out_trans_no' => time(),
+            'out_trant_no' => time(),
             'biz_content' => [
                 'mch_accnt_no' => '1117480490396200',
             ],
@@ -259,21 +258,33 @@ class TestController extends Controller
     public function accntDispatch(Request $request)
     {
         $data = json_encode([
-            'mch_no' => '8AAA',
+            'mch_no' => '80000000',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchaccnt.dispatch',
+            'out_trans_no' => time(),
             'biz_content' => [
                 'split_accnt_detail' => [
                     [
-                        'mch_accnt_no' => '1',
-                        'dispatch_event' => 'withdraw',
-                        'amount' => '100',
+                        'mch_accnt_no' => '1119947945437327',
+                        'card_no' => '103100000026',
+                        'order_no'=>time(),
+                        'dispatch_event' => 'transfer',
+                        'amount' => '211000.340000',
+                        'dispatch_type'=>'0'
+                    ],
+                    [
+                        'mch_accnt_no' => '1119947945437327',
+                        'card_no' => '103100000026',
+                        'order_no'=>'1',
+                        'dispatch_event' => 'transfer',
+                        'amount' => '211000.340000',
+                        'dispatch_type'=>'0'
                     ]
                 ]
             ],
             'sign_type' => ''
         ]);
-        $token = 'TOKENTOKEN';
+        $token = '9b389216c3c55a7c535510b33b9e6ea5';
         $sign = SignMD5Helper::genSign($data, $token);
 
         dump($data);
