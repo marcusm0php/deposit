@@ -34,3 +34,6 @@ Route::group(['prefix'=>'cibpay'],function(){
     Route::get('quickAuthSMS','TestCibController@quickAuthSMS');
 
 });
+
+
+

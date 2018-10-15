@@ -19,39 +19,36 @@ class GearCommandBase extends Command
     public function beforeRun()
     {
         $this->_worker= new \GearmanWorker();
-        $gearmanIp = '127.0.0.1';
-        $gearmanPort = '4730';
 
-
-        exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
-        $inetIp = empty($out[0])? '' : $out[0];
-        if(empty($inetIp)){
-            echo "启动失败\n";
-            echo "获取inet ip失败\n";
-            exit();
-        }
-
-        echo "本机INETIP: {$inetIp}\n";
-        $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
-
-        if(!empty($gearmanConfig)){
-            echo "Gearman Workers工作组IP: {$gearmanConfig->gearmand_srv_ip}\n";
-            echo "Gearman Workers工作组端口{$gearmanConfig->gearmand_srv_port}\n";
-
-            $this->_worker= new \GearmanWorker();
-
-            if(env('APP_ENV') == 'local'){//本地工作配置
-                $this->_worker->addServer('127.0.0.1', '4730');
-            }else{
-                $this->_worker->addServer($gearmanConfig->gearmand_srv_ip, $gearmanConfig->gearmand_srv_port);
-            }
-
-            return true;
+        if(env('APP_ENV') == 'local'){//本地工作配置
+            $this->_worker->addServer('127.0.0.1', '4730');
         }else{
-            echo "启动失败\n";
-            echo "获取WORKERS_IP失败\n";
-            exit();
-            return false;
+            exec("ip addr |grep global|awk '{print \$2}'|awk -F\/ '{print \$1}'", $out, $ret);
+            $inetIp = empty($out[0])? '' : $out[0];
+            if(empty($inetIp)){
+                echo "启动失败\n";
+                echo "获取inet ip失败\n";
+                exit();
+            }
+            
+            echo "本机INETIP: {$inetIp}\n";
+            $gearmanConfig = DB::table('sys_gearman_config')->where('inetip', $inetIp)->first();
+            
+            if(!empty($gearmanConfig)){
+                echo "Gearman Workers工作组IP: {$gearmanConfig->gearmand_srv_ip}\n";
+                echo "Gearman Workers工作组端口{$gearmanConfig->gearmand_srv_port}\n";
+                
+                $this->_worker= new \GearmanWorker();
+                
+                $this->_worker->addServer($gearmanConfig->gearmand_srv_ip, $gearmanConfig->gearmand_srv_port);
+                
+                return true;
+            }else{
+                echo "启动失败\n";
+                echo "获取WORKERS_IP失败\n";
+                exit();
+                return false;
+            }
         }
     }
     
@@ -77,7 +74,7 @@ class GearCommandBase extends Command
             $data = empty($data)? [] : $data;
             $data = array_merge([
                 'mch_no' => '',
-                'out_trant_no' => '',
+                'out_trans_no' => '',
                 'timestamp' => '', 
                 'biz_type' => '', 
                 'code' => '', 
@@ -100,7 +97,7 @@ class GearCommandBase extends Command
             DB::beginTransaction();
             if($funcName != 'deposit.outtransno.verify'){
                 $depoTrans = \App\Models\DepositTransaction::Factory(app('ga_traceno'), $funcName);
-                $depoTrans->out_trant_no = $data['out_trant_no'];
+                $depoTrans->out_trans_no = $data['out_trans_no'];
                 $depoTrans->mch_no = $data['mch_no'];
                 $depoTrans->save();
                 $this->_formatResult = new FormatResult($data, $depoTrans->transaction_no);

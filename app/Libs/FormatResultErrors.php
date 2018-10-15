@@ -8,7 +8,7 @@ class FormatResultErrors
         'SYS.ERR' => ['code' => '101', 'message' => '系统错误', ],
         'SIGN.VERIFY.FAIL' => ['code' => '102', 'message' => '签名错误', ],
         'SIGN.BIZ_TYPE.INVALID' => ['code' => '103', 'message' => 'biz_type无效', ],
-        'OUT_TRANT_NO.INVALID' => ['code' => '104', 'message' => '外部追踪号无效', ],
+        'OUT_TRANS_NO.INVALID' => ['code' => '104', 'message' => '外部追踪号无效', ],
 
         'OUTMCHACCNTNO.REPEAT' => ['code' => '201', 'message' => '外部子商户号重复', ],
         'OUTMCHACCNTNO.INVALID' => ['code' => '202', 'message' => '外部子商户号非法', ],

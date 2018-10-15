@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
     protected $_client;
-    protected $_request_url = 'http://yzallpay.test/gclients';
+    protected $_request_url = 'http://deposit.local/gclients';
 
     public function __construct(Client $client)
     {
@@ -40,7 +40,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.create',
-            'out_trant_no' => time(),
+            'out_trans_no' => time(),
             'biz_content' => [
                 'mch_accnt_name' => 'sub1',
                 'out_mch_accnt_no' => time(),
@@ -71,7 +71,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.bind.bankcard',
-            'out_trant_no' => time(),
+            'out_trans_no' => time(),
 
             'biz_content' => [
                 'mch_accnt_no' => '1117480490396200',
@@ -109,7 +109,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.unbind.bankcard',
-            'out_trant_no' => time(),
+            'out_trans_no' => time(),
 
             'biz_content' => [
                 'mch_accnt_no' => '1117480490396200',
@@ -138,7 +138,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.batchcreate',
-            'out_trant_no' => time(),
+            'out_trans_no' => time(),
             'biz_content' => [
                 'mch_accnts'=>[
                     [
@@ -234,7 +234,7 @@ class TestController extends Controller
             'mch_no' => '8AAA',
             'timestamp' => date('YmdHis'),
             'biz_type' => 'mchsub.query',
-            'out_trant_no' => time(),
+            'out_trans_no' => time(),
             'biz_content' => [
                 'mch_accnt_no' => '1117480490396200',
             ],
