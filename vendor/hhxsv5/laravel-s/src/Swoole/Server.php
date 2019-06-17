@@ -242,6 +242,9 @@ class Server
             $process = 'task worker';
         } else {
             $process = 'worker';
+            if (!empty($this->conf['enable_coroutine'])) {
+                \Swoole\Runtime::enableCoroutine();
+            }
         }
         $this->setProcessTitle(sprintf('%s laravels: %s process %d', $this->conf['process_prefix'], $process, $workerId));
 

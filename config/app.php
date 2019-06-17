@@ -146,6 +146,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        SwooleTW\Http\LaravelServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -164,9 +165,8 @@ return [
         /*
          * Mine Service Providers...
          */
-        App\Providers\GearApiInterfaceProvider::class,
-        App\Providers\GearApiLogProvider::class,
-        App\Providers\SmsProvider::class,
+        App\Providers\ApiLibsProvider::class,
+        
     ],
 
     /*

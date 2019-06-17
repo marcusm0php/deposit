@@ -8,6 +8,7 @@ return [
     'listen_port'        => env('LARAVELS_LISTEN_PORT', 5200),
     'socket_type'        => env('LARAVELS_SOCKET_TYPE', defined('SWOOLE_SOCK_TCP') ? \SWOOLE_SOCK_TCP : 1),
     'enable_gzip'        => env('LARAVELS_ENABLE_GZIP', false),
+    'enable_coroutine'   => false,
     'server'             => env('LARAVELS_SERVER', 'LaravelS'),
     'handle_static'      => env('LARAVELS_HANDLE_STATIC', false),
     'laravel_base_path'  => env('LARAVEL_BASE_PATH', base_path()),
@@ -40,7 +41,7 @@ return [
     'register_providers' => [
     ],
     'swoole'             => [
-        'daemonize'          => env('LARAVELS_DAEMONIZE', true),
+        'daemonize'          => env('LARAVELS_DAEMONIZE', false),
         'dispatch_mode'      => 1,
         'reactor_num'        => function_exists('\swoole_cpu_num') ? \swoole_cpu_num() * 2 : 4,
         'worker_num'         => function_exists('\swoole_cpu_num') ? \swoole_cpu_num() * 2 : 8,

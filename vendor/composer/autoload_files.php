@@ -19,5 +19,6 @@ return array(
     '58571171fd5812e6e447dce228f52f4d' => $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
     '6124b4c8570aa390c21fafd04a26c69f' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     '801c31d8ed748cfa537fa45402288c95' => $vendorDir . '/psy/psysh/src/functions.php',
+    '97bcee38f59896ca87b32ab0e55c86b9' => $vendorDir . '/swooletw/laravel-swoole/src/Server/helpers.php',
     '2ce6901ec4f9c74f8ab4796397c9ae1e' => $baseDir . '/app/Libs/Functions.php',
 );

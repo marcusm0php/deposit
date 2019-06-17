@@ -18,11 +18,6 @@ class Laravel
      */
     protected $laravelKernel;
 
-    /**
-     * @var \ReflectionObject $laravelReflect
-     */
-    protected $laravelReflect;
-
     protected static $snapshotKeys = ['config', 'cookie', 'auth', /*'auth.password'*/];
 
     /**
@@ -125,31 +120,16 @@ class Laravel
 
     protected function saveSnapshots()
     {
-        $this->snapshots = [];
-        foreach (self::$snapshotKeys as $key) {
-            if (isset($this->app[$key])) {
-                if (is_object($this->app[$key])) {
-                    $this->snapshots[$key] = clone $this->app[$key];
-                } else {
-                    $this->snapshots[$key] = $this->app[$key];
-                }
-            }
-        }
-
-        if ($this->conf['is_lumen']) {
-            $this->laravelReflect = new \ReflectionObject($this->app);
-        }
+        $this->snapshots['config'] = $this->app['config']->all();
     }
 
     protected function applySnapshots()
     {
-        foreach ($this->snapshots as $key => $value) {
-            if (is_object($value)) {
-                $this->app[$key] = clone $value;
-            } else {
-                $this->app[$key] = $value;
+        $this->app['config']->set($this->snapshots['config']);
+        if (isset($this->app['cookie'])) {
+            foreach ($this->app['cookie']->getQueuedCookies() as $name => $cookie) {
+                $this->app['cookie']->unqueue($name);
             }
-            Facade::clearResolvedInstance($key);
         }
     }
 
@@ -172,10 +152,11 @@ class Laravel
                 $content = (string)$response;
             }
 
-            $middleware = $this->laravelReflect->getProperty('middleware');
+            $laravelReflect = new \ReflectionObject($this->app);
+            $middleware = $laravelReflect->getProperty('middleware');
             $middleware->setAccessible(true);
             if (!empty($middleware->getValue($this->app))) {
-                $callTerminableMiddleware = $this->laravelReflect->getMethod('callTerminableMiddleware');
+                $callTerminableMiddleware = $laravelReflect->getMethod('callTerminableMiddleware');
                 $callTerminableMiddleware->setAccessible(true);
                 $callTerminableMiddleware->invoke($this->app, $response);
             }
@@ -242,7 +223,8 @@ class Laravel
     {
         if (class_exists($providerCls, false) || $force) {
             if ($this->conf['is_lumen']) {
-                $loadedProviders = $this->laravelReflect->getProperty('loadedProviders');
+                $laravelReflect = new \ReflectionObject($this->app);
+                $loadedProviders = $laravelReflect->getProperty('loadedProviders');
                 $loadedProviders->setAccessible(true);
                 $oldLoadedProviders = $loadedProviders->getValue($this->app);
                 unset($oldLoadedProviders[get_class(new $providerCls($this->app))]);
